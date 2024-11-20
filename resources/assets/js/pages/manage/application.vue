@@ -384,6 +384,7 @@ export default {
                     { value: "appPush", label: "APP 推送", sort: 18 },
                     { value: "complaint", label: "举报管理", sort: 19 },
                     { value: "allUser", label: "团队管理", sort: 20 },
+                    { value: "pluginStore", label: "云插件市场", sort: 21 },
                 ])
             }
             adminApplyList = adminApplyList.map((h) => {
@@ -469,6 +470,11 @@ export default {
                     this.sendType = item.value;
                     this.$refs.wordChainAndVoteRef.onSelection()
                     return;
+                case 'pluginStore':
+                    this.goForward({
+                        path: '/manage/store/plugin/' + ('list'),
+                    });
+                    break;
             }
             this.$emit("on-click", item.value)
         },

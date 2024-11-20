@@ -126,6 +126,11 @@ export default [
                 path: 'application',
                 component: () => import('./pages/manage/application.vue'),
             },
+            {
+                name: 'manage-store',
+                path: 'store/*',
+                component: () => import('./pages/manage/pluginStore.vue')
+            },
         ]
     },
     {
