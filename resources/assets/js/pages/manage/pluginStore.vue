@@ -1,5 +1,5 @@
 <template>
-    <MicroApps :url="appUrl" :path="path" v-if="!loading && $route.name == 'manage-plugin'" />
+    <MicroApps :url="appUrl" :path="path" name="micro-store" v-if="!loading && $route.name == 'manage-store'" />
 </template>
 
 <script>

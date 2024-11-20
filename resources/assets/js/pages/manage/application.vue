@@ -472,7 +472,7 @@ export default {
                     return;
                 case 'pluginStore':
                     this.goForward({
-                        path: '/manage/store/plugin/' + ('list'),
+                        path: '/manage/store/',
                     });
                     break;
             }

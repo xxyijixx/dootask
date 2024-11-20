@@ -23,6 +23,7 @@ export default function() {
 
     // 微应用名称
     modules["micro-app"] = [obj]
+    modules["micro-store"] = [obj]
     modules["okr-details"] = [obj]
 
     // 微应用

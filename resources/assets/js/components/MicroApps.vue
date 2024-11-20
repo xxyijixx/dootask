@@ -82,7 +82,7 @@ export default {
         },
         '$route': {
             handler(to) {
-                if (to.name == 'manage-apps' || to.name == 'single-apps') {
+                if (to.name == 'manage-apps' || to.name == 'single-apps' || to.name == 'manage-store') {
                     this.appData = {
                         path: to.hash || to.fullPath
                     }
