@@ -13,6 +13,7 @@ services:
       - ./docker/php/php.ini:/usr/local/etc/php/php.ini
       - ./docker/log/supervisor:/var/log/supervisor
       - ./:/var/www
+      - ./public/uploads:/var/www/public/uploads
     environment:
       LANG: "C.UTF-8"
       MODE: "production"
@@ -63,6 +64,8 @@ services:
   mariadb:
     container_name: "dootask-mariadb-${APP_ID}"
     image: "mariadb:10.7.3"
+    ports:
+      - "3336:3306"
     volumes:
       - ./docker/mysql/repassword.sh:/etc/mysql/repassword.sh
       - ./docker/mysql/conf.d:/etc/mysql/conf.d

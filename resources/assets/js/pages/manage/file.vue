@@ -216,6 +216,18 @@
                             <DropdownItem v-if="selectIds.length > 1" name="downloadzip" :disabled="contextMenuItem.userid != userId && contextMenuItem.permission == 0">{{$L('打包下载')}}</DropdownItem>
 
                             <DropdownItem name="delete" divided style="color:red">{{$L('删除')}}</DropdownItem>
+
+                            <Dropdown placement="right-start" transfer>
+                                <DropdownItem @click.native.stop="" name="aliyun:">
+                                    <div class="arrow-forward-item">{{$L('阿里云OSS')}}<Icon type="ios-arrow-forward"></Icon></div>
+                                </DropdownItem>
+                                <DropdownMenu slot="list" class="page-file-dropdown-menu">
+                                    <DropdownItem name="aliyun:upload">{{$L('上传至云存储')}}</DropdownItem>
+                                    <DropdownItem name="aliyun:keep">{{$L('始终保留在此设备')}}</DropdownItem>
+                                    <DropdownItem name="aliyun:release">{{$L('释放空间')}}</DropdownItem>
+                                    <DropdownItem name="aliyun:delete">{{$L('文件删除')}}</DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
                         </template>
                         <template v-else>
                             <DropdownItem
@@ -230,206 +242,206 @@
                     </DropdownMenu>
                 </Dropdown>
             </div>
-        </div>
 
-        <div v-if="uploadShow && uploadList.length > 0" class="file-upload-list">
-            <div class="upload-wrap">
-                <div class="title">
-                    {{$L('上传列表')}} ({{uploadList.length}})
-                    <em v-if="uploadList.find(({status}) => status === 'finished')" @click="uploadClear">{{$L('清空已完成')}}</em>
+            <div v-if="uploadShow && uploadList.length > 0" class="file-upload-list">
+                <div class="upload-wrap">
+                    <div class="title">
+                        {{$L('上传列表')}} ({{uploadList.length}})
+                        <em v-if="uploadList.find(({status}) => status === 'finished')" @click="uploadClear">{{$L('清空已完成')}}</em>
+                    </div>
+                    <ul class="content">
+                        <li v-for="(item, index) in uploadList" :key="index" v-if="index < 100" @click="uploadClick(item)">
+                            <AutoTip class="file-name">
+                                <span v-html="uploadName(item)"></span>
+                            </AutoTip>
+                            <AutoTip v-if="item.status === 'finished' && item.response && item.response.ret !== 1" class="file-error">{{item.response.msg}}</AutoTip>
+                            <Progress v-else :percent="uploadPercentageParse(item.percentage)" :stroke-width="5" />
+                            <Icon class="file-close" type="ios-close-circle-outline" @click="uploadList.splice(index, 1)"/>
+                        </li>
+                    </ul>
+                    <Icon class="close" type="md-close" @click="uploadShow=false"/>
                 </div>
-                <ul class="content">
-                    <li v-for="(item, index) in uploadList" :key="index" v-if="index < 100" @click="uploadClick(item)">
+            </div>
+
+            <div v-if="packShow && packList.length > 0" class="file-upload-list">
+                <div class="upload-wrap">
+                    <div class="title">
+                        <span>{{$L('打包列表')}}({{packList.length}})</span>
+                        <em v-if="packList.find(({status}) => status === 'finished')" @click="packClear">{{$L('清空已完成')}}</em>
+                    </div>
+                    <ul class="content">
+                    <li v-for="(item, index) in packList" :key="index" v-if="index < 100">
                         <AutoTip class="file-name">
-                            <span v-html="uploadName(item)"></span>
+                            <span v-if="item.status !== 'finished'">{{item.name}}</span>
+                            <a v-else :href="item.url" target="_blank">{{item.name}}</a>
                         </AutoTip>
-                        <AutoTip v-if="item.status === 'finished' && item.response && item.response.ret !== 1" class="file-error">{{item.response.msg}}</AutoTip>
-                        <Progress v-else :percent="uploadPercentageParse(item.percentage)" :stroke-width="5" />
-                        <Icon class="file-close" type="ios-close-circle-outline" @click="uploadList.splice(index, 1)"/>
+                        <AutoTip v-if="item.status === 'finished' && item.response && item.response.ret !==1" class="file-error">{{item.response.msg}}</AutoTip>
+                        <Progress v-else :percent="packPercentageParse(item.percentage)" :stroke-width="5" />
+                        <Icon class="file-close" type="ios-close-circle-outline" @click="packList.splice(index, 1)"/>
                     </li>
-                </ul>
-                <Icon class="close" type="md-close" @click="uploadShow=false"/>
-            </div>
-        </div>
-
-        <div v-if="packShow && packList.length > 0" class="file-upload-list">
-            <div class="upload-wrap">
-                <div class="title">
-                    <span>{{$L('打包列表')}}({{packList.length}})</span>
-                    <em v-if="packList.find(({status}) => status === 'finished')" @click="packClear">{{$L('清空已完成')}}</em>
+                    </ul>
+                    <Icon class="close" type="md-close" @click="packShow=false"/>
                 </div>
-                <ul class="content">
-                <li v-for="(item, index) in packList" :key="index" v-if="index < 100">
-                    <AutoTip class="file-name">
-                        <span v-if="item.status !== 'finished'">{{item.name}}</span>
-                        <a v-else :href="item.url" target="_blank">{{item.name}}</a>
-                    </AutoTip>
-                    <AutoTip v-if="item.status === 'finished' && item.response && item.response.ret !==1" class="file-error">{{item.response.msg}}</AutoTip>
-                    <Progress v-else :percent="packPercentageParse(item.percentage)" :stroke-width="5" />
-                    <Icon class="file-close" type="ios-close-circle-outline" @click="packList.splice(index, 1)"/>
-                </li>
-                </ul>
-                <Icon class="close" type="md-close" @click="packShow=false"/>
             </div>
-        </div>
 
-        <!--上传文件-->
-        <Upload
-            name="files"
-            ref="fileUpload"
-            v-show="false"
-            :action="actionUrl"
-            :headers="headers"
-            :multiple="true"
-            :webkitdirectory="false"
-            :format="uploadFormat"
-            :accept="uploadAccept"
-            :show-upload-list="false"
-            :max-size="maxSize"
-            :on-progress="handleProgress"
-            :on-success="handleSuccess"
-            :on-error="handleError"
-            :on-format-error="handleFormatError"
-            :on-exceeded-size="handleMaxSize"
-            :before-upload="handleBeforeUpload"/>
+            <!--上传文件-->
+            <Upload
+                name="files"
+                ref="fileUpload"
+                v-show="false"
+                :action="actionUrl"
+                :headers="headers"
+                :multiple="true"
+                :webkitdirectory="false"
+                :format="uploadFormat"
+                :accept="uploadAccept"
+                :show-upload-list="false"
+                :max-size="maxSize"
+                :on-progress="handleProgress"
+                :on-success="handleSuccess"
+                :on-error="handleError"
+                :on-format-error="handleFormatError"
+                :on-exceeded-size="handleMaxSize"
+                :before-upload="handleBeforeUpload"/>
 
-        <!--上传文件夹-->
-        <Upload
-            name="files"
-            ref="dirUpload"
-            v-show="false"
-            :action="actionUrl"
-            :headers="headers"
-            :multiple="true"
-            :webkitdirectory="true"
-            :format="uploadFormat"
-            :accept="uploadAccept"
-            :show-upload-list="false"
-            :max-size="maxSize"
-            :on-progress="handleProgress"
-            :on-success="handleSuccess"
-            :on-error="handleError"
-            :on-format-error="handleFormatError"
-            :on-exceeded-size="handleMaxSize"
-            :before-upload="handleBeforeUpload"/>
+            <!--上传文件夹-->
+            <Upload
+                name="files"
+                ref="dirUpload"
+                v-show="false"
+                :action="actionUrl"
+                :headers="headers"
+                :multiple="true"
+                :webkitdirectory="true"
+                :format="uploadFormat"
+                :accept="uploadAccept"
+                :show-upload-list="false"
+                :max-size="maxSize"
+                :on-progress="handleProgress"
+                :on-success="handleSuccess"
+                :on-error="handleError"
+                :on-format-error="handleFormatError"
+                :on-exceeded-size="handleMaxSize"
+                :before-upload="handleBeforeUpload"/>
 
-        <!--共享设置-->
-        <Modal
-            v-model="shareShow"
-            :title="$L('共享设置')"
-            :mask-closable="false"
-            footer-hide>
-            <Form class="page-file-share-form" :model="shareInfo" @submit.native.prevent inline>
-                <FormItem prop="userids" class="share-userid">
-                    <RadioGroup v-model="shareInfo.type">
-                        <Radio label="all">{{$L('所有人')}}</Radio>
-                        <Radio label="custom">{{$L('指定成员')}}</Radio>
-                    </RadioGroup>
-                    <UserSelect
-                        v-if="shareInfo.type === 'custom'"
-                        v-model="shareInfo.userids"
-                        :disabledChoice="shareAlready"
-                        :multiple-max="100"
-                        :placeholder="$L('选择共享成员')"
-                        :avatar-size="24"
-                        border>
-                    </UserSelect>
-                </FormItem>
-                <FormItem>
-                    <Select v-model="shareInfo.permission" :placeholder="$L('权限')">
-                        <Option :value="1">{{$L('读/写')}}</Option>
-                        <Option :value="0">{{$L('只读')}}</Option>
-                    </Select>
-                </FormItem>
-                <FormItem>
-                    <Button type="primary" :loading="shareLoad > 0" @click="onShare">{{$L('共享')}}</Button>
-                </FormItem>
-            </Form>
-            <div v-if="shareList.length > 0" class="page-file-share-items">
-                <div class="page-file-share-title">{{ $L('已共享成员') }}:</div>
-                <ul class="page-file-share-list">
-                    <li v-for="item in shareList">
-                        <div v-if="item.userid == 0" class="all-avatar">
-                            <EAvatar class="avatar-text" icon="el-icon-s-custom"/>
-                            <span class="avatar-name">{{$L('所有人')}}</span>
-                        </div>
-                        <UserAvatar v-else :size="32" :userid="item.userid" showName/>
-                        <Select v-model="item.permission" :placeholder="$L('权限')" @on-change="upShare(item)">
-                            <Option :value="1">{{ $L('读/写') }}</Option>
-                            <Option :value="0">{{ $L('只读') }}</Option>
-                            <Option :value="-1" class="delete">{{ $L('删除') }}</Option>
+            <!--共享设置-->
+            <Modal
+                v-model="shareShow"
+                :title="$L('共享设置')"
+                :mask-closable="false"
+                footer-hide>
+                <Form class="page-file-share-form" :model="shareInfo" @submit.native.prevent inline>
+                    <FormItem prop="userids" class="share-userid">
+                        <RadioGroup v-model="shareInfo.type">
+                            <Radio label="all">{{$L('所有人')}}</Radio>
+                            <Radio label="custom">{{$L('指定成员')}}</Radio>
+                        </RadioGroup>
+                        <UserSelect
+                            v-if="shareInfo.type === 'custom'"
+                            v-model="shareInfo.userids"
+                            :disabledChoice="shareAlready"
+                            :multiple-max="100"
+                            :placeholder="$L('选择共享成员')"
+                            :avatar-size="24"
+                            border>
+                        </UserSelect>
+                    </FormItem>
+                    <FormItem>
+                        <Select v-model="shareInfo.permission" :placeholder="$L('权限')">
+                            <Option :value="1">{{$L('读/写')}}</Option>
+                            <Option :value="0">{{$L('只读')}}</Option>
                         </Select>
+                    </FormItem>
+                    <FormItem>
+                        <Button type="primary" :loading="shareLoad > 0" @click="onShare">{{$L('共享')}}</Button>
+                    </FormItem>
+                </Form>
+                <div v-if="shareList.length > 0" class="page-file-share-items">
+                    <div class="page-file-share-title">{{ $L('已共享成员') }}:</div>
+                    <ul class="page-file-share-list">
+                        <li v-for="item in shareList">
+                            <div v-if="item.userid == 0" class="all-avatar">
+                                <EAvatar class="avatar-text" icon="el-icon-s-custom"/>
+                                <span class="avatar-name">{{$L('所有人')}}</span>
+                            </div>
+                            <UserAvatar v-else :size="32" :userid="item.userid" showName/>
+                            <Select v-model="item.permission" :placeholder="$L('权限')" @on-change="upShare(item)">
+                                <Option :value="1">{{ $L('读/写') }}</Option>
+                                <Option :value="0">{{ $L('只读') }}</Option>
+                                <Option :value="-1" class="delete">{{ $L('删除') }}</Option>
+                            </Select>
+                        </li>
+                    </ul>
+                </div>
+            </Modal>
+
+            <!-- 文件发送 -->
+            <UserSelect
+                ref="sendFile"
+                v-model="sendData"
+                :multiple-max="50"
+                :title="$L('发送文件')"
+                :before-submit="onSendFile"
+                :show-select-all="false"
+                show-dialog
+                module/>
+
+            <!--文件链接-->
+            <Modal
+                v-model="linkShow"
+                :title="$L('文件链接')"
+                :mask-closable="false">
+                <div>
+                    <div style="margin:-10px 0 8px">{{$L('文件名称')}}: {{linkData.name}}</div>
+                    <Input ref="linkInput" v-model="linkData.url" type="textarea" :rows="3" @on-focus="linkFocus" readonly/>
+                    <div class="form-tip" style="padding-top:6px">
+                        {{$L('可通过此链接浏览文件。')}}
+                        <Poptip
+                            confirm
+                            placement="bottom"
+                            :ok-text="$L('确定')"
+                            :cancel-text="$L('取消')"
+                            @on-ok="linkGet(true)"
+                            transfer>
+                            <div slot="title">
+                                <p><strong>{{$L('注意：刷新将导致原来的链接失效！')}}</strong></p>
+                            </div>
+                            <a href="javascript:void(0)">{{$L('刷新链接')}}</a>
+                        </Poptip>
+                    </div>
+                </div>
+                <div slot="footer" class="adaption">
+                    <Button type="default" @click="linkShow=false">{{$L('取消')}}</Button>
+                    <Button type="primary" :loading="linkLoad > 0" @click="linkCopy">{{$L('复制')}}</Button>
+                </div>
+            </Modal>
+
+            <!--查看/修改文件-->
+            <DrawerOverlay
+                v-model="fileShow"
+                class="page-file-drawer"
+                :beforeClose="fileBeforeClose"
+                :mask-closable="false">
+                <FilePreview v-if="isPreview" :file="fileInfo"/>
+                <FileContent v-else ref="fileContent" v-model="fileShow" :file="fileInfo"/>
+            </DrawerOverlay>
+
+            <!--拖动上传提示-->
+            <Modal
+                v-model="pasteShow"
+                :title="$L(pasteTitle)"
+                :cancel-text="$L('取消')"
+                :ok-text="$L('立即上传')"
+                :enter-ok="true"
+                @on-ok="pasteSend">
+                <ul class="dialog-wrapper-paste" :class="pasteWrapperClass">
+                    <li v-for="item in pasteItem">
+                        <img v-if="item.type == 'image'" :src="item.result"/>
+                        <div v-else>{{$L('文件')}}: {{item.name}} ({{$A.bytesToSize(item.size)}})</div>
                     </li>
                 </ul>
-            </div>
-        </Modal>
-
-        <!-- 文件发送 -->
-        <UserSelect
-            ref="sendFile"
-            v-model="sendData"
-            :multiple-max="50"
-            :title="$L('发送文件')"
-            :before-submit="onSendFile"
-            :show-select-all="false"
-            show-dialog
-            module/>
-
-        <!--文件链接-->
-        <Modal
-            v-model="linkShow"
-            :title="$L('文件链接')"
-            :mask-closable="false">
-            <div>
-                <div style="margin:-10px 0 8px">{{$L('文件名称')}}: {{linkData.name}}</div>
-                <Input ref="linkInput" v-model="linkData.url" type="textarea" :rows="3" @on-focus="linkFocus" readonly/>
-                <div class="form-tip" style="padding-top:6px">
-                    {{$L('可通过此链接浏览文件。')}}
-                    <Poptip
-                        confirm
-                        placement="bottom"
-                        :ok-text="$L('确定')"
-                        :cancel-text="$L('取消')"
-                        @on-ok="linkGet(true)"
-                        transfer>
-                        <div slot="title">
-                            <p><strong>{{$L('注意：刷新将导致原来的链接失效！')}}</strong></p>
-                        </div>
-                        <a href="javascript:void(0)">{{$L('刷新链接')}}</a>
-                    </Poptip>
-                </div>
-            </div>
-            <div slot="footer" class="adaption">
-                <Button type="default" @click="linkShow=false">{{$L('取消')}}</Button>
-                <Button type="primary" :loading="linkLoad > 0" @click="linkCopy">{{$L('复制')}}</Button>
-            </div>
-        </Modal>
-
-        <!--查看/修改文件-->
-        <DrawerOverlay
-            v-model="fileShow"
-            class="page-file-drawer"
-            :beforeClose="fileBeforeClose"
-            :mask-closable="false">
-            <FilePreview v-if="isPreview" :file="fileInfo"/>
-            <FileContent v-else ref="fileContent" v-model="fileShow" :file="fileInfo"/>
-        </DrawerOverlay>
-
-        <!--拖动上传提示-->
-        <Modal
-            v-model="pasteShow"
-            :title="$L(pasteTitle)"
-            :cancel-text="$L('取消')"
-            :ok-text="$L('立即上传')"
-            :enter-ok="true"
-            @on-ok="pasteSend">
-            <ul class="dialog-wrapper-paste" :class="pasteWrapperClass">
-                <li v-for="item in pasteItem">
-                    <img v-if="item.type == 'image'" :src="item.result"/>
-                    <div v-else>{{$L('文件')}}: {{item.name}} ({{$A.bytesToSize(item.size)}})</div>
-                </li>
-            </ul>
-        </Modal>
+            </Modal>
+        </div>
     </div>
 </template>
 
@@ -880,13 +892,6 @@ export default {
             return !!this.fileList?.find((res) => res._checked && res.permission < 1)
         },
 
-        maxSize() {
-            if(this.systemConfig?.file_upload_limit){
-                return this.systemConfig.file_upload_limit * 1024
-            }
-            return 1024000
-        },
-
         showBtnText(){
             return this.windowWidth > 600;
         }
@@ -1029,7 +1034,7 @@ export default {
         },
 
         handleRightClick(event, item, isAddButton) {
-            this.contextMenuItem = $A.isJson(item) ? item : {};
+            this.contextMenuItem = item || {};
             if (this.contextMenuVisible) {
                 this.handleClickContextMenuOutside();
             }
@@ -1144,6 +1149,8 @@ export default {
         handleContextClick(command) {
             if ($A.leftExists(command, "new:")) {
                 this.addFile($A.leftDelete(command, "new:"))
+            } else if ($A.leftExists(command, "aliyun:")) {
+                this.dropFile(this.contextMenuItem, command)
             } else {
                 this.dropFile(this.contextMenuItem, command)
             }
@@ -1314,71 +1321,43 @@ export default {
                 case 'delete':
                     this.deleteFile([item.id])
                     break;
+
+                case 'aliyun:upload':
+                    this.$store.dispatch("call", {
+                        url: `file/aliyun/upload?id=${item.id}`,
+                        method: 'post',
+                    }).then(({msg}) => {
+                        this.$Message.success(msg || this.$L('上传成功'));
+                    }).catch(({msg}) => {
+                        this.$Message.error(msg || this.$L('上传失败'));
+                    });
+                    break;
+
+                case 'aliyun:keep':
+                    this.$store.dispatch("call", {
+                        url: `file/aliyun/keep?id=${item.id}`,
+                    }).then(({msg}) => {
+                        this.$Message.success(msg || this.$L('下载成功'));
+                    }).catch(({msg}) => {
+                        this.$Message.error(msg || this.$L('下载失败'));
+                    });
+                    break;
+
+                case 'aliyun:release':
+                    this.$store.dispatch("call", {
+                        url: `file/aliyun/release?id=${item.id}`,
+                        method: 'delete',
+                    }).then(({msg}) => {
+                        this.$Message.success(msg || this.$L('释放成功'));
+                    }).catch(({msg}) => {
+                        this.$Message.error(msg || this.$L('释放失败'));
+                    });
+                    break;
+
+                case 'aliyun:delete':
+                    this.deleteFile([item.id]);
+                    break;
             }
-        },
-
-        onSendFile() {
-            return new Promise((resolve, reject) => {
-                if (this.sendData.length === 0) {
-                    $A.messageError("请选择转发对话或成员");
-                    reject();
-                    return
-                }
-                const dialogids = this.sendData.filter(value => $A.leftExists(value, 'd:')).map(value => value.replace('d:', ''));
-                const userids = this.sendData.filter(value => !$A.leftExists(value, 'd:'));
-                this.$store.dispatch("call", {
-                    url: 'dialog/msg/sendfileid',
-                    data: {
-                        dialogids,
-                        userids,
-                        file_id: this.sendFileId
-                    }
-                }).then(({data, msg}) => {
-                    this.$store.dispatch("saveDialogMsg", data.msgs);
-                    this.$store.dispatch("updateDialogLastMsg", data.msgs);
-                    $A.messageSuccess(msg);
-                    resolve();
-                }).catch(({msg}) => {
-                    $A.modalError(msg);
-                    reject();
-                });
-            })
-        },
-
-        linkGet(refresh) {
-            this.linkLoad++;
-            this.$store.dispatch("call", {
-                url: 'file/link',
-                data: {
-                    id: this.linkData.id,
-                    refresh: refresh === true ? 'yes' : 'no'
-                },
-            }).then(({data}) => {
-                this.linkData = Object.assign(data, {
-                    id: this.linkData.id,
-                    name: this.linkData.name
-                });
-                this.linkCopy();
-            }).catch(({msg}) => {
-                this.linkShow = false
-                $A.modalError(msg);
-            }).finally(_ => {
-                this.linkLoad--;
-            });
-        },
-
-        linkCopy() {
-            if (!this.linkData.url) {
-                return;
-            }
-            this.linkFocus();
-            this.copyText(this.linkData.url);
-        },
-
-        linkFocus() {
-            this.$nextTick(_ => {
-                this.$refs.linkInput.focus({cursor:'all'});
-            });
         },
 
         shearTo() {
