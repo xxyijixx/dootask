@@ -26,7 +26,7 @@ export default {
                 if (to.name == 'manage-store') {
                     this.$nextTick(() => {
                         this.loading = false;
-                        this.appUrl = import.meta.env.VITE_PLUGIN_STORE_URL || $A.mainUrl("plugin/store")
+                        this.appUrl = import.meta.env.VITE_PLUGIN_STORE_URL || $A.mainUrl("store")
                         this.path = this.$route.query.path || '';
                     })
                 }else{
