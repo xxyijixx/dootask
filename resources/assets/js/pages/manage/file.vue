@@ -215,6 +215,7 @@
                             <DropdownItem name="download" :disabled="contextMenuItem.ext == '' || (contextMenuItem.userid != userId && contextMenuItem.permission == 0)">{{$L('下载')}}</DropdownItem>
                             <DropdownItem v-if="selectIds.length > 1" name="downloadzip" :disabled="contextMenuItem.userid != userId && contextMenuItem.permission == 0">{{$L('打包下载')}}</DropdownItem>
 
+                            <DropdownItem divided v-if="!cloudStorageName" name="delete" style="color:red">{{$L('删除')}}</DropdownItem>
                             <Dropdown v-if="cloudStorageName" placement="right-start" transfer>
                                 <DropdownItem divided>
                                     <div class="arrow-forward-item">{{$L(cloudStorageName)}}<Icon type="ios-arrow-forward"></Icon></div>
@@ -226,9 +227,6 @@
                                     <DropdownItem name="cloud:delete" style="color:red">{{$L('文件删除')}}</DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
-
-                            <DropdownItem divided v-if="!cloudStorageName" name="delete" style="color:red">{{$L('删除')}}</DropdownItem>
-
                         </template>
                         <template v-else>
                             <DropdownItem
@@ -896,6 +894,13 @@ export default {
             return !!this.fileList?.find((res) => res._checked && res.permission < 1)
         },
 
+        maxSize() {
+            if(this.systemConfig?.file_upload_limit){
+                return this.systemConfig.file_upload_limit * 1024
+            }
+            return 1024000
+        },
+
         showBtnText(){
             return this.windowWidth > 600;
         }
@@ -1038,7 +1043,7 @@ export default {
         },
 
         handleRightClick(event, item, isAddButton) {
-            this.contextMenuItem = item || {};
+            this.contextMenuItem = $A.isJson(item) ? item : {};
             if (this.contextMenuVisible) {
                 this.handleClickContextMenuOutside();
             }
@@ -1362,6 +1367,70 @@ export default {
                     this.deleteFile([item.id]);
                     break;
             }
+        },
+        
+        onSendFile() {
+            return new Promise((resolve, reject) => {
+                if (this.sendData.length === 0) {
+                    $A.messageError("请选择转发对话或成员");
+                    reject();
+                    return
+                }
+                const dialogids = this.sendData.filter(value => $A.leftExists(value, 'd:')).map(value => value.replace('d:', ''));
+                const userids = this.sendData.filter(value => !$A.leftExists(value, 'd:'));
+                this.$store.dispatch("call", {
+                    url: 'dialog/msg/sendfileid',
+                    data: {
+                        dialogids,
+                        userids,
+                        file_id: this.sendFileId
+                    }
+                }).then(({data, msg}) => {
+                    this.$store.dispatch("saveDialogMsg", data.msgs);
+                    this.$store.dispatch("updateDialogLastMsg", data.msgs);
+                    $A.messageSuccess(msg);
+                    resolve();
+                }).catch(({msg}) => {
+                    $A.modalError(msg);
+                    reject();
+                });
+            })
+        },
+
+        linkGet(refresh) {
+            this.linkLoad++;
+            this.$store.dispatch("call", {
+                url: 'file/link',
+                data: {
+                    id: this.linkData.id,
+                    refresh: refresh === true ? 'yes' : 'no'
+                },
+            }).then(({data}) => {
+                this.linkData = Object.assign(data, {
+                    id: this.linkData.id,
+                    name: this.linkData.name
+                });
+                this.linkCopy();
+            }).catch(({msg}) => {
+                this.linkShow = false
+                $A.modalError(msg);
+            }).finally(_ => {
+                this.linkLoad--;
+            });
+        },
+
+        linkCopy() {
+            if (!this.linkData.url) {
+                return;
+            }
+            this.linkFocus();
+            this.copyText(this.linkData.url);
+        },
+
+        linkFocus() {
+            this.$nextTick(_ => {
+                this.$refs.linkInput.focus({cursor:'all'});
+            });
         },
 
         shearTo() {
