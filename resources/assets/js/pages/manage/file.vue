@@ -215,19 +215,20 @@
                             <DropdownItem name="download" :disabled="contextMenuItem.ext == '' || (contextMenuItem.userid != userId && contextMenuItem.permission == 0)">{{$L('下载')}}</DropdownItem>
                             <DropdownItem v-if="selectIds.length > 1" name="downloadzip" :disabled="contextMenuItem.userid != userId && contextMenuItem.permission == 0">{{$L('打包下载')}}</DropdownItem>
 
-                            <DropdownItem name="delete" divided style="color:red">{{$L('删除')}}</DropdownItem>
-
-                            <Dropdown placement="right-start" transfer>
-                                <DropdownItem @click.native.stop="" name="aliyun:">
-                                    <div class="arrow-forward-item">{{$L('阿里云OSS')}}<Icon type="ios-arrow-forward"></Icon></div>
+                            <Dropdown v-if="cloudStorageName" placement="right-start" transfer>
+                                <DropdownItem divided>
+                                    <div class="arrow-forward-item">{{$L(cloudStorageName)}}<Icon type="ios-arrow-forward"></Icon></div>
                                 </DropdownItem>
                                 <DropdownMenu slot="list" class="page-file-dropdown-menu">
-                                    <DropdownItem name="aliyun:upload">{{$L('上传至云存储')}}</DropdownItem>
-                                    <DropdownItem name="aliyun:keep">{{$L('始终保留在此设备')}}</DropdownItem>
-                                    <DropdownItem name="aliyun:release">{{$L('释放空间')}}</DropdownItem>
-                                    <DropdownItem name="aliyun:delete">{{$L('文件删除')}}</DropdownItem>
+                                    <DropdownItem name="cloud:upload">{{$L('上传至云存储')}}</DropdownItem>
+                                    <DropdownItem name="cloud:keep">{{$L('始终保留在此设备')}}</DropdownItem>
+                                    <DropdownItem name="cloud:release">{{$L('释放空间')}}</DropdownItem>
+                                    <DropdownItem name="cloud:delete" style="color:red">{{$L('文件删除')}}</DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
+
+                            <DropdownItem divided v-if="!cloudStorageName" name="delete" style="color:red">{{$L('删除')}}</DropdownItem>
+
                         </template>
                         <template v-else>
                             <DropdownItem
@@ -561,6 +562,7 @@ export default {
             pasteShow: false,
             pasteFile: [],
             pasteItem: [],
+            cloudStorageName: '',  
         }
     },
 
@@ -771,14 +773,16 @@ export default {
         this.uploadAccept = this.uploadFormat.map(item => {
             return '.' + item
         }).join(",");
+        this.getCloudStorageName();
     },
 
     activated() {
         this.getFileList();
+        this.getCloudStorageName();
     },
 
     computed: {
-        ...mapState(['systemConfig', 'userIsAdmin', 'userInfo', 'fileLists', 'wsOpenNum', 'windowWidth', 'filePackLists']),
+        ...mapState(['systemConfig', 'userIsAdmin', 'userInfo', 'fileLists', 'wsOpenNum', 'windowWidth', 'filePackLists', 'cloudStorageKey']),
 
         pid() {
             const {folderId} = this.$route.params;
@@ -1149,7 +1153,7 @@ export default {
         handleContextClick(command) {
             if ($A.leftExists(command, "new:")) {
                 this.addFile($A.leftDelete(command, "new:"))
-            } else if ($A.leftExists(command, "aliyun:")) {
+            } else if ($A.leftExists(command, "cloud:")) {
                 this.dropFile(this.contextMenuItem, command)
             } else {
                 this.dropFile(this.contextMenuItem, command)
@@ -1322,9 +1326,9 @@ export default {
                     this.deleteFile([item.id])
                     break;
 
-                case 'aliyun:upload':
+                case 'cloud:upload':
                     this.$store.dispatch("call", {
-                        url: `file/aliyun/upload?id=${item.id}`,
+                        url: `file/cloud/upload?id=${item.id}`,
                         method: 'post',
                     }).then(({msg}) => {
                         this.$Message.success(msg || this.$L('上传成功'));
@@ -1333,9 +1337,9 @@ export default {
                     });
                     break;
 
-                case 'aliyun:keep':
+                case 'cloud:keep':
                     this.$store.dispatch("call", {
-                        url: `file/aliyun/keep?id=${item.id}`,
+                        url: `file/cloud/keep?id=${item.id}`,
                     }).then(({msg}) => {
                         this.$Message.success(msg || this.$L('下载成功'));
                     }).catch(({msg}) => {
@@ -1343,9 +1347,9 @@ export default {
                     });
                     break;
 
-                case 'aliyun:release':
+                case 'cloud:release':
                     this.$store.dispatch("call", {
-                        url: `file/aliyun/release?id=${item.id}`,
+                        url: `file/cloud/release?id=${item.id}`,
                         method: 'delete',
                     }).then(({msg}) => {
                         this.$Message.success(msg || this.$L('释放成功'));
@@ -1354,7 +1358,7 @@ export default {
                     });
                     break;
 
-                case 'aliyun:delete':
+                case 'cloud:delete':
                     this.deleteFile([item.id]);
                     break;
             }
@@ -1978,7 +1982,32 @@ export default {
         handleUploadNext() {
             this.uploadShow = true;
             this.packShow = false;
-        }
+        },
+
+        getCloudStorageName() {
+            this.$store.dispatch("call", {
+                url: `file/cloud/name?key=${this.cloudStorageKey}`,
+            }).then((response) => {
+                if (response.data && response.data.cloud_provider) {
+                    const providerMap = {
+                        'aliyun': '阿里云OSS',
+                        'tencent': '腾讯云COS',
+                        'qiniu': '七牛云'
+                    };
+                    const provider = response.data.cloud_provider;
+                    const name = providerMap[provider];
+                    if (name) {
+                        this.cloudStorageName = name;
+                    } else {
+                        this.cloudStorageName = '';
+                    }
+                } else {
+                    this.cloudStorageName = '';
+                }
+            }).catch((error) => {
+                this.cloudStorageName = '';
+            });
+        },
     }
 }
 </script>
