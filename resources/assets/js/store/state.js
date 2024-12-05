@@ -215,6 +215,9 @@ export default {
     // 系统设置
     systemConfig: {},
 
+    // 云存储配置
+    cloudStorageKey: 'doocloudisk',
+
     // 审批待办未读数量
     approveUnreadNumber: 0,
 
