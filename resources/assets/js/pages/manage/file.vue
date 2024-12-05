@@ -1346,9 +1346,9 @@ export default {
                     this.$store.dispatch("call", {
                         url: `file/cloud/keep?id=${item.id}`,
                     }).then(({msg}) => {
-                        this.$Message.success(msg || this.$L('下载成功'));
+                        this.$Message.success(msg || this.$L('保存成功'));
                     }).catch(({msg}) => {
-                        this.$Message.error(msg || this.$L('下载失败'));
+                        this.$Message.error(msg || this.$L('保存失败'));
                     });
                     break;
 
