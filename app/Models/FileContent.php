@@ -103,6 +103,51 @@ class FileContent extends AbstractModel
     }
 
     /**
+     * 获取文件的最新内容
+     * @param int $fid 文件ID
+     * @return array|null
+     */
+    public static function getLatestContent($fid)
+    {
+        $content = self::where('fid', $fid)
+            ->orderBy('created_at', 'desc')
+            ->first();
+            
+        return $content ? Base::json2array($content->content ?: []) : null;
+    }
+
+    /**
+     * 获取临时文件目录
+     * @return string
+     */
+    private static function getTempDir()
+    {
+        $tempDir = env('OFFICE_TEMP_DIR', 'storage/app/temp/office');
+        $fullPath = base_path($tempDir);
+        if (!file_exists($fullPath)) {
+            mkdir($fullPath, 0777, true);
+        }
+        return $fullPath;
+    }
+
+    /**
+     * 清理旧的临时文件
+     * @param int $fid 文件ID
+     * @param string $currentFile 当前文件路径（这个文件不会被删除）
+     */
+    private static function cleanOldTempFiles($fid, $currentFile = null)
+    {
+        $tempDir = self::getTempDir();
+        $pattern = $tempDir . '/' . md5((string)$fid) . '_*';
+        
+        foreach (glob($pattern) as $file) {
+            if ($currentFile !== $file) {
+                @unlink($file);
+            }
+        }
+    }
+
+    /**
      * 获取格式内容（或下载）
      * @param File $file
      * @param $content
@@ -114,6 +159,54 @@ class FileContent extends AbstractModel
         $name = $file->ext ? "{$file->name}.{$file->ext}" : null;
         $content = Base::json2array($content ?: []);
         if (in_array($file->type, ['word', 'excel', 'ppt'])) {
+            // 检查是否有更新的版本包含office_url
+            $latestContent = self::where('fid', $file->id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+            if ($latestContent) {
+                $latestData = Base::json2array($latestContent->content ?: []);
+                if (!empty($latestData['office_url'])) {
+                    try {
+                        // 获取临时目录
+                        $tempDir = self::getTempDir();
+                        
+                        // 生成临时文件路径（加入文件ID以便后续清理）
+                        $tempFile = $tempDir . '/' . md5((string)$file->id) . '_' . md5($latestData['office_url']) . '.' . $file->ext;
+                        
+                        // 如果临时文件不存在，从云端下载
+                        if (!file_exists($tempFile)) {
+                            $ch = curl_init($latestData['office_url']);
+                            $fp = fopen($tempFile, 'wb');
+                            curl_setopt($ch, CURLOPT_FILE, $fp);
+                            curl_setopt($ch, CURLOPT_HEADER, 0);
+                            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+                            curl_exec($ch);
+                            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                            curl_close($ch);
+                            fclose($fp);
+                            
+                            if ($httpCode !== 200 || !file_exists($tempFile)) {
+                                @unlink($tempFile);
+                                throw new \Exception('下载文件失败');
+                            }
+                        }
+
+                        // 检查是否有更新的版本，如果有则清理旧文件
+                        $newerContent = self::where('fid', $file->id)
+                            ->where('created_at', '>', $latestContent->created_at)
+                            ->exists();
+                        if ($newerContent) {
+                            self::cleanOldTempFiles($file->id, $tempFile);
+                        }
+                        
+                        return Base::BinaryFileResponse($tempFile, $name);
+                    } catch (\Exception $e) {
+                        // 下载失败时继续使用原始内容
+                    }
+                }
+            }
+            
+            // 使用原始内容
             if (empty($content)) {
                 $filePath = public_path('assets/office/empty.' . str_replace(['word', 'excel', 'ppt'], ['docx', 'xlsx', 'pptx'], $file->type));
             } else {
