@@ -110,7 +110,7 @@ class FileContent extends AbstractModel
     public static function getLatestContent($fid)
     {
         $content = self::where('fid', $fid)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->first();
             
         return $content ? Base::json2array($content->content ?: []) : null;
@@ -159,23 +159,23 @@ class FileContent extends AbstractModel
         $name = $file->ext ? "{$file->name}.{$file->ext}" : null;
         $content = Base::json2array($content ?: []);
         if (in_array($file->type, ['word', 'excel', 'ppt'])) {
-            // 检查是否有更新的版本包含office_url
+            // 检查是否有更新的版本包含cloud_url
             $latestContent = self::where('fid', $file->id)
-                ->orderBy('created_at', 'desc')
+                ->orderBy('updated_at', 'desc')
                 ->first();
             if ($latestContent) {
                 $latestData = Base::json2array($latestContent->content ?: []);
-                if (!empty($latestData['office_url'])) {
+                if (!empty($latestData['cloud_url'])) {
                     try {
                         // 获取临时目录
                         $tempDir = self::getTempDir();
                         
                         // 生成临时文件路径（加入文件ID以便后续清理）
-                        $tempFile = $tempDir . '/' . md5((string)$file->id) . '_' . md5($latestData['office_url']) . '.' . $file->ext;
+                        $tempFile = $tempDir . '/' . md5((string)$file->id) . '_' . md5($latestData['cloud_url']) . '.' . $file->ext;
                         
                         // 如果临时文件不存在，从云端下载
                         if (!file_exists($tempFile)) {
-                            $ch = curl_init($latestData['office_url']);
+                            $ch = curl_init($latestData['cloud_url']);
                             $fp = fopen($tempFile, 'wb');
                             curl_setopt($ch, CURLOPT_FILE, $fp);
                             curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -193,7 +193,7 @@ class FileContent extends AbstractModel
 
                         // 检查是否有更新的版本，如果有则清理旧文件
                         $newerContent = self::where('fid', $file->id)
-                            ->where('created_at', '>', $latestContent->created_at)
+                            ->where('updated_at', '>', $latestContent->updated_at)
                             ->exists();
                         if ($newerContent) {
                             self::cleanOldTempFiles($file->id, $tempFile);
