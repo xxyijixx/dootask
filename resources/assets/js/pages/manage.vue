@@ -883,7 +883,7 @@ export default {
 
         classNameRoute(path) {
             let routeName = this.routeName
-            if(routeName == 'manage-approve' || routeName == 'manage-apps'){
+            if(routeName == 'manage-approve' || routeName == 'manage-apps' || routeName == 'manage-store'){
                 routeName = `manage-application`
             }
             return {

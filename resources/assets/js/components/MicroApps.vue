@@ -10,7 +10,7 @@
             :name='name'
             :url='url'
             inline
-            keep-alive
+            :keep-alive="keepAlive"
             disableSandbox
             :data='appData'
             @created='handleCreate'
@@ -52,6 +52,10 @@ export default {
             type: Object,
             default: () => {
             }
+        },
+        keepAlive: {
+            type: Boolean,
+            default: true
         }
     },
     data() {
@@ -158,14 +162,55 @@ export default {
             if (this.path) {
                 this.appData.path = this.path
             }
+            // 对"micro-store"进行代理
+            if (this.name === "micro-store") {
+                this.setupProxy();
+            }
             this.showSpin = false;
         },
         handleUnmount(e) {
-            // 卸载
+             // 卸载
+            if (this.name === "micro-store") {
+                this.removeProxy();
+            }
             window.dispatchEvent(new Event('apps-unmount'));
         },
         handleError(e) { },
-        handleDataChange(e) { }
+        handleDataChange(e) { },
+        setupProxy() {
+            // 添加代理逻辑
+            Object.defineProperty(document, "body", {
+                get() {
+                    const microAppBody = document.querySelector("micro-app-body");
+                    return microAppBody ? microAppBody : document.body;
+                },
+                configurable: true,
+            });
+        },
+        removeProxy() {
+            // 获取原始的 document.body 描述符
+            const originalBodyDescriptor = Object.getOwnPropertyDescriptor(document, "body");
+
+            // 如果存在 get 函数，恢复为原始的 document.body
+            if (originalBodyDescriptor?.get) {
+                console.log("Restoring original document.body");
+
+                // 直接设置 document.body 为查询到的 body 元素
+                Object.defineProperty(document, "body", {
+                    get() {
+                        return document.querySelector("body");
+                    },
+                    configurable: true
+                });
+            } else {
+                console.log("No existing getter found for document.body, no need to restore");
+            }
+
+            // 确保没有多次定义 document.body
+            const currentBody = document.querySelector("body");
+            console.log("document.body", document.body, currentBody);
+            
+        }
     }
 }
 </script>
