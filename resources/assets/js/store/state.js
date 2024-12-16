@@ -218,6 +218,9 @@ export default {
     // 云存储配置
     cloudStorageKey: 'doocloudisk',
 
+    // 云存储状态
+    cacheCloudStorage: {},
+
     // 审批待办未读数量
     approveUnreadNumber: 0,
 

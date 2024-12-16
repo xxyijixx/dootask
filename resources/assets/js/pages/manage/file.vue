@@ -144,6 +144,11 @@
                                                 <p v-else>{{$L('所有者创建于')}}: {{item.created_at}}</p>
                                             </UserAvatarTip>
                                         </template>
+                                        <template v-else-if="item.cloud_storage">
+                                            <div class="share-icon no-dark-content" v-if="item.cloud_storage.msg !== 'success'">
+                                                <i class="taskfont" v-html="item.cloud_storage.msg === 'cloud_confirmed' ? '&#xe89a;' : '&#xe89b;'"></i>
+                                            </div>
+                                        </template>
                                     </div>
                                     <div v-if="item._edit" class="file-input">
                                         <Input
@@ -665,6 +670,19 @@ export default {
                         ]));
                         //
                         const iconArray = [];
+                        iconArray.push(h('div', {
+                            style: {
+                                width: '22px',
+                                display: 'inline-block'
+                            }
+                        }, [
+                            !isCreate && row.cloud_storage && row.cloud_storage.msg !== 'success' ? h('i', {
+                                class: 'taskfont share-icon no-dark-content',
+                                domProps: {
+                                    innerHTML: row.cloud_storage.msg === 'cloud_confirmed' ? '&#xe89a;' : '&#xe89b;'
+                                }
+                            }) : null
+                        ]))
                         if (row.share) {
                             if (row.userid != this.userId) {
                                 iconArray.push(h('UserAvatar', {
@@ -690,6 +708,13 @@ export default {
                             }, [
                                 row.created_id != row.userid ? h('p', [h('strong', this.$L('成员创建于') + ": " + row.created_at)]) : h('p', this.$L('所有者创建于') + ": " + row.created_at)
                             ]))
+                        } else {
+                            iconArray.push(h('span', {
+                                style: {
+                                    width: '22px',
+                                    display: 'inline-block'
+                                }
+                            }));
                         }
                         const shearClass = this.shearIds.includes(row.id) ? ' shear' : '';
                         const shareClass = row.share ? ' share' : '';
@@ -780,8 +805,7 @@ export default {
     },
 
     computed: {
-        ...mapState(['systemConfig', 'userIsAdmin', 'userInfo', 'fileLists', 'wsOpenNum', 'windowWidth', 'filePackLists', 'cloudStorageKey']),
-
+        ...mapState(['systemConfig', 'userIsAdmin', 'userInfo', 'fileLists', 'wsOpenNum', 'windowWidth', 'filePackLists', 'cloudStorageKey', 'cacheCloudStorage']),
         pid() {
             const {folderId} = this.$route.params;
             return parseInt(/^\d+$/.test(folderId) ? folderId : 0);
@@ -1337,6 +1361,7 @@ export default {
                         method: 'post',
                     }).then(({msg}) => {
                         this.$Message.success(msg || this.$L('上传成功'));
+                        this.getCloudStorageStatus(item);  // 获取最新的云存储状态
                     }).catch(({msg}) => {
                         this.$Message.error(msg || this.$L('上传失败'));
                     });
@@ -1347,6 +1372,7 @@ export default {
                         url: `file/cloud/keep?id=${item.id}`,
                     }).then(({msg}) => {
                         this.$Message.success(msg || this.$L('保存成功'));
+                        this.getCloudStorageStatus(item);  // 获取最新的云存储状态
                     }).catch(({msg}) => {
                         this.$Message.error(msg || this.$L('保存失败'));
                     });
@@ -1829,6 +1855,7 @@ export default {
             this.shearIds = [];
         },
 
+        cloudStorageName: '',  
         shakeFile(fileId) {
             if (!fileId) {
                 return
@@ -2076,6 +2103,35 @@ export default {
             }).catch((error) => {
                 this.cloudStorageName = '';
             });
+        },
+        
+        /**
+         * 获取文件云存储状态
+         * @param item
+         */
+        getCloudStorageStatus(item) {
+            if (item && item.id) {
+                this.$store.dispatch('getCloudStorageStatus', item.id).then(data => {
+                    if (data) {
+                        // 直接存储msg
+                        const cloudStatus = {
+                            msg: data.msg
+                        };
+                        
+                        // 更新文件的云存储状态
+                        this.$set(item, 'cloud_storage', cloudStatus);
+                        this.$store.dispatch("saveFile", item);
+                        
+                        // 保存状态到缓存
+                        this.$store.commit('SET_CLOUD_STORAGE', {
+                            id: item.id,
+                            status: cloudStatus
+                        });
+                    }
+                }).catch(error => {
+                    console.warn('Failed to get cloud storage status:', error);
+                });
+            }
         },
     }
 }
