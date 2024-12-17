@@ -805,7 +805,7 @@ export default {
     },
 
     computed: {
-        ...mapState(['systemConfig', 'userIsAdmin', 'userInfo', 'fileLists', 'wsOpenNum', 'windowWidth', 'filePackLists', 'cloudStorageKey', 'cacheCloudStorage']),
+        ...mapState(['systemConfig', 'userIsAdmin', 'userInfo', 'fileLists', 'wsOpenNum', 'windowWidth', 'filePackLists', 'cloudStorageKey']),
         pid() {
             const {folderId} = this.$route.params;
             return parseInt(/^\d+$/.test(folderId) ? folderId : 0);
@@ -1361,7 +1361,7 @@ export default {
                         method: 'post',
                     }).then(({msg}) => {
                         this.$Message.success(msg || this.$L('上传成功'));
-                        this.getCloudStorageStatus([item]);  // 获取最新的云存储状态
+                        this.$store.dispatch("getCloudStatus", [item]);
                     }).catch(({msg}) => {
                         this.$Message.error(msg || this.$L('上传失败'));
                     });
@@ -1372,7 +1372,7 @@ export default {
                         url: `file/cloud/keep?id=${item.id}`,
                     }).then(({msg}) => {
                         this.$Message.success(msg || this.$L('保存成功'));
-                        this.getCloudStorageStatus([item]);  // 获取最新的云存储状态
+                        this.$store.dispatch("getCloudStatus", [item]);
                     }).catch(({msg}) => {
                         this.$Message.error(msg || this.$L('保存失败'));
                     });
@@ -2006,7 +2006,7 @@ export default {
             this.uploadUpdate(fileList);
             if (res.ret === 1) {
                 this.$store.dispatch("saveFile", res.data);
-                this.getCloudStorageStatus([res.data[0]]);  // 获取最新的云存储状态
+                this.$store.dispatch("getCloudStatus", [res.data[0]]).catch(() => {});
             } else {
                 $A.modalWarning({
                     title: '上传失败',
@@ -2102,42 +2102,6 @@ export default {
                 }
             }).catch((error) => {
                 this.cloudStorageName = '';
-            });
-        },
-        
-        getCloudStorageStatus(list) {
-            if (!list || !list.length) return list;
-            
-            // 获取所有文件ID
-            const fileIds = list.map(item => item.id);
-            
-            // 批量请求云存储状态
-            return this.$store.dispatch("call", {
-                url: 'file/cloud/status',
-                data: { ids: fileIds.join(',') }
-            }).then(({data}) => {
-                if (data && Array.isArray(data)) {
-                    // 创建一个映射对象，方便查找
-                    const statusMap = data.reduce((map, item) => {
-                        map[item.id] = item.status;
-                        return map;
-                    }, {});
-                    
-                    // 更新每个文件的云存储状态
-                    const updatedFiles = list.map(item => ({
-                        ...item,
-                        cloud: statusMap[item.id] || 'none'
-                    }));
-                    
-                    // 使用 saveFile 更新到 store
-                    this.$store.dispatch("saveFile", updatedFiles);
-                    
-                    return updatedFiles;
-                }
-                return list;
-            }).catch(error => {
-                console.warn('Failed to get cloud storage status:', error);
-                return list;
             });
         },
     }
