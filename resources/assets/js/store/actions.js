@@ -1160,28 +1160,6 @@ export default {
         });
     },
 
-    /**
-     * 获取文件云存储状态
-     * @param state
-     * @param dispatch
-     * @param file_id
-     * @returns {Promise<unknown>}
-     */
-    getCloudStorageStatus({state, dispatch}, file_id) {
-        return new Promise(async resolve => {
-            try {
-                const {msg} = await dispatch('call', {
-                    url: 'file/cloud/status',
-                    data: {id: file_id},
-                });
-                resolve(msg);
-            } catch (error) {
-                console.error(error);
-                resolve(null);
-            }
-        });
-    },
-
     /** *****************************************************************************************/
     /** ************************************** 项目 **********************************************/
     /** *****************************************************************************************/
