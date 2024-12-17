@@ -144,9 +144,9 @@
                                                 <p v-else>{{$L('所有者创建于')}}: {{item.created_at}}</p>
                                             </UserAvatarTip>
                                         </template>
-                                        <template v-else-if="item.cloud_storage">
-                                            <div class="share-icon no-dark-content" v-if="item.cloud_storage.msg !== 'success'">
-                                                <i class="taskfont" v-html="item.cloud_storage.msg === 'cloud_confirmed' ? '&#xe89a;' : '&#xe89b;'"></i>
+                                        <template v-else-if="item.cloud">          
+                                            <div class="share-icon no-dark-content" v-if="item.cloud !== 'none'">
+                                                <i class="taskfont" v-html="item.cloud === 'cloud_confirmed' ? '&#xe89b;' : '&#xe89a;'"></i>
                                             </div>
                                         </template>
                                     </div>
@@ -672,14 +672,14 @@ export default {
                         const iconArray = [];
                         iconArray.push(h('div', {
                             style: {
-                                width: '22px',
+                                width: '20px',
                                 display: 'inline-block'
                             }
                         }, [
-                            !isCreate && row.cloud_storage && row.cloud_storage.msg !== 'success' ? h('i', {
+                            !isCreate && row.cloud && row.cloud !== 'none' ? h('i', {
                                 class: 'taskfont share-icon no-dark-content',
                                 domProps: {
-                                    innerHTML: row.cloud_storage.msg === 'cloud_confirmed' ? '&#xe89a;' : '&#xe89b;'
+                                    innerHTML: row.cloud === 'cloud_confirmed' ? '&#xe89b;' : '&#xe89a;'
                                 }
                             }) : null
                         ]))
@@ -1361,7 +1361,7 @@ export default {
                         method: 'post',
                     }).then(({msg}) => {
                         this.$Message.success(msg || this.$L('上传成功'));
-                        this.getCloudStorageStatus(item);  // 获取最新的云存储状态
+                        this.getCloudStorageStatus([item]);  // 获取最新的云存储状态
                     }).catch(({msg}) => {
                         this.$Message.error(msg || this.$L('上传失败'));
                     });
@@ -1372,7 +1372,7 @@ export default {
                         url: `file/cloud/keep?id=${item.id}`,
                     }).then(({msg}) => {
                         this.$Message.success(msg || this.$L('保存成功'));
-                        this.getCloudStorageStatus(item);  // 获取最新的云存储状态
+                        this.getCloudStorageStatus([item]);  // 获取最新的云存储状态
                     }).catch(({msg}) => {
                         this.$Message.error(msg || this.$L('保存失败'));
                     });
@@ -1855,7 +1855,6 @@ export default {
             this.shearIds = [];
         },
 
-        cloudStorageName: '',  
         shakeFile(fileId) {
             if (!fileId) {
                 return
@@ -2007,6 +2006,7 @@ export default {
             this.uploadUpdate(fileList);
             if (res.ret === 1) {
                 this.$store.dispatch("saveFile", res.data);
+                this.getCloudStorageStatus([res.data[0]]);  // 获取最新的云存储状态
             } else {
                 $A.modalWarning({
                     title: '上传失败',
@@ -2105,33 +2105,40 @@ export default {
             });
         },
         
-        /**
-         * 获取文件云存储状态
-         * @param item
-         */
-        getCloudStorageStatus(item) {
-            if (item && item.id) {
-                this.$store.dispatch('getCloudStorageStatus', item.id).then(data => {
-                    if (data) {
-                        // 直接存储msg
-                        const cloudStatus = {
-                            msg: data.msg
-                        };
-                        
-                        // 更新文件的云存储状态
-                        this.$set(item, 'cloud_storage', cloudStatus);
-                        this.$store.dispatch("saveFile", item);
-                        
-                        // 保存状态到缓存
-                        this.$store.commit('SET_CLOUD_STORAGE', {
-                            id: item.id,
-                            status: cloudStatus
-                        });
-                    }
-                }).catch(error => {
-                    console.warn('Failed to get cloud storage status:', error);
-                });
-            }
+        getCloudStorageStatus(list) {
+            if (!list || !list.length) return list;
+            
+            // 获取所有文件ID
+            const fileIds = list.map(item => item.id);
+            
+            // 批量请求云存储状态
+            return this.$store.dispatch("call", {
+                url: 'file/cloud/status',
+                data: { ids: fileIds.join(',') }
+            }).then(({data}) => {
+                if (data && Array.isArray(data)) {
+                    // 创建一个映射对象，方便查找
+                    const statusMap = data.reduce((map, item) => {
+                        map[item.id] = item.status;
+                        return map;
+                    }, {});
+                    
+                    // 更新每个文件的云存储状态
+                    const updatedFiles = list.map(item => ({
+                        ...item,
+                        cloud: statusMap[item.id] || 'none'
+                    }));
+                    
+                    // 使用 saveFile 更新到 store
+                    this.$store.dispatch("saveFile", updatedFiles);
+                    
+                    return updatedFiles;
+                }
+                return list;
+            }).catch(error => {
+                console.warn('Failed to get cloud storage status:', error);
+                return list;
+            });
         },
     }
 }
