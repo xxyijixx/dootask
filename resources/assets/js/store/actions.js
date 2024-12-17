@@ -1127,6 +1127,8 @@ export default {
                 $A.IDBSave("fileLists", state.fileLists, 600)
                 //
                 dispatch("saveFile", result.data);
+                // 获取云存储状态，使用 catch 确保不影响主流程
+                dispatch("getCloudStatus", result.data).catch(() => {});
                 resolve(result)
             }).catch(e => {
                 console.warn(e);
@@ -4250,5 +4252,42 @@ export default {
             }
         }
 
+    },
+    
+    /** *****************************************************************************************/
+    /** *************************************** 云存储 *********************************************/
+    /** *****************************************************************************************/
+
+    /**
+     * 获取云存储状态
+     * @param state
+     * @param dispatch
+     * @param files
+     * @returns {Promise<void>}
+     */
+    async getCloudStatus({dispatch}, files) {
+        if (!Array.isArray(files) || files.length === 0) return;
+        
+        try {
+            const {data: cloudStatus} = await dispatch('call', {
+                url: 'file/cloud/status',
+                data: { ids: JSON.stringify(files.map(item => item.id)) }
+            });
+            
+            if (cloudStatus && Array.isArray(cloudStatus)) {
+                const statusMap = cloudStatus.reduce((map, item) => {
+                    map[item.id] = item.status;
+                    return map;
+                }, {});
+                
+                files.forEach(item => {
+                    item.cloud = statusMap[item.id] || 'none';
+                });
+                
+                dispatch('saveFile', files);
+            }
+        } catch (error) {
+            console.warn('Failed to get cloud status:', error);
+        }
     },
 }
