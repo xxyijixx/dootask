@@ -227,9 +227,9 @@
                                 </DropdownItem>
                                 <DropdownMenu slot="list" class="page-file-dropdown-menu">
                                     <DropdownItem name="cloud:upload">{{$L('上传至云存储')}}</DropdownItem>
-                                    <DropdownItem name="cloud:keep">{{$L('始终保留在此设备')}}</DropdownItem>
-                                    <DropdownItem name="cloud:release">{{$L('释放空间')}}</DropdownItem>
-                                    <DropdownItem name="cloud:delete" style="color:red">{{$L('文件删除')}}</DropdownItem>
+                                    <DropdownItem name="cloud:keep">{{$L('保留在此设备')}}</DropdownItem>
+                                    <DropdownItem name="cloud:release">{{$L('释放本地空间')}}</DropdownItem>
+                                    <DropdownItem name="cloud:delete" style="color:red">{{$L('删除')}}</DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
                         </template>
@@ -2080,29 +2080,8 @@ export default {
             this.packShow = false;
         },
 
-        getCloudStorageName() {
-            this.$store.dispatch("call", {
-                url: `file/cloud/name?key=${this.cloudStorageKey}`,
-            }).then((response) => {
-                if (response.data && response.data.cloud_provider) {
-                    const providerMap = {
-                        'aliyun': '阿里云OSS',
-                        'tencent': '腾讯云COS',
-                        'qiniu': '七牛云'
-                    };
-                    const provider = response.data.cloud_provider;
-                    const name = providerMap[provider];
-                    if (name) {
-                        this.cloudStorageName = name;
-                    } else {
-                        this.cloudStorageName = '';
-                    }
-                } else {
-                    this.cloudStorageName = '';
-                }
-            }).catch((error) => {
-                this.cloudStorageName = '';
-            });
+        async getCloudStorageName() {
+            this.cloudStorageName =await this.$store.dispatch('getCloudStorageName', this.cloudStorageKey);
         },
     }
 }

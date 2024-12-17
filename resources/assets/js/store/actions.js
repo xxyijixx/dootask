@@ -4259,6 +4259,34 @@ export default {
     /** *****************************************************************************************/
 
     /**
+     * 获取云存储名称
+     * @param dispatch
+     * @param key
+     * @returns {Promise}
+     */
+    async getCloudStorageName({dispatch}, key) {
+        try {
+            const response = await dispatch('call', {
+                url: `file/cloud/name?key=${key}`
+            });
+            
+            if (response.data && response.data.cloud_provider) {
+                const providerMap = {
+                    'aliyun': '阿里云OSS',
+                    'tencent': '腾讯云COS',
+                    'qiniu': '七牛云'
+                };
+                const provider = response.data.cloud_provider;
+                return providerMap[provider] || '';
+            }
+            return '';
+        } catch (error) {
+            console.warn('Failed to get cloud storage name:', error);
+            return '';
+        }
+    },
+
+    /**
      * 获取云存储状态
      * @param state
      * @param dispatch
