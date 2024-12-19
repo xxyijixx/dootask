@@ -144,11 +144,6 @@
                                                 <p v-else>{{$L('所有者创建于')}}: {{item.created_at}}</p>
                                             </UserAvatarTip>
                                         </template>
-                                        <template v-else-if="item.cloud">          
-                                            <div class="share-icon no-dark-content" v-if="item.cloud !== 'none'">
-                                                <i class="taskfont" v-html="item.cloud === 'cloud_confirmed' ? '&#xe89b;' : '&#xe89a;'"></i>
-                                            </div>
-                                        </template>
                                     </div>
                                     <div v-if="item._edit" class="file-input">
                                         <Input
@@ -161,7 +156,16 @@
                                             @on-keyup="onKeyup($event, item)"/>
                                         <div v-if="item._load" class="file-load"><Loading/></div>
                                     </div>
-                                    <div v-else class="file-name" :title="item.name">{{$A.getFileName(item)}}</div>
+                                    <div v-else class="file-name" :title="item.name">
+                                        <div class="file-name-content">
+                                            <template v-if="item.cloud">          
+                                                <div class="share-icon no-dark-content" v-if="item.cloud !== 'none'" style="display: inline-block; margin-right: 1px;">
+                                                    <i class="taskfont" v-html="item.cloud === 'cloud_confirmed' ? '&#xe89b;' : '&#xe89a;'" style="font-size: 14px;"></i>
+                                                </div>       
+                                            </template>
+                                            <span>{{$A.getFileName(item)}}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </li>
                         </ul>
@@ -226,9 +230,18 @@
                                     <div class="arrow-forward-item">{{$L(cloudStorageName)}}<Icon type="ios-arrow-forward"></Icon></div>
                                 </DropdownItem>
                                 <DropdownMenu slot="list" class="page-file-dropdown-menu">
-                                    <DropdownItem name="cloud:upload">{{$L('上传至云存储')}}</DropdownItem>
-                                    <DropdownItem name="cloud:keep">{{$L('保留在此设备')}}</DropdownItem>
-                                    <DropdownItem name="cloud:release">{{$L('释放本地空间')}}</DropdownItem>
+                                    <DropdownItem name="cloud:upload" :disabled="contextMenuItem.cloud && contextMenuItem.cloud !== 'none'">
+                                        {{$L('上传至云存储')}}
+                                        <i v-if="contextMenuItem.cloud && contextMenuItem.cloud !== 'none'" class="taskfont" style="margin-left: 4px;font-size: 14px;">&#xe89c;</i>
+                                    </DropdownItem>
+                                    <DropdownItem name="cloud:keep">
+                                        {{$L('保存至此设备')}}
+                                        <i v-if="contextMenuItem.cloud === 'cloud_confirmed'" class="taskfont" style="margin-left: 4px;font-size: 14px;">&#xe89c;</i>
+                                    </DropdownItem>
+                                    <DropdownItem name="cloud:release" :disabled="contextMenuItem.cloud === 'cloud'">
+                                        {{$L('释放本地空间')}}
+                                        <i v-if="contextMenuItem.cloud === 'cloud'" class="taskfont" style="margin-left: 4px;font-size: 14px;">&#xe89c;</i>
+                                    </DropdownItem>
                                     <DropdownItem name="cloud:delete" style="color:red">{{$L('删除')}}</DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
@@ -1383,7 +1396,8 @@ export default {
                         url: `file/cloud/release?id=${item.id}`,
                         method: 'delete',
                     }).then(({msg}) => {
-                        this.$Message.success(msg || this.$L('释放成功'));
+                        this.$Message.success(this.$L('释放成功'));
+                        this.$store.dispatch("getCloudStatus", [item]);
                     }).catch(({msg}) => {
                         this.$Message.error(msg || this.$L('释放失败'));
                     });
@@ -1954,15 +1968,45 @@ export default {
                     return;
                 }
                 if (this.$refs.fileContent.equalContent) {
-                    resolve()
-                    return
+                    // 如果是office文件,延迟更新云存储状态
+                    if (this.fileInfo && ['word', 'excel', 'ppt'].includes(this.fileInfo.type)) {
+                        resolve();
+                        // 3秒后获取云存储状态
+                        setTimeout(() => {
+                            this.$store.dispatch("getCloudStatus", [this.fileInfo]).then(({data}) => {
+                                // 更新当前文件列表中对应文件的状态
+                                const file = this.fileLists.find(item => item.id === this.fileInfo.id);
+                                if (file && data && data[this.fileInfo.id]) {
+                                    file.cloud = data[this.fileInfo.id];
+                                }
+                            }).catch(() => {});
+                        }, 10000);
+                    } else {
+                        resolve();
+                    }
+                    return;
                 }
                 $A.modalConfirm({
                     content: '修改的内容尚未保存，确定要放弃修改吗？',
                     cancelText: '取消',
                     okText: '放弃',
                     onOk: () => {
-                        resolve()
+                        // 如果是office文件,延迟更新云存储状态
+                        if (this.fileInfo && ['word', 'excel', 'ppt'].includes(this.fileInfo.type)) {
+                            resolve();
+                            // 3秒后获取云存储状态
+                            setTimeout(() => {
+                                this.$store.dispatch("getCloudStatus", [this.fileInfo]).then(({data}) => {
+                                    // 更新当前文件列表中对应文件的状态
+                                    const file = this.fileLists.find(item => item.id === this.fileInfo.id);
+                                    if (file && data && data[this.fileInfo.id]) {
+                                        file.cloud = data[this.fileInfo.id];
+                                    }
+                                }).catch(() => {});
+                            }, 10000);
+                        } else {
+                            resolve();
+                        }
                     }
                 });
             })
