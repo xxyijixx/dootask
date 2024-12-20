@@ -721,13 +721,6 @@ export default {
                             }, [
                                 row.created_id != row.userid ? h('p', [h('strong', this.$L('成员创建于') + ": " + row.created_at)]) : h('p', this.$L('所有者创建于') + ": " + row.created_at)
                             ]))
-                        } else {
-                            iconArray.push(h('span', {
-                                style: {
-                                    width: '22px',
-                                    display: 'inline-block'
-                                }
-                            }));
                         }
                         const shearClass = this.shearIds.includes(row.id) ? ' shear' : '';
                         const shareClass = row.share ? ' share' : '';
