@@ -234,11 +234,11 @@
                                         {{$L('上传至云存储')}}
                                         <i v-if="contextMenuItem.cloud && contextMenuItem.cloud !== 'none'" class="taskfont" style="margin-left: 4px;font-size: 14px;">&#xe89c;</i>
                                     </DropdownItem>
-                                    <DropdownItem name="cloud:keep">
+                                    <DropdownItem name="cloud:keep" :disabled="contextMenuItem.cloud === 'none'">
                                         {{$L('保存至此设备')}}
                                         <i v-if="contextMenuItem.cloud === 'cloud_confirmed'" class="taskfont" style="margin-left: 4px;font-size: 14px;">&#xe89c;</i>
                                     </DropdownItem>
-                                    <DropdownItem name="cloud:release" :disabled="contextMenuItem.cloud === 'cloud'">
+                                    <DropdownItem name="cloud:release" :disabled="contextMenuItem.cloud === 'cloud' || contextMenuItem.cloud === 'none'">
                                         {{$L('释放本地空间')}}
                                         <i v-if="contextMenuItem.cloud === 'cloud'" class="taskfont" style="margin-left: 4px;font-size: 14px;">&#xe89c;</i>
                                     </DropdownItem>
@@ -1373,10 +1373,10 @@ export default {
                         url: `file/cloud/upload?id=${item.id}`,
                         method: 'post',
                     }).then(({msg}) => {
-                        this.$Message.success(msg || this.$L('上传成功'));
+                        this.$Message.success(this.$L('上传成功'));
                         this.$store.dispatch("getCloudStatus", [item]);
                     }).catch(({msg}) => {
-                        this.$Message.error(msg || this.$L('上传失败'));
+                        this.$Message.error(this.$L('上传失败'));
                     });
                     break;
 
@@ -1384,10 +1384,10 @@ export default {
                     this.$store.dispatch("call", {
                         url: `file/cloud/keep?id=${item.id}`,
                     }).then(({msg}) => {
-                        this.$Message.success(msg || this.$L('保存成功'));
+                        this.$Message.success(this.$L('保存成功'));
                         this.$store.dispatch("getCloudStatus", [item]);
                     }).catch(({msg}) => {
-                        this.$Message.error(msg || this.$L('保存失败'));
+                        this.$Message.error(this.$L('保存失败'));
                     });
                     break;
 
@@ -1399,7 +1399,7 @@ export default {
                         this.$Message.success(this.$L('释放成功'));
                         this.$store.dispatch("getCloudStatus", [item]);
                     }).catch(({msg}) => {
-                        this.$Message.error(msg || this.$L('释放失败'));
+                        this.$Message.error(this.$L('释放失败'));
                     });
                     break;
 
@@ -1971,7 +1971,7 @@ export default {
                     // 如果是office文件,延迟更新云存储状态
                     if (this.fileInfo && ['word', 'excel', 'ppt'].includes(this.fileInfo.type)) {
                         resolve();
-                        // 3秒后获取云存储状态
+                        // 8秒后获取云存储状态
                         setTimeout(() => {
                             this.$store.dispatch("getCloudStatus", [this.fileInfo]).then(({data}) => {
                                 // 更新当前文件列表中对应文件的状态
@@ -1980,7 +1980,7 @@ export default {
                                     file.cloud = data[this.fileInfo.id];
                                 }
                             }).catch(() => {});
-                        }, 10000);
+                        }, 8000);
                     } else {
                         resolve();
                     }
@@ -1994,7 +1994,7 @@ export default {
                         // 如果是office文件,延迟更新云存储状态
                         if (this.fileInfo && ['word', 'excel', 'ppt'].includes(this.fileInfo.type)) {
                             resolve();
-                            // 3秒后获取云存储状态
+                            // 8秒后获取云存储状态
                             setTimeout(() => {
                                 this.$store.dispatch("getCloudStatus", [this.fileInfo]).then(({data}) => {
                                     // 更新当前文件列表中对应文件的状态
@@ -2003,7 +2003,7 @@ export default {
                                         file.cloud = data[this.fileInfo.id];
                                     }
                                 }).catch(() => {});
-                            }, 10000);
+                            }, 8000);
                         } else {
                             resolve();
                         }
