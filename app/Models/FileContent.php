@@ -213,6 +213,73 @@ class FileContent extends AbstractModel
                 $filePath = public_path($content['url']);
             }
             return Base::BinaryFileResponse($filePath, $name);
+        } elseif (in_array($file->type, ['document', 'drawio', 'mind'])) {
+            // 检查是否有更新的版本包含cloud_url
+            $latestContent = self::where('fid', $file->id)
+                ->orderBy('updated_at', 'desc')
+                ->first();
+            if ($latestContent) {
+                $latestData = Base::json2array($latestContent->content ?: []);
+                if (!empty($latestData['cloud_url'])) {
+                    try {
+                        // 获取临时目录
+                        $tempDir = self::getTempDir();
+                        
+                        // 生成临时文件路径（加入文件ID以便后续清理）
+                        $tempFile = $tempDir . '/' . md5((string)$file->id) . '_' . md5($latestData['cloud_url']) . '.' . $file->ext;
+                        
+                        // 如果临时文件不存在，从云端下载
+                        if (!file_exists($tempFile)) {
+                            $ch = curl_init($latestData['cloud_url']);
+                            $fp = fopen($tempFile, 'wb');
+                            curl_setopt($ch, CURLOPT_FILE, $fp);
+                            curl_setopt($ch, CURLOPT_HEADER, 0);
+                            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+                            curl_exec($ch);
+                            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                            curl_close($ch);
+                            fclose($fp);
+                            
+                            if ($httpCode !== 200 || !file_exists($tempFile)) {
+                                @unlink($tempFile);
+                                throw new \Exception('下载文件失败');
+                            }
+                        }
+
+                        // 检查是否有更新的版本，如果有则清理旧文件
+                        $newerContent = self::where('fid', $file->id)
+                            ->where('updated_at', '>', $latestContent->updated_at)
+                            ->exists();
+                        if ($newerContent) {
+                            self::cleanOldTempFiles($file->id, $tempFile);
+                        }
+                        
+                        // 读取文件内容
+                        $fileContent = file_get_contents($tempFile);
+                        
+                        // 确定文件类型
+                        $contentType = $file->type;
+                        if ($file->type === 'document') {
+                            // document类型根据扩展名区分为md和text
+                            $contentType = strtolower($file->ext) === 'md' ? 'md' : 'text';
+                        }
+                        
+                        // 返回指定格式的响应
+                        return response()->json([
+                            'ret' => 1,
+                            'msg' => 'success',
+                            'data' => [
+                                'content' => [
+                                    'type' => $contentType,
+                                    'content' => $fileContent
+                                ]
+                            ]
+                        ]);
+                    } catch (\Exception $e) {
+                        // 下载失败时继续使用原始内容
+                    }
+                }
+            }
         }
         if (empty($content)) {
             $content = match ($file->type) {
