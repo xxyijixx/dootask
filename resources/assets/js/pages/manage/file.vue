@@ -1962,7 +1962,7 @@ export default {
                 }
                 if (this.$refs.fileContent.equalContent) {
                     // 如果是office文件,延迟更新云存储状态
-                    if (this.fileInfo && ['word', 'excel', 'ppt'].includes(this.fileInfo.type)) {
+                    if (this.fileInfo && ['word', 'excel', 'ppt', 'document', 'drawio', 'mind'].includes(this.fileInfo.type)) {
                         resolve();
                         // 8秒后获取云存储状态
                         setTimeout(() => {
@@ -1985,7 +1985,7 @@ export default {
                     okText: '放弃',
                     onOk: () => {
                         // 如果是office文件,延迟更新云存储状态
-                        if (this.fileInfo && ['word', 'excel', 'ppt'].includes(this.fileInfo.type)) {
+                        if (this.fileInfo && ['word', 'excel', 'ppt', 'document', 'drawio', 'mind'].includes(this.fileInfo.type)) {
                             resolve();
                             // 8秒后获取云存储状态
                             setTimeout(() => {
@@ -2044,6 +2044,7 @@ export default {
             if (res.ret === 1) {
                 this.$store.dispatch("saveFile", res.data);
                 this.$store.dispatch("getCloudStatus", [res.data[0]]).catch(() => {});
+                this.getFileList();
             } else {
                 $A.modalWarning({
                     title: '上传失败',
