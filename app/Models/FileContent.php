@@ -257,24 +257,32 @@ class FileContent extends AbstractModel
                         // 读取文件内容
                         $fileContent = file_get_contents($tempFile);
                         
-                        // 确定文件类型
-                        $contentType = $file->type;
-                        if ($file->type === 'document') {
-                            // document类型根据扩展名区分为md和text
-                            $contentType = strtolower($file->ext) === 'md' ? 'md' : 'text';
-                        }
-                        
-                        // 返回指定格式的响应
-                        return response()->json([
+                        $response = [
                             'ret' => 1,
                             'msg' => 'success',
                             'data' => [
-                                'content' => [
-                                    'type' => $contentType,
-                                    'content' => $fileContent
-                                ]
+                                'content' => []
                             ]
-                        ]);
+                        ];
+                        
+                        if ($file->type === 'document') {
+                            // document类型根据扩展名区分为md和text
+                            $contentType = strtolower($file->ext) === 'md' ? 'md' : 'text';
+                            $response['data']['content'] = [
+                                'type' => $contentType,
+                                'content' => $fileContent
+                            ];
+                        } elseif ($file->type === 'drawio') {
+                            $response['data']['content'] = [
+                                'xml' => $fileContent
+                            ];
+                        } elseif ($file->type === 'mind') {
+                            // mind类型直接将文件内容解析为json放入content中
+                            $response['data']['content'] = json_decode($fileContent, true);
+                        }
+                        
+                        // 返回响应
+                        return response()->json($response);
                     } catch (\Exception $e) {
                         // 下载失败时继续使用原始内容
                     }
