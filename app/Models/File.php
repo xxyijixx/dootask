@@ -687,7 +687,8 @@ class File extends AbstractModel
         if (in_array($item['ext'], self::imageExt) ) {
             $content = Base::json2array(FileContent::whereFid($item['id'])->orderByDesc('id')->value('content'));
             if ($content) {
-                $item['image_url'] = Base::fillUrl($content['url']);
+                // 优先使用 cloud_url
+                $item['image_url'] = Base::fillUrl(!empty($content['cloud_url']) ? $content['cloud_url'] : $content['url']);
                 $item['image_width'] = intval($content['width']);
                 $item['image_height'] = intval($content['height']);
             }
