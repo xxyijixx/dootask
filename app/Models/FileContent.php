@@ -89,7 +89,8 @@ class FileContent extends AbstractModel
     public static function formatPreview($file, $content)
     {
         $content = Base::json2array($content ?: []);
-        $filePath = $content['url'];
+        // 优先使用 cloud_url
+        $filePath = !empty($content['cloud_url']) ? $content['cloud_url'] : $content['url'];
         if (in_array($file->type, ['word', 'excel', 'ppt'])) {
             if (empty($content)) {
                 $filePath = 'assets/office/empty.' . str_replace(['word', 'excel', 'ppt'], ['docx', 'xlsx', 'pptx'], $file->type);
