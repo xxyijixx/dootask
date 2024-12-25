@@ -90,12 +90,30 @@ class FileContent extends AbstractModel
     {
         $content = Base::json2array($content ?: []);
         // 优先使用 cloud_url
-        $filePath = !empty($content['cloud_url']) ? $content['cloud_url'] : $content['url'];
+        if (!empty($content['cloud_url'])) {
+            // 对于云文件，直接返回预览 URL
+            return Base::fillUrl("fileview/onlinePreview?url=" . urlencode(base64_encode($content['cloud_url'])));
+        }
+        
+        // 本地文件的处理
+        $filePath = $content['url'] ?? '';
         if (in_array($file->type, ['word', 'excel', 'ppt'])) {
             if (empty($content)) {
                 $filePath = 'assets/office/empty.' . str_replace(['word', 'excel', 'ppt'], ['docx', 'xlsx', 'pptx'], $file->type);
             }
         }
+
+        // 检查是否是压缩包或视频文件
+        $compressExts = ['zip', 'rar', '7z', 'tar', 'gz'];
+        $videoExts = ['mp4', 'webm', 'ogg', 'avi', 'mov', 'wmv', 'flv', 'mkv'];
+        
+        if (in_array($file->ext, array_merge($compressExts, $videoExts))) {
+            // 对于压缩包和视频文件，也直接返回预览 URL
+            $url = Base::fillUrl($filePath);
+            return Base::fillUrl("fileview/onlinePreview?url=" . urlencode(base64_encode($url)));
+        }
+
+        // 其他文件类型使用原有的预览方式
         return self::toPreviewUrl([
             'ext' => $file->ext,
             'name' => $file->name,
@@ -289,7 +307,92 @@ class FileContent extends AbstractModel
                     }
                 }
             }
+        } elseif (in_array($file->ext, ['zip', 'rar', '7z', 'tar', 'gz']) || in_array($file->ext, ['mp4', 'webm', 'ogg', 'avi', 'mov', 'wmv', 'flv', 'mkv'])) {
+            // 检查是否有更新的版本包含cloud_url
+            $latestContent = self::where('fid', $file->id)
+                ->orderBy('updated_at', 'desc')
+                ->first();
+            if ($latestContent) {
+                $latestData = Base::json2array($latestContent->content ?: []);
+                if (!empty($latestData['cloud_url'])) {
+                    try {
+                        // 获取临时目录
+                        $tempDir = self::getTempDir();
+                        
+                        // 生成临时文件路径（加入文件ID以便后续清理）
+                        $tempFile = $tempDir . '/' . md5((string)$file->id) . '_' . md5($latestData['cloud_url']) . '.' . $file->ext;
+                        
+                        // 如果临时文件不存在，从云端下载
+                        if (!file_exists($tempFile)) {
+                            $ch = curl_init($latestData['cloud_url']);
+                            $fp = fopen($tempFile, 'wb');
+                            curl_setopt($ch, CURLOPT_FILE, $fp);
+                            curl_setopt($ch, CURLOPT_HEADER, 0);
+                            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+                            curl_exec($ch);
+                            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                            curl_close($ch);
+                            fclose($fp);
+                            
+                            if ($httpCode !== 200 || !file_exists($tempFile)) {
+                                @unlink($tempFile);
+                                throw new \Exception('下载文件失败');
+                            }
+                        }
+
+                        // 检查是否有更新的版本，如果有则清理旧文件
+                        $newerContent = self::where('fid', $file->id)
+                            ->where('updated_at', '>', $latestContent->updated_at)
+                            ->exists();
+                        if ($newerContent) {
+                            self::cleanOldTempFiles($file->id, $tempFile);
+                        }
+
+                        // 将临时文件复制到 public 目录
+                        $publicDir = public_path('temp');
+                        if (!file_exists($publicDir)) {
+                            mkdir($publicDir, 0777, true);
+                        }
+                        $publicFile = $publicDir . '/' . md5((string)$file->id) . '_' . md5($latestData['cloud_url']) . '.' . $file->ext;
+                        copy($tempFile, $publicFile);
+
+                        // 返回预览信息
+                        $relativePath = 'temp/' . basename($publicFile);
+                        $name = Base::rightDelete($file->name, ".{$file->ext}") . ".{$file->ext}";
+                        $key = urlencode(Base::urlAddparameter($relativePath, [
+                            'name' => $name,
+                            'ext' => $file->ext
+                        ]));
+                        return Base::retSuccess('success', [
+                            'content' => [
+                                'preview' => true,
+                                'name' => $name,
+                                'key' => $key
+                            ]
+                        ]);
+                    } catch (\Exception $e) {
+                        // 下载失败时继续使用原始内容
+                    }
+                }
+            }
+            
+            // 使用原始内容
+            if (!empty($content['url'])) {
+                $name = Base::rightDelete($file->name, ".{$file->ext}") . ".{$file->ext}";
+                $key = urlencode(Base::urlAddparameter($content['url'], [
+                    'name' => $name,
+                    'ext' => $file->ext
+                ]));
+                return Base::retSuccess('success', [
+                    'content' => [
+                        'preview' => true,
+                        'name' => $name,
+                        'key' => $key
+                    ]
+                ]);
+            }
         }
+        
         if (empty($content)) {
             $content = match ($file->type) {
                 'document' => [
