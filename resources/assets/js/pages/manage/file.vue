@@ -215,7 +215,19 @@
                             <DropdownItem name="download" :disabled="contextMenuItem.ext == '' || (contextMenuItem.userid != userId && contextMenuItem.permission == 0)">{{$L('下载')}}</DropdownItem>
                             <DropdownItem v-if="selectIds.length > 1" name="downloadzip" :disabled="contextMenuItem.userid != userId && contextMenuItem.permission == 0">{{$L('打包下载')}}</DropdownItem>
 
-                            <DropdownItem name="delete" divided style="color:red">{{$L('删除')}}</DropdownItem>
+                            <Dropdown v-if="cloudiskShow" placement="right-start" transfer>
+                                <DropdownItem divided @click.native.stop="" name="new:">
+                                    <div class="arrow-forward-item">{{$L('aliyun_oss')}}<Icon type="ios-arrow-forward"></Icon></div>
+                                </DropdownItem>
+                                <DropdownMenu slot="list" class="page-file-dropdown-menu">
+                                    <DropdownItem name="uploadcloud" :disabled="contextMenuItem.type == 'folder'">{{$L('上传到云存储')}}</DropdownItem>
+                                    <DropdownItem name="downloadlocal" :disabled="contextMenuItem.type == 'folder'">{{$L('始终保留在本地')}}</DropdownItem>
+                                    <DropdownItem name="releaselocal" :disabled="contextMenuItem.type == 'folder'">{{$L('释放本地空间')}}</DropdownItem>
+                                    <DropdownItem name="remotedel" :disabled="contextMenuItem.type == 'folder'">{{$L('文件删除')}}</DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                            <DropdownItem v-else name="delete" divided style="color:red">{{$L('删除')}}</DropdownItem>
+                            
                         </template>
                         <template v-else>
                             <DropdownItem
@@ -452,7 +464,7 @@ export default {
         return {
             packList: [],
             packShow: false,
-
+            cloudiskShow: false,
             loadIng: 0,
             searchKey: '',
             searchTimeout: null,
