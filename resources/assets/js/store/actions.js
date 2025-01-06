@@ -106,6 +106,8 @@ export default {
             // Keyboard
             await dispatch("handleKeyboard")
 
+            dispatch("loadRunningPlugins")
+
             // 客户端ID
             if (!state.clientId) {
                 state.clientId = $A.randomString(6)
@@ -4369,6 +4371,10 @@ export default {
      * @param link_id
      */
     openOkr({state}, link_id) {
+        if (state.runningPlugins.indexOf('okr') < 0) {
+            $A.modalWarning(`请先安装OKR插件`)
+            return;
+        }
         if (link_id > 0) {
             if (window.innerWidth < 910) {
                 $A.goForward({
@@ -4389,4 +4395,24 @@ export default {
         }
 
     },
+
+
+    /** *****************************************************************************************/
+    /** *********************************** Plugin Store ****************************************/
+    /** *****************************************************************************************/
+    loadRunningPlugins({dispatch, state}) {
+        return new Promise((resolve, reject) => {
+            dispatch("call", {
+                url: "/store/api/v1/apps/running",
+            }).then(({data}) => {
+                state.runningPlugins = data.list || []
+                // state.runningPlugins = ['okr']
+                resolve(state.runningPlugins)
+            }).catch(_ => {
+                state.runningPlugins = []
+                reject()
+            });
+        })
+    },
+    
 }

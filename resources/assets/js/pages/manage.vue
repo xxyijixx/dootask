@@ -334,7 +334,7 @@
         <MobileNotification ref="mobileNotification"/>
 
         <!-- okr明细 -->
-        <MicroApps v-show="false" v-if="$route.name != 'manage-apps'" name="okr-details" :url="okrUrl" :datas="okrWindow"/>
+        <MicroApps v-show="false" v-if="$route.name != 'manage-apps' && runningPlugins.includes('okr')" name="okr-details" :url="okrUrl" :datas="okrWindow"/>
 
         <!--审批详情-->
         <DrawerOverlay v-model="approveDetailsShow" placement="right" :size="600">
@@ -510,7 +510,9 @@ export default {
 
             'okrWindow',
 
-            'formOptions'
+            'formOptions',
+
+            'runningPlugins'
         ]),
 
         ...mapGetters(['dashboardTask']),

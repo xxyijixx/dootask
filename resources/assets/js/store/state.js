@@ -242,5 +242,8 @@ export default {
     cacheTranslations: [],
 
     // 下拉菜单操作
-    menuOperation: {}
+    menuOperation: {},
+
+
+    runningPlugins: []
 };

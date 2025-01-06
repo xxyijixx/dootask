@@ -330,6 +330,7 @@ export default {
             'approveUnreadNumber',
             'cacheDialogs',
             'windowOrientation',
+            'runningPlugins'
         ]),
         isExistAdminList() {
             return this.applyList.map(h => h.type).indexOf('admin') !== -1;
@@ -429,6 +430,10 @@ export default {
                     break;
                 case 'okr':
                 case 'okrAnalyze':
+                    if (this.runningPlugins.indexOf('okr') < 0) {
+                        this.$Message.warning('请先安装OKR插件');
+                        return;
+                    }
                     this.goForward({
                         path: '/manage/apps/okr/' + (item.value == 'okr' ? 'list' : 'analysis'),
                     });
