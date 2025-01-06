@@ -1,6 +1,6 @@
 <template>
     <div class="minder-editor-container">
-        <div class="quickbar">
+        <div class="quickbar" v-if="runningPlugins.includes('minder')">
             <ETooltip placement="top" effect="light">
                 <div><i class="ft icon" :title="$L('缩放')">&#xE7B3;</i></div>
                 <div slot="content" class="minder-editor-slider">
@@ -57,8 +57,13 @@
             </ETooltip>
         </div>
         <div class="minder-content">
-            <IFrame ref="frame" class="minder-iframe" :src="url" @on-message="onMessage"/>
-            <div v-if="loadIng" class="minder-loading"><Loading/></div>
+            <template v-if="runningPlugins.includes('minder')">
+                <IFrame ref="frame" class="minder-iframe" :src="url" @on-message="onMessage"/>
+                <div v-if="loadIng" class="minder-loading"><Loading/></div>
+            </template>
+            <div class="minder-loading" v-if="!runningPlugins.includes('minder')">
+                请启用思维导图插件
+            </div>
         </div>
     </div>
 </template>
@@ -199,7 +204,8 @@
 }
 </style>
 <script>
-    import IFrame from "../pages/manage/components/IFrame.vue";
+import { mapState } from "vuex/dist/vuex.common.js";
+import IFrame from "../pages/manage/components/IFrame.vue";
     export default {
         name: 'mind-editor',
         components: {IFrame},
@@ -231,7 +237,7 @@
         },
         methods: {
             onMessage(data) {
-                if (data.app !== 'minder') {
+                if (data.app !== 'minder' || !this.runningPlugins.includes('minder')) {
                     return
                 }
                 switch (data.action) {
@@ -306,6 +312,7 @@
             }
         },
         computed: {
+            ...mapState(['runningPlugins']),
             url() {
                 return $A.mainUrl(`minder/index.html?type=manual&readonly=${this.readOnly ? 'yes' : 'no'}`)
             }

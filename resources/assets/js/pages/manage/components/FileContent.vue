@@ -42,7 +42,7 @@
                 <div v-if="file.type=='mind'" class="header-hint">
                     {{$L('选中节点，按enter键添加同级节点，tab键添加子节点')}}
                 </div>
-                <Dropdown v-if="file.type=='mind'"
+                <Dropdown v-if="file.type=='mind' && runningPlugins.includes('minder')"
                           trigger="click"
                           class="header-hint"
                           @on-click="exportMenu"
@@ -269,7 +269,7 @@ export default {
     },
 
     computed: {
-        ...mapState(['wsMsg']),
+        ...mapState(['wsMsg', 'runningPlugins']),
 
         fileId() {
             return this.file.id || 0

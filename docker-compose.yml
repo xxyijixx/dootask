@@ -47,7 +47,7 @@ services:
       - fileview
       - drawio-webapp
       - drawio-export
-      - minder
+      # - minder
       # - okr
       - ai
     restart: unless-stopped
@@ -63,6 +63,8 @@ services:
   mariadb:
     container_name: "dootask-mariadb-${APP_ID}"
     image: "mariadb:10.7.3"
+    ports:
+      - "13306:3306"
     volumes:
       - ./docker/mysql/repassword.sh:/etc/mysql/repassword.sh
       - ./docker/mysql/conf.d:/etc/mysql/conf.d
@@ -138,13 +140,13 @@ services:
       - ./docker/drawio/export/fonts:/usr/share/fonts/drawio
     restart: unless-stopped
 
-  minder:
-    container_name: "dootask-minder-${APP_ID}"
-    image: "kuaifan/minder:0.1.3"
-    networks:
-      extnetwork:
-        ipv4_address: "${APP_IPPR}.10"
-    restart: unless-stopped
+  # minder:
+  #   container_name: "dootask-minder-${APP_ID}"
+  #   image: "kuaifan/minder:0.1.3"
+  #   networks:
+  #     extnetwork:
+  #       ipv4_address: "${APP_IPPR}.10"
+  #   restart: unless-stopped
 
   approve:
     container_name: "dootask-approve-${APP_ID}"

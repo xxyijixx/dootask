@@ -195,7 +195,7 @@
                                 <DropdownMenu slot="list" class="page-file-dropdown-menu">
                                     <DropdownItem
                                         v-for="(type, key) in types"
-                                        v-if="type.label"
+                                        v-if="type.label && handleMenuShow(type.value)"
                                         :key="key"
                                         :divided="!!type.divided"
                                         :name="`new:${type.value}`">
@@ -232,7 +232,7 @@
                         <template v-else>
                             <DropdownItem
                                 v-for="(type, key) in types"
-                                v-if="type.label"
+                                v-if="type.label && handleMenuShow(type.value)"
                                 :key="key"
                                 :divided="!!type.divided"
                                 :name="`new:${type.value}`">
@@ -773,7 +773,7 @@ export default {
     },
 
     computed: {
-        ...mapState(['systemConfig', 'userIsAdmin', 'userInfo', 'fileLists', 'wsOpenNum', 'windowWidth', 'filePackLists']),
+        ...mapState(['systemConfig', 'userIsAdmin', 'userInfo', 'fileLists', 'wsOpenNum', 'windowWidth', 'filePackLists', 'runningPlugins']),
 
         pid() {
             const {folderId} = this.$route.params;
@@ -1171,6 +1171,7 @@ export default {
         },
 
         dropFile(item, command) {
+            console.log("处理文件", item, command)
             switch (command) {
                 case 'open':
                 case 'openCheckMenu':
@@ -2004,6 +2005,15 @@ export default {
         handleUploadNext() {
             this.uploadShow = true;
             this.packShow = false;
+        },
+
+        handleMenuShow(value) {
+            if(value === 'mind') {
+                if (!this.runningPlugins.includes('minder')) {
+                    return false
+                }
+            }
+            return true
         }
     }
 }
