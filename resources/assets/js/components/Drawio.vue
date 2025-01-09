@@ -1,7 +1,10 @@
 <template>
     <div class="drawio-content">
-        <IFrame ref="frame" class="drawio-iframe" :src="url" @on-message="onMessage"/>
-        <div v-if="loadIng" class="drawio-loading"><Loading/></div>
+        <template v-if="runningPlugins.includes('drawio')">
+            <IFrame ref="frame" class="drawio-iframe" :src="url" @on-message="onMessage"/>
+            <div v-if="loadIng" class="drawio-loading"><Loading/></div>
+        </template>
+        <div v-if="!runningPlugins.includes('drawio')" class="drawio-loading">请启用图表插件</div>
     </div>
 </template>
 
@@ -103,7 +106,7 @@ export default {
         },
     },
     computed: {
-        ...mapState(['themeName'])
+        ...mapState(['themeName', 'runningPlugins'])
     },
     methods: {
         formatZoom(val) {

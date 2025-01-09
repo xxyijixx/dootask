@@ -2012,6 +2012,10 @@ export default {
                 if (!this.runningPlugins.includes('minder')) {
                     return false
                 }
+            } else if (value === 'drawio') {
+                if (!this.runningPlugins.includes('drawio')) {
+                    return false
+                }
             }
             return true
         }

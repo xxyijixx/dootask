@@ -204,7 +204,7 @@
 }
 </style>
 <script>
-import { mapState } from "vuex/dist/vuex.common.js";
+import { mapState } from "vuex";
 import IFrame from "../pages/manage/components/IFrame.vue";
     export default {
         name: 'mind-editor',
