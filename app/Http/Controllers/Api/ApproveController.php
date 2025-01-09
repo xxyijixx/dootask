@@ -21,6 +21,7 @@ use App\Exceptions\ApiException;
 use App\Models\UserDepartment;
 use App\Models\WebSocketDialogMsg;
 use App\Module\BillMultipleExport;
+use App\Services\PluginStore;
 use Hhxsv5\LaravelS\Swoole\Task\Task;
 
 /**
@@ -103,6 +104,9 @@ class ApproveController extends AbstractController
     public function procdef__del()
     {
         User::auth('admin');
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $data['id'] = Request::input('id');
         $ret = Ihttp::ihttp_get($this->flow_url . '/api/v1/workflow/procdef/delById?' . http_build_query($data));
         $procdef = json_decode($ret['ret'] == 1 ? $ret['data'] : '{}', true);
@@ -131,6 +135,9 @@ class ApproveController extends AbstractController
     public function process__start()
     {
         $user = User::auth();
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $data['userid'] = (string)$user->userid;
         $data['department_id'] = intval(Request::input('department_id'));
         $data['proc_name'] = Request::input('proc_name');
@@ -193,6 +200,9 @@ class ApproveController extends AbstractController
     public function process__addGlobalComment()
     {
         $user = User::auth();
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $data['proc_inst_id'] = intval(Request::input('proc_inst_id'));
         $data['userid'] = (string)$user->userid;
         $data['content'] = Request::input('content'); //内容+图片
@@ -239,6 +249,9 @@ class ApproveController extends AbstractController
     public function task__complete()
     {
         $user = User::auth();
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $data['userid'] = (string)$user->userid;
         $data['task_id'] = intval(Request::input('task_id'));
         $data['pass'] = Request::input('pass');
@@ -318,6 +331,9 @@ class ApproveController extends AbstractController
     public function task__withdraw()
     {
         $user = User::auth();
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $data['userid'] = (string)$user->userid;
         $data['task_id'] = intval(Request::input('task_id'));
         $data['proc_inst_id'] = intval(Request::input('proc_inst_id'));
@@ -365,6 +381,9 @@ class ApproveController extends AbstractController
     public function process__findTask()
     {
         $user = User::auth();
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $data['userid'] = (string)$user->userid;
         $data['username'] = Request::input('username');
         $data['procName'] = Request::input('proc_def_name');
@@ -408,6 +427,9 @@ class ApproveController extends AbstractController
     public function process__startByMyselfAll()
     {
         $user = User::auth();
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $data['userid'] = (string)$user->userid;
         $data['username'] = Request::input('username');
         $data['procName'] = Request::input('proc_def_name'); //分类
@@ -449,6 +471,9 @@ class ApproveController extends AbstractController
     public function process__startByMyself()
     {
         $user = User::auth();
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $data['userid'] = (string)$user->userid;
         $data['pageIndex'] = intval(Request::input('page'));
         $data['pageSize'] = intval(Request::input('page_size'));
@@ -490,6 +515,9 @@ class ApproveController extends AbstractController
     public function process__findProcNotify()
     {
         $user = User::auth();
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $data['userid'] = (string)$user->userid;
         $data['procName'] = Request::input('proc_def_name');
         $data['sort'] = Request::input('sort');
@@ -530,6 +558,9 @@ class ApproveController extends AbstractController
     public function identitylink__findParticipant()
     {
         User::auth();
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $proc_inst_id = Request::input('proc_inst_id');
         $ret = Ihttp::ihttp_get($this->flow_url . '/api/v1/workflow/identitylink/findParticipant?procInstId=' . $proc_inst_id);
         $identitylink = json_decode($ret['ret'] == 1 ? $ret['data'] : '{}', true);
@@ -568,6 +599,9 @@ class ApproveController extends AbstractController
     public function procHistory__findTask()
     {
         $user = User::auth();
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $data['userid'] = (string)$user->userid;
         $data['username'] = Request::input('username');
         $data['procName'] = Request::input('proc_def_name');
@@ -609,6 +643,9 @@ class ApproveController extends AbstractController
     public function procHistory__startByMyself()
     {
         $user = User::auth();
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $data['userid'] = (string)$user->userid;
         $data['pageIndex'] = intval(Request::input('page'));
         $data['pageSize'] = intval(Request::input('page_size'));
@@ -649,6 +686,9 @@ class ApproveController extends AbstractController
     public function procHistory__findProcNotify()
     {
         $user = User::auth();
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $data['userid'] = (string)$user->userid;
         $data['username'] = Request::input('username');
         $data['procName'] = Request::input('proc_def_name');
@@ -725,6 +765,9 @@ class ApproveController extends AbstractController
     public function process__detail()
     {
         User::auth();
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $data['id'] = intval(Request::input('id'));
         $approve = $this->getProcessById($data['id']);
         return Base::retSuccess('success', $approve);
@@ -750,6 +793,9 @@ class ApproveController extends AbstractController
     public function export()
     {
         $user = User::auth('admin');
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $name = $data['procName'] = Request::input('proc_def_name'); //分类
         $data['state'] = intval(Request::input('state')); //状态
         $data['isFinished'] = intval(Request::input('is_finished')); //是否完成
@@ -1147,6 +1193,9 @@ class ApproveController extends AbstractController
      */
     public function user__status()
     {
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $userid = intval(Request::input('userid'));
         $status = ApproveProcInstHistory::getUserApprovalStatus($userid);
         return Base::retSuccess('success', $status);
@@ -1167,6 +1216,9 @@ class ApproveController extends AbstractController
     public function process__doto()
     {
         $user = User::auth();
+        if (!PluginStore::includes("approve")) {
+            return Base::retError('审批未启用');
+        }
         $ret = Ihttp::ihttp_get($this->flow_url . '/api/v1/workflow/process/findTaskTotal?userid=' . $user->userid);
         $process = json_decode($ret['ret'] == 1 ? $ret['data'] : '{}', true);
         if (!$process || $process['status'] != 200) {
@@ -1174,5 +1226,4 @@ class ApproveController extends AbstractController
         }
         return Base::retSuccess('success', $process['data']);
     }
-
 }

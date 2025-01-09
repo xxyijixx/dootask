@@ -423,6 +423,12 @@ export default {
         applyClick(item, area = '') {
             switch (item.value) {
                 case 'approve':
+                    if (!this.runningPlugins.includes('approve')) {
+                        this.$Message.warning('请先安装审批插件');
+                        return;
+                    }
+                    this.goForward({ name: 'manage-' + item.value });
+                    break;
                 case 'calendar':
                 case 'file':
                 case 'setting':
@@ -430,7 +436,7 @@ export default {
                     break;
                 case 'okr':
                 case 'okrAnalyze':
-                    if (this.runningPlugins.indexOf('okr') < 0) {
+                    if (!this.runningPlugins.includes('okr')) {
                         this.$Message.warning('请先安装OKR插件');
                         return;
                     }

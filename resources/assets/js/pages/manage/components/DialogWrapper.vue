@@ -921,7 +921,9 @@ export default {
             'keyboardHeight',
             'safeAreaBottom',
             'formOptions',
-            'cacheTranslationLanguage'
+            'cacheTranslationLanguage',
+
+            'runningPlugins'
         ]),
 
         ...mapGetters(['isLoad']),
@@ -3484,7 +3486,11 @@ export default {
                     break;
                 }
                 if (approveElement.classList.contains('open-approve-details')) {
-                    emitter.emit('approveDetails', approveElement.getAttribute("data-id"));
+                    if (this.runningPlugins.includes('approve')) {
+                        emitter.emit('approveDetails', approveElement.getAttribute("data-id"));
+                    } else {
+                        $A.messageWarning("未启用审批")
+                    }
                     return;
                 }
                 approveElement = approveElement.parentElement;
