@@ -1,6 +1,6 @@
 <template>
     <div class="component-only-office">
-        <Alert v-if="loadError" class="load-error" type="error" show-icon>{{$L('组件加载失败！')}}</Alert>
+        <Alert v-if="loadError" class="load-error" type="error" show-icon>{{ disable ? $L('Office插件未启用') : $L('组件加载失败！')}}</Alert>
         <div :id="id" class="placeholder"></div>
         <div v-if="loadIng > 0" class="office-loading"><Loading/></div>
     </div>
@@ -94,6 +94,7 @@ export default {
         return {
             loadIng: 0,
             loadError: false,
+            disable: false,
 
             docEditor: null,
         }
@@ -107,7 +108,7 @@ export default {
     },
 
     computed: {
-        ...mapState(['userInfo', 'themeName']),
+        ...mapState(['userInfo', 'themeName', 'runningPlugins']),
 
         fileType() {
             return this.getType(this.value.type);
@@ -138,6 +139,11 @@ export default {
         'value.id': {
             handler(id)  {
                 if (!id) {
+                    return;
+                }
+                if (!this.runningPlugins.includes('office')) {
+                    this.loadError = true
+                    this.disable = true
                     return;
                 }
                 this.loadIng++;

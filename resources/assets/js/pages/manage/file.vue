@@ -2016,6 +2016,10 @@ export default {
                 if (!this.runningPlugins.includes('drawio')) {
                     return false
                 }
+            } else if (value === 'excel' || value === 'word' || value === 'ppt') {
+                if (!this.runningPlugins.includes('office')) {
+                    return false
+                }
             }
             return true
         }
