@@ -89,6 +89,9 @@
                     <div class="block-setting-box">
                         <h3>{{ $L('人脸签到') }}</h3>
                         <div class="form-box">
+                            <Alert type="error" v-if="!runningPlugins.includes('face-checkin')">
+                                {{ $L('为确保正常使用人脸签到,请先安装人脸签到插件') }}
+                            </Alert>
                             <FormItem :label="$L('签到备注')" prop="face_remark">
                                 <Input :maxlength="30" v-model="formData.face_remark"/>
                             </FormItem>
@@ -245,7 +248,7 @@ export default {
     },
 
     computed: {
-        ...mapState(['formOptions']),
+        ...mapState(['formOptions', 'runningPlugins']),
     },
 
     methods: {

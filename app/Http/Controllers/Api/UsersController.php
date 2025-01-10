@@ -30,6 +30,7 @@ use App\Models\WebSocketDialogMsg;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserEmailVerification;
 use App\Module\AgoraIO\AgoraTokenGenerator;
+use App\Services\PluginStore;
 use Swoole\Coroutine;
 
 /**
@@ -1773,6 +1774,9 @@ class UsersController extends AbstractController
             case 'face':
                 if ($setting['face_upload'] !== 'open') {
                     return Base::retError('未开放修改权限，请联系管理员');
+                }
+                if (!PluginStore::includes('face-checkin')) {
+                    return Base::retError('未安装人脸签到插件，请联系管理员');
                 }
                 UserCheckinFace::saveFace($user->userid, $user->nickname(), $faceimg, "用户上传");
                 break;
