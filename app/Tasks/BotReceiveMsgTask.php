@@ -12,6 +12,7 @@ use App\Models\WebSocketDialogMsg;
 use App\Module\Base;
 use App\Module\Doo;
 use App\Module\Ihttp;
+use App\Services\PluginStore;
 use Carbon\Carbon;
 use DB;
 use League\HTMLToMarkdown\HtmlConverter;
@@ -438,6 +439,9 @@ class BotReceiveMsgTask extends AbstractTask
             }
             if (in_array($this->client['platform'], ['win', 'mac', 'web']) && !Base::judgeClientVersion("0.41.11", $this->client['version'])) {
                 $errorContent = '当前客户端版本低（所需版本≥v0.41.11）。';
+            }
+            if (!PluginStore::includes("ai-robot")) {
+                $errorContent = '未安装AI机器人插件。';
             }
             if ($msg->reply_id > 0) {
                 $replyMsg = WebSocketDialogMsg::find($msg->reply_id);

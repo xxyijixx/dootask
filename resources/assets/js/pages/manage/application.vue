@@ -449,6 +449,10 @@ export default {
                     this.workReportShow = true;
                     break;
                 case 'robot':
+                    if (!this.runningPlugins.includes('ai-robot')) {
+                        this.$Message.warning('请先安装AI机器人插件');
+                        return;
+                    }
                     this.aibotType = 1;
                     this.aibotTabAction = "opanai";
                     this.aibotShow = true;
