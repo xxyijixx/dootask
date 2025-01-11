@@ -1171,7 +1171,6 @@ export default {
         },
 
         dropFile(item, command) {
-            console.log("处理文件", item, command)
             switch (command) {
                 case 'open':
                 case 'openCheckMenu':

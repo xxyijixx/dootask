@@ -44,7 +44,7 @@ services:
     links:
       - php
       # - office
-      - fileview
+      # - fileview
       # - drawio-webapp
       # - drawio-export
       # - minder
@@ -101,18 +101,18 @@ services:
   #       ipv4_address: "${APP_IPPR}.6"
   #   restart: unless-stopped
 
-  fileview:
-    container_name: "dootask-fileview-${APP_ID}"
-    image: "kuaifan/fileview:4.2.0-SNAPSHOT-RC25"
-    environment:
-      KK_CONTEXT_PATH: "/fileview"
-      KK_OFFICE_PREVIEW_SWITCH_DISABLED: true
-      KK_FILE_UPLOAD_ENABLED: true
-      KK_MEDIA: "mp3,wav,mp4,mov,avi,wmv"
-    networks:
-      extnetwork:
-        ipv4_address: "${APP_IPPR}.7"
-    restart: unless-stopped
+  # fileview:
+  #   container_name: "dootask-fileview-${APP_ID}"
+  #   image: "kuaifan/fileview:4.2.0-SNAPSHOT-RC25"
+  #   environment:
+  #     KK_CONTEXT_PATH: "/fileview"
+  #     KK_OFFICE_PREVIEW_SWITCH_DISABLED: true
+  #     KK_FILE_UPLOAD_ENABLED: true
+  #     KK_MEDIA: "mp3,wav,mp4,mov,avi,wmv"
+  #   networks:
+  #     extnetwork:
+  #       ipv4_address: "${APP_IPPR}.7"
+  #   restart: unless-stopped
 
   # drawio-webapp:
   #   container_name: "dootask-drawio-webapp-${APP_ID}"

@@ -1,6 +1,10 @@
 <template>
     <div class="file-preview">
-        <IFrame v-if="isPreview" class="preview-iframe" :src="previewUrl" @on-load="onFrameLoad"/>
+        <template v-if="isPreview">
+             <IFrame v-if="runningPlugins.includes('fileview')" class="preview-iframe" :src="previewUrl" @on-load="onFrameLoad"/>
+             <div v-else class="content-load"> 文件预览插件未启用</div>
+        </template>
+        <!-- <IFrame v-if="isPreview" class="preview-iframe" :src="previewUrl" @on-load="onFrameLoad"/> -->
         <template v-else-if="contentDetail">
             <div v-show="headerShow && !['word', 'excel', 'ppt'].includes(file.type)" class="edit-header">
                 <div class="header-title">
@@ -23,11 +27,12 @@
                 <OnlyOffice v-else-if="['word', 'excel', 'ppt'].includes(file.type)" :value="contentDetail" :code="code" :historyId="historyId" :documentKey="documentKey" readOnly/>
             </div>
         </template>
-        <div v-if="contentLoad" class="content-load"><Loading/></div>
+        <div v-if="contentLoad && runningPlugins.includes('fileview')" class="content-load"><Loading/></div>
     </div>
 </template>
 
 <script>
+import {mapState} from "vuex";
 import IFrame from "./IFrame";
 
 const VMPreview = () => import('../../../components/VMEditor/preview');
@@ -83,6 +88,7 @@ export default {
     },
 
     computed: {
+        ...mapState(['runningPlugins']),
         contentLoad() {
             return this.loadContent > 0 || this.previewLoad;
         },

@@ -1,6 +1,9 @@
 <template>
     <div v-if="ready" class="file-content">
-        <IFrame v-if="isPreview" class="preview-iframe" :src="previewUrl" @on-load="onFrameLoad"/>
+        <template v-if="isPreview">
+             <IFrame v-if="runningPlugins.includes('fileview')" class="preview-iframe" :src="previewUrl" @on-load="onFrameLoad"/>
+             <div v-else class="content-load"> 文件预览插件未启用</div>
+        </template>
         <template v-else-if="contentDetail">
             <EPopover
                 v-if="['word', 'excel', 'ppt'].includes(file.type)"
@@ -90,7 +93,7 @@
                 <OnlyOffice v-else-if="['word', 'excel', 'ppt'].includes(file.type)" v-model="contentDetail" :documentKey="documentKey" @on-document-ready="handleClick('officeReady')"/>
             </div>
         </template>
-        <div v-if="contentLoad" class="content-load"><Loading/></div>
+        <div v-if="contentLoad && runningPlugins.includes('fileview')" class="content-load"><Loading/></div>
 
         <!--文件链接-->
         <Modal
