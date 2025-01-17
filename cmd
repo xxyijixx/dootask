@@ -328,7 +328,7 @@ https_auto() {
     fi
     new_job="* 6 * * * docker run -it --rm -v $(pwd):/work nginx:alpine sh /work/bin/https renew"
     current_crontab=$(crontab -l 2>/dev/null)
-    if echo "$current_crontab" | grep -v "https renew"; then
+    if ! echo "$current_crontab" | grep -v "https renew"; then
         echo "任务已存在，无需添加。"
     else
         crontab -l |{
