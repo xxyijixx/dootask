@@ -105,6 +105,13 @@ export default {
                             link: 'https://platform.openai.com/docs/models'
                         },
                         {
+                            label: 'Base URL',
+                            prop: 'openai_base_url',
+                            type: 'input',
+                            placeholder: 'Enter base URL...',
+                            tip: 'API请求的基础URL路径，如果没有请留空'
+                        },
+                        {
                             label: '使用代理',
                             prop: 'openai_agency',
                             placeholder: '支持 http 或 socks 代理',

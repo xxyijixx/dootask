@@ -427,6 +427,7 @@ class BotReceiveMsgTask extends AbstractTask
                 'model_name' => $setting[$type . '_model'],
                 'system_message' => $setting[$type . '_system'],
                 'api_key' => $setting[$type . '_key'],
+                'base_url' => $setting[$type . '_base_url'],
                 'agency' => $setting[$type . '_agency'],
                 'server_url' => $serverUrl,
             ];
