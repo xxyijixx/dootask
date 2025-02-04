@@ -28090,5 +28090,29 @@
         "fr": "Visitez le site Web de DeepSeek pour voir",
         "id": "Kunjungi situs web DeepSeek untuk melihat",
         "ru": "Посетите веб-сайт DeepSeek, чтобы просмотреть"
+    },
+    {
+        "key": "欢迎词",
+        "zh": "",
+        "zh-CHT": "歡迎詞",
+        "en": "Welcome Message",
+        "ko": "환영 메시지",
+        "ja": "歓迎メッセージ",
+        "de": "Begrüßungsnachricht",
+        "fr": "Message de bienvenue",
+        "id": "Pesan Selamat Datang",
+        "ru": "Приветственное сообщение"
+    },
+    {
+        "key": "仪表盘欢迎词，(%T1)代表用户昵称",
+        "zh": "",
+        "zh-CHT": "儀表盤歡迎詞，(%T1)代表用戶暱稱",
+        "en": "Dashboard welcome message, where (%T1) represents the user nickname",
+        "ko": "대시보드 환영 메시지, (%T1)은 사용자 닉네임을 나타냅니다",
+        "ja": "ダッシュボードの歓迎メッセージ、(%T1) はユーザーのニックネームを表します",
+        "de": "Willkommensnachricht im Dashboard, wobei (%T1) den Benutzernamen darstellt",
+        "fr": "Message de bienvenue sur le tableau de bord, où (%T1) représente le surnom de l'utilisateur",
+        "id": "Pesan selamat datang di dasbor, di mana (%T1) mewakili julukan pengguna",
+        "ru": "Приветственное сообщение на панели управления, где (%T1) представляет собой никнейм пользователя"
     }
 ]

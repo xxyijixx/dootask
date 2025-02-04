@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.42.57]
+
+### Bug Fixes
+
+- 跨地区发消息出现消息过期的情况
+- 多线程下载文件损坏的问题
+- 修复新建周报或日报唯一标识重复
+
+### Features
+
+- 添加 DeepSeek AI
+- 添加https证书自动更新
+
+### Performance
+
+- 支持自定义仪表盘欢迎词
+- ChatGPT 支持自定义 Base URL
+- 优化仪表盘任务更新规则
+
 ## [0.42.37]
 
 ### Bug Fixes
