@@ -47,7 +47,7 @@
         </DrawerOverlay>
 
         <!--AI 机器人-->
-        <DrawerOverlay v-model="aibotShow" placement="right" :size="720">
+        <DrawerOverlay v-model="aibotShow" placement="right" :size="800">
             <div class="ivu-modal-wrap-apply">
                 <div class="ivu-modal-wrap-apply-title">
                     {{ $L('AI 机器人') }}
@@ -76,6 +76,11 @@
                         <TabPane label="Claude" name="claude">
                             <div class="aibot-warp">
                                 <SystemAibot type="Claude" v-if="aibotTabAction == 'claude'" />
+                            </div>
+                        </TabPane>
+                        <TabPane label="DeepSeek" name="deepseek">
+                            <div class="aibot-warp">
+                                <SystemAibot type="DeepSeek" v-if="aibotTabAction == 'deepseek'" />
                             </div>
                         </TabPane>
                         <TabPane label="Gemini" name="gemini">
@@ -261,6 +266,12 @@ export default {
                     label: "Claude",
                     src: $A.mainUrl('images/avatar/default_claude.png'),
                     desc: this.$L('我是Claude,一个由Anthropic公司创造出来的AI助手机器人。我的工作是帮助人类,与人对话并给出解答。')
+                },
+                {
+                    value: "deepseek",
+                    label: "DeepSeek",
+                    src: $A.mainUrl('images/avatar/default_deepseek.png'),
+                    desc: this.$L('DeepSeek大语言模型算法是北京深度求索人工智能基础技术研究有限公司推出的深度合成服务算法。')
                 },
                 {
                     value: "gemini",

@@ -65,7 +65,7 @@ class Setting extends AbstractModel
                     $value['claude_key'] = $value['claude_token'];
                 }
                 $array = [];
-                $aiList = ['openai', 'claude', 'gemini', 'zhipu', 'qianwen', 'wenxin'];
+                $aiList = ['openai', 'claude', 'deepseek', 'gemini', 'zhipu', 'qianwen', 'wenxin'];
                 $fieldList = ['key', 'model', 'base_url', 'agency', 'system', 'secret'];
                 foreach ($aiList as $aiName) {
                     foreach ($fieldList as $fieldName) {
@@ -73,6 +73,7 @@ class Setting extends AbstractModel
                         $array[$key] = $value[$key] ?: match ($key) {
                             'openai_model' => 'gpt-4o-mini',
                             'claude_model' => 'claude-3-5-sonnet-latest',
+                            'deepseek_model' => 'deepseek-chat',
                             'gemini_model' => 'gemini-1.5-flash',
                             'zhipu_model' => 'glm-4',
                             'qianwen_model' => 'qwen-turbo',

@@ -593,6 +593,8 @@ class User extends AbstractModel
                 return url("images/avatar/default_openai.png");
             case 'ai-claude@bot.system':
                 return url("images/avatar/default_claude.png");
+            case 'ai-deepseek@bot.system':
+                return url("images/avatar/default_deepseek.png");
             case 'ai-gemini@bot.system':
                 return url("images/avatar/default_gemini.png");
             case 'ai-zhipu@bot.system':

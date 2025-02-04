@@ -18,14 +18,16 @@
                                     type="password"
                                     :placeholder="$L(field.placeholder)"/>
                             </template>
-                            <template v-else-if="field.type === 'select'">
-                                <Select v-model="formData[field.prop]" transfer>
-                                    <Option v-for="option in field.options"
-                                        :key="option.value"
-                                        :value="option.value">
-                                        {{ option.value }}
-                                    </Option>
-                                </Select>
+                            <template v-else-if="field.type === 'auto-complete'">
+                                <AutoComplete
+                                    v-model="formData[field.prop]"
+                                    :data="field.data"
+                                    :placeholder="$L(field.placeholder)"
+                                    :filter-method="field.noFilter ? null : filterMethod"
+                                    @on-blur="field.noFilter = true"
+                                    @on-keyup="field.noFilter = false"
+                                    transfer>
+                                </AutoComplete>
                             </template>
                             <template v-else-if="field.type === 'textarea'">
                                 <Input
@@ -90,17 +92,19 @@ export default {
                         {
                             label: '模型',
                             prop: 'openai_model',
-                            type: 'select',
-                            options: [
-                                { value: 'gpt-4' },
-                                { value: 'gpt-4-turbo' },
-                                { value: 'gpt-4o' },
-                                { value: 'gpt-4o-mini' },
-                                { value: 'gpt-3.5-turbo' },
-                                { value: 'gpt-3.5-turbo-16k' },
-                                { value: 'gpt-3.5-turbo-0125' },
-                                { value: 'gpt-3.5-turbo-1106' }
+                            type: 'auto-complete',
+                            data: [
+                                'gpt-4',
+                                'gpt-4-turbo',
+                                'gpt-4o',
+                                'gpt-4o-mini',
+                                'gpt-3.5-turbo',
+                                'gpt-3.5-turbo-16k',
+                                'gpt-3.5-turbo-0125',
+                                'gpt-3.5-turbo-1106'
                             ],
+                            noFilter: true,
+                            placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
                             link: 'https://platform.openai.com/docs/models'
                         },
@@ -138,18 +142,20 @@ export default {
                         {
                             label: '模型',
                             prop: 'claude_model',
-                            type: 'select',
-                            options: [
-                                { value: 'claude-3-5-sonnet-latest' },
-                                { value: 'claude-3-5-sonnet-20241022' },
-                                { value: 'claude-3-5-haiku-latest' },
-                                { value: 'claude-3-5-haiku-20241022' },
-                                { value: 'claude-3-opus-latest' },
-                                { value: 'claude-3-opus-20240229' },
-                                { value: 'claude-3-haiku-20240307' },
-                                { value: 'claude-2.1' },
-                                { value: 'claude-2.0' }
+                            type: 'auto-complete',
+                            data: [
+                                'claude-3-5-sonnet-latest',
+                                'claude-3-5-sonnet-20241022',
+                                'claude-3-5-haiku-latest',
+                                'claude-3-5-haiku-20241022',
+                                'claude-3-opus-latest',
+                                'claude-3-opus-20240229',
+                                'claude-3-haiku-20240307',
+                                'claude-2.1',
+                                'claude-2.0'
                             ],
+                            noFilter: true,
+                            placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
                             link: 'https://docs.anthropic.com/en/docs/about-claude/models'
                         },
@@ -168,6 +174,44 @@ export default {
                         }
                     ]
                 },
+                DeepSeek: {
+                    fields: [
+                        {
+                            label: 'API Key',
+                            prop: 'deepseek_key',
+                            type: 'password',
+                            placeholder: 'DeepSeek API Key',
+                            tipPrefix: '访问DeepSeek网站查看',
+                            link: 'https://platform.deepseek.com/api_keys'
+                        },
+                        {
+                            label: '模型',
+                            prop: 'deepseek_model',
+                            type: 'auto-complete',
+                            data: [
+                                'deepseek-chat',
+                                'deepseek-reasoner'
+                            ],
+                            noFilter: true,
+                            placeholder: '请输入模型名称',
+                            tipPrefix: '查看说明',
+                            link: 'https://api-docs.deepseek.com/zh-cn/quick_start/pricing'
+                        },
+                        {
+                            label: '使用代理',
+                            prop: 'deepseek_agency',
+                            placeholder: '支持 http 或 socks 代理',
+                            tip: '例如：http://proxy.com 或 socks5://proxy.com'
+                        },
+                        {
+                            label: '默认提示词',
+                            prop: 'deepseek_system',
+                            type: 'textarea',
+                            placeholder: '请输入默认提示词',
+                            tip: '例如：你是一个人开发的AI助手'
+                        }
+                    ]
+                },
                 Gemini: {
                     fields: [
                         {
@@ -180,13 +224,15 @@ export default {
                         {
                             label: '模型',
                             prop: 'gemini_model',
-                            type: 'select',
-                            options: [
-                                { value: 'gemini-1.5-flash' },
-                                { value: 'gemini-1.5-flash-8b' },
-                                { value: 'gemini-1.5-pro' },
-                                { value: 'gemini-1.0-pro' },
+                            type: 'auto-complete',
+                            data: [
+                                'gemini-1.5-flash',
+                                'gemini-1.5-flash-8b',
+                                'gemini-1.5-pro',
+                                'gemini-1.0-pro',
                             ],
+                            noFilter: true,
+                            placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
                             link: 'https://ai.google.dev/models/gemini'
                         },
@@ -217,18 +263,20 @@ export default {
                         {
                             label: '模型',
                             prop: 'zhipu_model',
-                            type: 'select',
-                            options: [
-                                { value: 'glm-4' },
-                                { value: 'glm-4-plus' },
-                                { value: 'glm-4-air' },
-                                { value: 'glm-4-airx' },
-                                { value: 'glm-4-long' },
-                                { value: 'glm-4-flash' },
-                                { value: 'glm-4v' },
-                                { value: 'glm-4v-plus' },
-                                { value: 'glm-3-turbo' }
+                            type: 'auto-complete',
+                            data: [
+                                'glm-4',
+                                'glm-4-plus',
+                                'glm-4-air',
+                                'glm-4-airx',
+                                'glm-4-long',
+                                'glm-4-flash',
+                                'glm-4v',
+                                'glm-4v-plus',
+                                'glm-3-turbo'
                             ],
+                            noFilter: true,
+                            placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
                             link: 'https://open.bigmodel.cn/dev/api'
                         },
@@ -259,16 +307,18 @@ export default {
                         {
                             label: '模型',
                             prop: 'qianwen_model',
-                            type: 'select',
-                            options: [
-                                { value: 'qwen-turbo' },
-                                { value: 'qwen-turbo-latest' },
-                                { value: 'qwen-plus' },
-                                { value: 'qwen-plus-latest' },
-                                { value: 'qwen-max' },
-                                { value: 'qwen-max-latest' },
-                                { value: 'qwen-long' },
+                            type: 'auto-complete',
+                            data: [
+                                'qwen-turbo',
+                                'qwen-turbo-latest',
+                                'qwen-plus',
+                                'qwen-plus-latest',
+                                'qwen-max',
+                                'qwen-max-latest',
+                                'qwen-long',
                             ],
+                            noFilter: true,
+                            placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
                             link: 'https://help.aliyun.com/zh/model-studio/getting-started/models'
                         },
@@ -306,19 +356,21 @@ export default {
                         {
                             label: '模型',
                             prop: 'wenxin_model',
-                            type: 'select',
-                            options: [
-                                { value: 'ernie-4.0-8k' },
-                                { value: 'ernie-4.0-8k-latest' },
-                                { value: 'ernie-4.0-turbo-128k' },
-                                { value: 'ernie-4.0-turbo-8k' },
-                                { value: 'ernie-3.5-128k' },
-                                { value: 'ernie-3.5-8k' },
-                                { value: 'ernie-speed-128k' },
-                                { value: 'ernie-speed-8k' },
-                                { value: 'ernie-lite-8k' },
-                                { value: 'ernie-tiny-8k' },
+                            type: 'auto-complete',
+                            data: [
+                                'ernie-4.0-8k',
+                                'ernie-4.0-8k-latest',
+                                'ernie-4.0-turbo-128k',
+                                'ernie-4.0-turbo-8k',
+                                'ernie-3.5-128k',
+                                'ernie-3.5-8k',
+                                'ernie-speed-128k',
+                                'ernie-speed-8k',
+                                'ernie-lite-8k',
+                                'ernie-tiny-8k',
                             ],
+                            noFilter: true,
+                            placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
                             link: 'https://cloud.baidu.com/doc/WENXINWORKSHOP/s/Blfmc9dlf'
                         },
@@ -347,6 +399,9 @@ export default {
         ...mapState(['formOptions']),
     },
     methods: {
+        filterMethod(value, option) {
+            return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;
+        },
         submitForm() {
             this.$refs.formData.validate((valid) => {
                 if (valid) {

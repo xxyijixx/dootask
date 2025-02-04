@@ -83,6 +83,7 @@ class UserBot extends AbstractModel
             'approval-alert' => '审批',
             'ai-openai' => 'ChatGPT',
             'ai-claude' => 'Claude',
+            'ai-deepseek' => 'DeepSeek',
             'ai-wenxin' => '文心一言',
             'ai-qianwen' => '通义千问',
             'ai-gemini' => 'Gemini',
