@@ -217,6 +217,12 @@
                         </div>
                         <div class="form-tip">{{$L('用于网页默认标题、邮件发送等')}}</div>
                     </FormItem>
+                    <FormItem :label="$L('欢迎词')" prop="system_welcome">
+                        <div style="width: 220px;">
+                            <Input v-model="formDatum.system_welcome" :placeholder="$L('欢迎您，{username}')"/>
+                        </div>
+                        <div class="form-tip">{{$L('仪表盘欢迎词，{username} 代表用户昵称')}}</div>
+                    </FormItem>
                     <FormItem :label="$L('图片优化')" prop="image_compress">
                         <RadioGroup v-model="formDatum.image_compress">
                             <Radio label="open">{{$L('开启')}}</Radio>

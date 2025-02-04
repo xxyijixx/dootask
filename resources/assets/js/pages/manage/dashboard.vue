@@ -5,7 +5,7 @@
             <span @click="goForward({name: 'manage-setting-license'})">{{warningMsg}}</span>
         </Alert>
         <div class="dashboard-wrapper" :style="wrapperStyle">
-            <div class="dashboard-hello">{{$L('欢迎您，' + userInfo.nickname)}}</div>
+            <div class="dashboard-hello">{{dashboardHello}}</div>
             <div v-if="systemConfig.timezoneDifference" class="dashboard-time">
                 <span>{{$L('服务器时间')}}:</span>
                 <span>{{$A.daytz().format('YYYY-MM-DD HH:mm:ss')}}</span>
@@ -183,6 +183,14 @@ export default {
                 'max-height': 'calc(100% - 50px)'
             } : null
         },
+
+        dashboardHello({systemConfig, userInfo}) {
+            let hello = '欢迎您，{username}';
+            if (systemConfig.system_welcome) {
+                hello = systemConfig.system_welcome
+            }
+            return this.$L(hello.replace(/\{username}/g, userInfo.nickname))
+        }
     },
 
     watch: {

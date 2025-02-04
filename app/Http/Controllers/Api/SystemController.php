@@ -41,7 +41,7 @@ class SystemController extends AbstractController
      * @apiParam {String} type
      * - get: 获取（默认）
      * - all: 获取所有（需要管理员权限）
-     * - save: 保存设置（参数：['reg', 'reg_identity', 'reg_invite', 'temp_account_alias', 'login_code', 'password_policy', 'project_invite', 'chat_information', 'anon_message', 'voice2text', 'translation', 'e2e_message', 'auto_archived', 'archived_day', 'task_visible', 'task_default_time', 'all_group_mute', 'all_group_autoin', 'user_private_chat_mute', 'user_group_chat_mute', 'system_alias', 'image_compress', 'image_quality', 'image_save_local', 'start_home']）
+     * - save: 保存设置（参数：['reg', 'reg_identity', 'reg_invite', 'temp_account_alias', 'login_code', 'password_policy', 'project_invite', 'chat_information', 'anon_message', 'voice2text', 'translation', 'e2e_message', 'auto_archived', 'archived_day', 'task_visible', 'task_default_time', 'all_group_mute', 'all_group_autoin', 'user_private_chat_mute', 'user_group_chat_mute', 'system_alias', 'system_welcome', 'image_compress', 'image_quality', 'image_save_local', 'start_home']）
 
      * @apiSuccess {Number} ret     返回状态码（1正确、0错误）
      * @apiSuccess {String} msg     返回信息（错误描述）
@@ -80,6 +80,7 @@ class SystemController extends AbstractController
                     'user_private_chat_mute',
                     'user_group_chat_mute',
                     'system_alias',
+                    'system_welcome',
                     'image_compress',
                     'image_quality',
                     'image_save_local',
@@ -107,6 +108,9 @@ class SystemController extends AbstractController
             }
             if ($all['system_alias'] == env('APP_NAME')) {
                 $all['system_alias'] = '';
+            }
+            if ($all['system_welcome'] == '欢迎您，{username}') {
+                $all['system_welcome'] = '';
             }
             $setting = Base::setting('system', Base::newTrim($all));
         } else {
