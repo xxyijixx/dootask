@@ -28042,5 +28042,53 @@
         "fr": "Ce message a expiré",
         "id": "Pesan ini telah kedaluwarsa",
         "ru": "Это сообщение истекло"
+    },
+    {
+        "key": "DeepSeek大语言模型算法是北京深度求索人工智能基础技术研究有限公司推出的深度合成服务算法。",
+        "zh": "",
+        "zh-CHT": "DeepSeek大語言模型算法是北京深度求索人工智能基礎技術研究有限公司推出的深度合成服務算法。",
+        "en": "The DeepSeek large language model algorithm is a deep synthesis service algorithm launched by Beijing Deep Exploration Artificial Intelligence Foundation Technology Research Co., Ltd.",
+        "ko": "DeepSeek 대형 언어 모델 알고리즘은 베이징 딥 익스플로레이션 인공지능 기반 기술 연구 유한회사에서 출시한 심층 합성 서비스 알고리즘입니다.",
+        "ja": "DeepSeek大言語モデルアルゴリズムは、北京深度探索人工知能基盤技術研究有限公司によって発表された深層合成サービスアルゴリズムです。",
+        "de": "Der DeepSeek-Großsprachenmodellalgorithmus ist ein von der Beijing Deep Exploration Artificial Intelligence Foundation Technology Research Co., Ltd. entwickelter Tiefensynthese-Dienstalgorithmus.",
+        "fr": "L'algorithme de modèle de langage grande échelle DeepSeek est un algorithme de service de synthèse profonde lancé par Beijing Deep Exploration Artificial Intelligence Foundation Technology Research Co., Ltd.",
+        "id": "Algoritma model bahasa besar DeepSeek adalah algoritma layanan sintesis dalam yang diluncurkan oleh Beijing Deep Exploration Artificial Intelligence Foundation Technology Research Co., Ltd.",
+        "ru": "Алгоритм крупной языковой модели DeepSeek является алгоритмом службы глубокого синтеза, разработанным Beijing Deep Exploration Artificial Intelligence Foundation Technology Research Co., Ltd."
+    },
+    {
+        "key": "请输入模型名称",
+        "zh": "",
+        "zh-CHT": "請輸入模型名稱",
+        "en": "Please enter the model name",
+        "ko": "모델 이름을 입력하세요",
+        "ja": "モデル名を入力してください",
+        "de": "Bitte geben Sie den Modellnamen ein",
+        "fr": "Veuillez entrer le nom du modèle",
+        "id": "Silakan masukkan nama model",
+        "ru": "Пожалуйста, введите название модели"
+    },
+    {
+        "key": "API请求的基础URL路径，如果没有请留空",
+        "zh": "",
+        "zh-CHT": "API請求的基礎URL路徑，如果沒有請留空",
+        "en": "Base URL path for API request, leave blank if none",
+        "ko": "API 요청의 기본 URL 경로, 없으면 비워 두세요",
+        "ja": "APIリクエストの基本URLパス、ない場合は空白のままにしてください",
+        "de": "Basis-URL-Pfad für API-Anfragen, leer lassen, wenn nicht vorhanden",
+        "fr": "Chemin d'URL de base pour la demande d'API, laisser vide si aucun",
+        "id": "Jalur URL dasar untuk permintaan API, biarkan kosong jika tidak ada",
+        "ru": "Базовый путь URL для запроса API, оставить пустым, если отсутствует"
+    },
+    {
+        "key": "访问DeepSeek网站查看",
+        "zh": "",
+        "zh-CHT": "訪問DeepSeek網站查看",
+        "en": "Visit the DeepSeek website to view",
+        "ko": "DeepSeek 웹사이트 방문하여 보기",
+        "ja": "DeepSeekのウェブサイトを訪問して確認してください",
+        "de": "Besuchen Sie die DeepSeek-Website, um zu sehen",
+        "fr": "Visitez le site Web de DeepSeek pour voir",
+        "id": "Kunjungi situs web DeepSeek untuk melihat",
+        "ru": "Посетите веб-сайт DeepSeek, чтобы просмотреть"
     }
 ]
