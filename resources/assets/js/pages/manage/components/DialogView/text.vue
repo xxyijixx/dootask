@@ -38,7 +38,7 @@ export default {
         },
 
         isOverdueMsg({msg, createdAt}) {
-            return msg.text === '...' && $A.daytz(createdAt).isBefore($A.daytz().subtract(10, 'minute'));
+            return msg.text === '...' && $A.dayjs(createdAt).isBefore($A.daytz().subtract(10, 'minute'));
         },
     },
     methods: {
