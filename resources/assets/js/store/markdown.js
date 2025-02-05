@@ -68,7 +68,72 @@ const MarkdownPluginUtils = {
         return value;
     },
 
-    // 修改初始化插件函数
+    // 修改初始化插件函数（推理）
+    initReasoningPlugin(md) {
+        md.block.ruler.before('fence', 'reasoning', (state, startLine, endLine, silent) => {
+            const start = state.bMarks[startLine] + state.tShift[startLine];
+            const max = state.eMarks[startLine];
+            const firstLine = state.src.slice(start, max).trim();
+
+            // 检查是否匹配 :::reasoning 开始标记
+            const match = firstLine.match(/^:::\s*reasoning(?:\s+(\S+))?$/);
+            if (!match) {
+                return false;
+            }
+
+            if (silent) {
+                return true;
+            }
+
+            let nextLine = startLine + 1;
+            let content = [];
+
+            // 查找结束标记 :::
+            while (nextLine < endLine) {
+                const lineStart = state.bMarks[nextLine] + state.tShift[nextLine];
+                const lineMax = state.eMarks[nextLine];
+                const currentLine = state.src.slice(lineStart, lineMax);
+
+                if (currentLine.trim() === ':::') {
+                    break;
+                }
+
+                content.push(state.getLines(nextLine, nextLine + 1, state.tShift[nextLine], true));
+                nextLine++;
+            }
+
+            // 创建外层容器
+            let token = state.push('reasoning_open', 'div', 1);
+            token.attrs = [['class', 'apply-reasoning']];
+
+            // 创建标签
+            token = state.push('reasoning_label_open', 'div', 1);
+            token.attrs = [['class', 'reasoning-label']];
+            token = state.push('text', '', 0);
+            token.content = $A.L('思考过程');
+            state.push('reasoning_label_close', 'div', -1);
+
+            // 创建内容容器
+            token = state.push('reasoning_content_open', 'div', 1);
+            token.attrs = [['class', 'reasoning-content']];
+
+            // 处理内容
+            if (content.length > 0) {
+                state.md.block.parse(content.join('\n'), state.md, state.env, state.tokens);
+            }
+
+            // 关闭内容容器
+            state.push('reasoning_content_close', 'div', -1);
+
+            // 关闭外层容器
+            state.push('reasoning_close', 'div', -1);
+
+            state.line = nextLine + 1;
+            return true;
+        });
+    },
+
+    // 修改初始化插件函数（创建任务）
     initCreateTaskPlugin(md) {
         md.block.ruler.before('fence', 'create-task', (state, startLine, endLine, silent) => {
             const start = state.bMarks[startLine] + state.tShift[startLine];
@@ -201,6 +266,7 @@ export function MarkdownConver(text) {
         })
         MarkdownUtils.mdi.use(mila, {attrs: {target: '_blank', rel: 'noopener'}})
         MarkdownUtils.mdi.use(mdKatex, {blockClass: 'katexmath-block rounded-md p-[10px]', errorColor: ' #cc0000'})
+        MarkdownPluginUtils.initReasoningPlugin(MarkdownUtils.mdi);
         MarkdownPluginUtils.initCreateTaskPlugin(MarkdownUtils.mdi);
     }
     return MarkdownUtils.formatMsg(MarkdownUtils.mdi.render(text))
@@ -209,6 +275,7 @@ export function MarkdownConver(text) {
 export function MarkdownPreview(text) {
     if (MarkdownUtils.mds === null) {
         MarkdownUtils.mds = MarkdownIt()
+        MarkdownPluginUtils.initReasoningPlugin(MarkdownUtils.mds);
         MarkdownPluginUtils.initCreateTaskPlugin(MarkdownUtils.mds);
     }
     return MarkdownUtils.mds.render(text)

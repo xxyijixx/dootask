@@ -246,6 +246,7 @@ import {convertLocalResourcePath} from "../components/Replace/utils";
                 return '';
             }
             if (type === 'md') {
+                text = text.replace(/:::\s*reasoning[\s\S]*?:::/g, "");
                 text = MarkdownPreview(text);
             }
             //

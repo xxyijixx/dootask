@@ -306,6 +306,12 @@ body.dark-mode-reverse {
                 }
             }
         }
+
+        .apply-reasoning {
+            &:before {
+                background-color: #4e4e56;
+            }
+        }
     }
 
     .dialog-group-info {
