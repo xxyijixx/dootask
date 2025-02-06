@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.42.61]
+
+### Performance
+
+- 支持下载聊天引用的文件
+- 优化翻译消息
+- 支持显示思考过程
+
 ## [0.42.57]
 
 ### Bug Fixes
