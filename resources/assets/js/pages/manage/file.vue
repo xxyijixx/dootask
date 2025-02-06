@@ -1779,7 +1779,7 @@ export default {
             this.$nextTick(_ => {
                 const dom = $A(this.$el).find(`[data-id="${fileId}"]`)
                 if (dom.length > 0) {
-                    $A.scrollIntoAndShake(dom)
+                    $A.scrollIntoAndShake(dom[0])
                 }
             })
         },

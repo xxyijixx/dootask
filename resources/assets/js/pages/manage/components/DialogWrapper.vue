@@ -3416,6 +3416,10 @@ export default {
                     this.$store.dispatch("filePos", value);
                     break;
 
+                case 'filedown':
+                    this.$store.dispatch('downUrl', $A.apiUrl(`file/content?id=${value.shakeId}&down=yes`))
+                    break;
+
                 case 'link':
                     this.copyText(value);
                     break;
@@ -4042,6 +4046,15 @@ export default {
                 type: 'filepos',
                 icon: '&#xe6f3;',
                 label: '显示文件',
+                value: {
+                    folderId: data.pid,
+                    fileId: null,
+                    shakeId: data.id
+                },
+            }, {
+                type: 'filedown',
+                icon: '&#xe7a8;',
+                label: '下载',
                 value: {
                     folderId: data.pid,
                     fileId: null,
