@@ -2885,7 +2885,7 @@ class Base
             \Log::error('File download failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
-                'file' => $file->getPathname() ?? null,
+                'file' => $file ?? null,
                 'name' => $name ?? null,
                 'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? null,
                 'ip' => request()->ip(),

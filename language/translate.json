@@ -28114,5 +28114,41 @@
         "fr": "Message de bienvenue sur le tableau de bord, où (%T1) représente le surnom de l'utilisateur",
         "id": "Pesan selamat datang di dasbor, di mana (%T1) mewakili julukan pengguna",
         "ru": "Приветственное сообщение на панели управления, где (%T1) представляет собой никнейм пользователя"
+    },
+    {
+        "key": "思考过程",
+        "zh": "",
+        "zh-CHT": "思考過程",
+        "en": "Thought process",
+        "ko": "생각 과정",
+        "ja": "思考過程",
+        "de": "Denkprozess",
+        "fr": "Processus de réflexion",
+        "id": "Proses berpikir",
+        "ru": "Процесс мышления"
+    },
+    {
+        "key": "隐藏翻译",
+        "zh": "",
+        "zh-CHT": "隱藏翻譯",
+        "en": "Hide translation",
+        "ko": "번역 숨기기",
+        "ja": "翻訳を隠す",
+        "de": "Übersetzung ausblenden",
+        "fr": "Masquer la traduction",
+        "id": "Sembunyikan terjemahan",
+        "ru": "Скрыть перевод"
+    },
+    {
+        "key": "重新翻译",
+        "zh": "",
+        "zh-CHT": "重新翻譯",
+        "en": "Re-translate",
+        "ko": "다시 번역",
+        "ja": "再翻訳",
+        "de": "Neu übersetzen",
+        "fr": "Retraduire",
+        "id": "Terjemahkan ulang",
+        "ru": "Перевести заново"
     }
 ]

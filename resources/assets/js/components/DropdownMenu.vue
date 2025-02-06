@@ -16,6 +16,7 @@
                         v-for="(item, key) in list"
                         :key="key"
                         :command="item.value"
+                        :divided="!!item.divided"
                         :disabled="active === item.value">
                         <div class="item">{{item.label}}</div>
                     </EDropdownItem>
