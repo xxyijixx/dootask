@@ -1792,6 +1792,8 @@ class DialogController extends AbstractController
      * @apiName msg__translation
      *
      * @apiParam {Number} msg_id            消息ID
+     * @apiParam {Number} [force]           强制翻译（1是、0否）
+     * - 默认不强制翻译，已翻译过的消息不再翻译
      * @apiParam {String} [language]        目标语言，默认当前语言
      *
      * @apiSuccess {Number} ret     返回状态码（1正确、0错误）
@@ -1803,6 +1805,7 @@ class DialogController extends AbstractController
         User::auth();
         //
         $msg_id = intval(Request::input("msg_id"));
+        $force = intval(Request::input("force"));
         $language = Base::inputOrHeader('language');
         $targetLanguage = Doo::getLanguages($language);
         //
@@ -1820,12 +1823,19 @@ class DialogController extends AbstractController
         //
         $row = WebSocketDialogMsgTranslate::whereMsgId($msg_id)->whereLanguage($language)->first();
         if ($row) {
-            return Base::retSuccess("success", $row->only(['msg_id', 'language', 'content']));
+            if ($force) {
+                $row->delete();
+            } else {
+                return Base::retSuccess("success", $row->only(['msg_id', 'language', 'content']));
+            }
         }
         //
         $msgData = Base::json2array($msg->getRawOriginal('msg'));
         if (empty($msgData['text'])) {
             return Base::retError("消息内容为空");
+        }
+        if ($msg->type === 'text' && $msgData['type'] === 'md') {
+            $msgData['text'] = preg_replace('/:::\s*reasoning.*?:::/s', '', $msgData['text']);
         }
         $res = Extranet::openAItranslations($msgData['text'], $targetLanguage);
         if (Base::isError($res)) {

@@ -2171,6 +2171,24 @@
             }
         }
     }
+
+    .content-translation {
+        .apply-reasoning {
+            display: none;
+        }
+
+        .apply-create-task {
+            ul {
+                li:last-child {
+                    margin-bottom: 0;
+                }
+            }
+
+            .apply-button {
+                display: none;
+            }
+        }
+    }
 }
 
 body:not(.window-touch) {

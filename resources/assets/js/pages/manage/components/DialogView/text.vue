@@ -10,7 +10,7 @@
                 <div class="divider-label translation-label" @click="viewText">{{ translation.label }}</div>
                 <span></span>
             </div>
-            <DialogMarkdown v-if="msg.type === 'md'" :text="translation.content"/>
+            <DialogMarkdown v-if="msg.type === 'md'" :text="translation.content" class="content-translation"/>
             <pre v-else v-html="$A.formatTextMsg(translation.content, userId)"></pre>
         </template>
     </div>

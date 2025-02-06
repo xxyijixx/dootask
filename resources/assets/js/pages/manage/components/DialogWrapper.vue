@@ -3197,7 +3197,7 @@ export default {
             });
         },
 
-        onTranslation() {
+        onTranslation(language = undefined) {
             if (!this.actionPermission(this.operateItem, 'translation')) {
                 return;
             }
@@ -3206,12 +3206,22 @@ export default {
             if (this.isLoad(key)) {
                 return;
             }
+            let force = 0;
+            if (language === 'hidden') {
+                this.$store.dispatch("removeTranslation", key);
+                return;
+            } else if (language === 'retranslation') {
+                this.$store.dispatch("removeTranslation", key);
+                language = undefined;
+                force = 1;
+            }
             this.$store.dispatch("setLoad", key)
             this.$store.dispatch("call", {
                 url: 'dialog/msg/translation',
                 data: {
                     msg_id,
-                    language: this.cacheTranslationLanguage
+                    force,
+                    language: language || this.cacheTranslationLanguage
                 },
             }).then(({data}) => {
                 this.$store.dispatch("saveTranslation", Object.assign(data, {key}));
@@ -3356,14 +3366,20 @@ export default {
                 label: languageList[item],
                 value: item
             }))
+            list.push(...[
+                {label: '重新翻译', value: 'retranslation', divided: true},
+                {label: '隐藏翻译', value: 'hidden'},
+            ])
             this.$store.state.menuOperation = {
                 event,
                 list,
                 active: this.cacheTranslationLanguage,
                 scrollHide: true,
                 onUpdate: async (language) => {
-                    await this.$store.dispatch("setTranslationLanguage", language);
-                    this.onTranslation();
+                    if (languageList[language]) {
+                        await this.$store.dispatch("setTranslationLanguage", language);
+                    }
+                    this.onTranslation(language);
                 }
             }
         },

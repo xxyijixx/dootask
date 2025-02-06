@@ -3595,6 +3595,16 @@ export default {
     },
 
     /**
+     * 删除翻译
+     * @param state
+     * @param key
+     */
+    removeTranslation({state}, key) {
+        state.cacheTranslations = state.cacheTranslations.filter(item => item.key != key)
+        $A.IDBSave("cacheTranslations", state.cacheTranslations.slice(-200))
+    },
+
+    /**
      * 设置翻译语言
      * @param state
      * @param language
