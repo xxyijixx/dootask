@@ -65,6 +65,7 @@
 
 <script>
 import {mapState} from "vuex";
+import {AIModelList} from "../../../../store/utils";
 
 export default {
     name: "SystemAibot",
@@ -93,16 +94,7 @@ export default {
                             label: '模型',
                             prop: 'openai_model',
                             type: 'auto-complete',
-                            data: [
-                                'gpt-4',
-                                'gpt-4-turbo',
-                                'gpt-4o',
-                                'gpt-4o-mini',
-                                'gpt-3.5-turbo',
-                                'gpt-3.5-turbo-16k',
-                                'gpt-3.5-turbo-0125',
-                                'gpt-3.5-turbo-1106'
-                            ],
+                            data: AIModelList('openai'),
                             noFilter: true,
                             placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
@@ -143,17 +135,7 @@ export default {
                             label: '模型',
                             prop: 'claude_model',
                             type: 'auto-complete',
-                            data: [
-                                'claude-3-5-sonnet-latest',
-                                'claude-3-5-sonnet-20241022',
-                                'claude-3-5-haiku-latest',
-                                'claude-3-5-haiku-20241022',
-                                'claude-3-opus-latest',
-                                'claude-3-opus-20240229',
-                                'claude-3-haiku-20240307',
-                                'claude-2.1',
-                                'claude-2.0'
-                            ],
+                            data: AIModelList('claude'),
                             noFilter: true,
                             placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
@@ -188,14 +170,18 @@ export default {
                             label: '模型',
                             prop: 'deepseek_model',
                             type: 'auto-complete',
-                            data: [
-                                'deepseek-chat',
-                                'deepseek-reasoner'
-                            ],
+                            data: AIModelList('deepseek'),
                             noFilter: true,
                             placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
                             link: 'https://api-docs.deepseek.com/zh-cn/quick_start/pricing'
+                        },
+                        {
+                            label: 'Base URL',
+                            prop: 'deepseek_base_url',
+                            type: 'input',
+                            placeholder: 'Enter base URL...',
+                            tip: 'API请求的基础URL路径，如果没有请留空'
                         },
                         {
                             label: '使用代理',
@@ -225,12 +211,7 @@ export default {
                             label: '模型',
                             prop: 'gemini_model',
                             type: 'auto-complete',
-                            data: [
-                                'gemini-1.5-flash',
-                                'gemini-1.5-flash-8b',
-                                'gemini-1.5-pro',
-                                'gemini-1.0-pro',
-                            ],
+                            data: AIModelList('gemini'),
                             noFilter: true,
                             placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
@@ -264,17 +245,7 @@ export default {
                             label: '模型',
                             prop: 'zhipu_model',
                             type: 'auto-complete',
-                            data: [
-                                'glm-4',
-                                'glm-4-plus',
-                                'glm-4-air',
-                                'glm-4-airx',
-                                'glm-4-long',
-                                'glm-4-flash',
-                                'glm-4v',
-                                'glm-4v-plus',
-                                'glm-3-turbo'
-                            ],
+                            data: AIModelList('zhipu'),
                             noFilter: true,
                             placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
@@ -308,15 +279,7 @@ export default {
                             label: '模型',
                             prop: 'qianwen_model',
                             type: 'auto-complete',
-                            data: [
-                                'qwen-turbo',
-                                'qwen-turbo-latest',
-                                'qwen-plus',
-                                'qwen-plus-latest',
-                                'qwen-max',
-                                'qwen-max-latest',
-                                'qwen-long',
-                            ],
+                            data: AIModelList('qianwen'),
                             noFilter: true,
                             placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
@@ -357,18 +320,7 @@ export default {
                             label: '模型',
                             prop: 'wenxin_model',
                             type: 'auto-complete',
-                            data: [
-                                'ernie-4.0-8k',
-                                'ernie-4.0-8k-latest',
-                                'ernie-4.0-turbo-128k',
-                                'ernie-4.0-turbo-8k',
-                                'ernie-3.5-128k',
-                                'ernie-3.5-8k',
-                                'ernie-speed-128k',
-                                'ernie-speed-8k',
-                                'ernie-lite-8k',
-                                'ernie-tiny-8k',
-                            ],
+                            data: AIModelList('wenxin'),
                             noFilter: true,
                             placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',

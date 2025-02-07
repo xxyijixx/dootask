@@ -162,3 +162,91 @@ export class SSEClient {
         }
     }
 }
+
+export function AIModelList(email) {
+    switch (email) {
+        case "openai":
+        case "ai-openai@bot.system":
+            return [
+                'gpt-4',
+                'gpt-4-turbo',
+                'gpt-4o',
+                'gpt-4o-mini',
+                'gpt-3.5-turbo',
+                'gpt-3.5-turbo-16k',
+                'gpt-3.5-turbo-0125',
+                'gpt-3.5-turbo-1106'
+            ]
+
+        case "claude":
+        case "ai-claude@bot.system":
+            return [
+                'claude-3-5-sonnet-latest',
+                'claude-3-5-sonnet-20241022',
+                'claude-3-5-haiku-latest',
+                'claude-3-5-haiku-20241022',
+                'claude-3-opus-latest',
+                'claude-3-opus-20240229',
+                'claude-3-haiku-20240307',
+                'claude-2.1',
+                'claude-2.0'
+            ]
+
+        case "deepseek":
+        case "ai-deepseek@bot.system":
+            return [
+                'deepseek-chat',
+                'deepseek-reasoner'
+            ]
+
+        case "wenxin":
+        case "ai-wenxin@bot.system":
+            return [
+                'gemini-1.5-flash',
+                'gemini-1.5-flash-8b',
+                'gemini-1.5-pro',
+                'gemini-1.0-pro',
+            ]
+
+        case "qianwen":
+        case "ai-qianwen@bot.system":
+            return [
+                'glm-4',
+                'glm-4-plus',
+                'glm-4-air',
+                'glm-4-airx',
+                'glm-4-long',
+                'glm-4-flash',
+                'glm-4v',
+                'glm-4v-plus',
+                'glm-3-turbo'
+            ]
+
+        case "gemini":
+        case "ai-gemini@bot.system":
+            return [
+                'qwen-turbo',
+                'qwen-turbo-latest',
+                'qwen-plus',
+                'qwen-plus-latest',
+                'qwen-max',
+                'qwen-max-latest',
+                'qwen-long',
+            ]
+
+        case "zhipu":
+        case "ai-zhipu@bot.system":
+            return [
+                'ernie-4.0-8k',
+                'ernie-4.0-8k-latest',
+                'ernie-4.0-turbo-128k',
+                'ernie-4.0-turbo-8k',
+                'ernie-3.5-128k',
+                'ernie-3.5-8k',
+                'ernie-speed-128k',
+                'ernie-speed-8k',
+                'ernie-lite-8k',
+                'ernie-tiny-8k',
+            ]
+    }
+}

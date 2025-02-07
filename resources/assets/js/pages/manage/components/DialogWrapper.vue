@@ -255,7 +255,7 @@
             </div>
             <div v-else-if="quickShow" class="chat-bottom-menu">
                 <ul class="scrollbar-hidden">
-                    <li v-for="item in quickMsgs" @click.stop="sendQuick(item)">
+                    <li v-for="item in quickMsgs" @click.stop="sendQuick(item, $event)">
                         <div class="bottom-menu-desc no-dark-content" :style="item.style || null">{{item.label}}</div>
                     </li>
                 </ul>
@@ -707,6 +707,7 @@ import touchclick from "../../../directives/touchclick";
 import {languageList} from "../../../language";
 import {isLocalResourcePath} from "../../../components/Replace/utils";
 import emitter from "../../../store/events";
+import {AIModelList} from "../../../store/utils";
 
 export default {
     name: "DialogWrapper",
@@ -1801,8 +1802,9 @@ export default {
         /**
          * 发送快捷消息
          * @param item
+         * @param event
          */
-        sendQuick(item) {
+        sendQuick(item, event = undefined) {
             switch (item.key) {
                 // 位置签到
                 case "locat-checkin":
@@ -1852,6 +1854,28 @@ export default {
                     emitter.emit('addMeeting', {
                         type: 'join',
                     });
+                    break;
+
+                // 开启新对话
+                case "ai-newchat":
+                    if (!this.isAiBot) {
+                        return
+                    }
+                    this.$store.state.menuOperation = {
+                        event,
+                        list: AIModelList(this.dialogData.email).map(value => ({label: value, value: value})),
+                        scrollHide: true,
+                        onUpdate: async (model) => {
+
+                        }
+                    }
+                    break;
+
+                // 历史对话
+                case "ai-historychat":
+                    if (!this.isAiBot) {
+                        return
+                    }
                     break;
 
                 // 发送快捷指令
