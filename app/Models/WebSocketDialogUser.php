@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
-
 /**
  * App\Models\WebSocketDialogUser
  *
