@@ -256,7 +256,7 @@
             <div v-else-if="quickShow" class="chat-bottom-menu">
                 <ul class="scrollbar-hidden">
                     <li v-for="item in quickMsgs" @click.stop="sendQuick(item, $event)">
-                        <div class="bottom-menu-desc no-dark-content" :style="item.style || null">{{item.label}}</div>
+                        <div class="bottom-menu-desc no-dark-content" :style="item.style || null">{{quickLabel(item)}}</div>
                     </li>
                 </ul>
             </div>
@@ -870,7 +870,12 @@ export default {
             replyMsgAutoMention: false,         // 允许回复消息后自动@
             waitUnreadData: new Map(),          // 等待未读数据
             replyEmojiIngs: {},                 // 是否回复表情中（避免重复回复）
+            dialogAiModel: [],                  // AI模型选择
         }
+    },
+
+    async created() {
+        this.dialogAiModel = await $A.IDBArray('dialogAiModel')
     },
 
     mounted() {
@@ -1595,6 +1600,18 @@ export default {
         },
 
         /**
+         * 发送数据处理
+         * @param data
+         * @returns {*}
+         */
+        sendDataHandle(data) {
+            if (this.isAiBot) {
+                data.model_name = this.aiModelValue()
+            }
+            return data
+        },
+
+        /**
          * 发送消息
          * @param text
          * @param type
@@ -1641,13 +1658,13 @@ export default {
                 //
                 this.$store.dispatch("call", {
                     url: 'dialog/msg/sendtext',
-                    data: {
+                    data: this.sendDataHandle({
                         dialog_id: this.dialogId,
                         update_id,
                         text: textBody,
                         text_type: textType,
                         silence,
-                    },
+                    }),
                     method: 'post',
                     complete: _ => this.$store.dispatch("cancelLoad", `msg-${update_id}`)
                 }).then(({data}) => {
@@ -1680,13 +1697,13 @@ export default {
                 this.$store.dispatch("call", {
                     requestId: tempMsg.id,
                     url: 'dialog/msg/sendtext',
-                    data: {
+                    data: this.sendDataHandle({
                         dialog_id: tempMsg.dialog_id,
                         reply_id: tempMsg.reply_id,
                         text: textBody,
                         text_type: textType,
                         silence,
-                    },
+                    }),
                     method: 'post',
                 }).then(({data}) => {
                     this.sendSuccess(data, tempMsg.id)
@@ -1800,6 +1817,31 @@ export default {
         },
 
         /**
+         * Ai模型值
+         * @returns {*}
+         */
+        aiModelValue() {
+            const item = this.dialogAiModel.find(({dialog_id}) => dialog_id == this.dialogId)
+            return item?.model
+        },
+
+        /**
+         * 快捷菜单标签
+         * @param key
+         * @param label
+         * @param config
+         * @returns {*}
+         */
+        quickLabel({key, label, config}) {
+            if (key === '~ai-model-select') {
+                const model = this.aiModelValue()
+                if (model) return model
+                if (config?.model) return config.model
+            }
+            return label
+        },
+
+        /**
          * 发送快捷消息
          * @param item
          * @param event
@@ -1856,30 +1898,36 @@ export default {
                     });
                     break;
 
-                // 开启新对话
-                case "ai-newchat":
+                // 选择模型
+                case "~ai-model-select":
                     if (!this.isAiBot) {
                         return
+                    }
+                    const list = AIModelList(this.dialogData.email).map(value => ({label: value, value: value}))
+                    const configModel = item.config?.model
+                    if (configModel && !list.find(({value}) => value === configModel)) {
+                        list.unshift({label: configModel, value: configModel})
                     }
                     this.$store.state.menuOperation = {
                         event,
-                        list: AIModelList(this.dialogData.email).map(value => ({label: value, value: value})),
+                        list,
                         scrollHide: true,
-                        onUpdate: async (model) => {
-
+                        onUpdate: async model => {
+                            this.dialogAiModel = [
+                                ...this.dialogAiModel.filter(({dialog_id}) => dialog_id !== this.dialogId),
+                                {dialog_id: this.dialogId, model}
+                            ]
+                            await $A.IDBSet('dialogAiModel', this.dialogAiModel)
                         }
-                    }
-                    break;
-
-                // 历史对话
-                case "ai-historychat":
-                    if (!this.isAiBot) {
-                        return
                     }
                     break;
 
                 // 发送快捷指令
                 default:
+                    if (/^~/.test(item.key)) {
+                        $A.modalWarning("当前客户端不支持该指令");
+                        break;
+                    }
                     this.sendMsg(`<p><span data-quick-key="${item.key}">${item.label}</span></p>`)
                     break;
             }

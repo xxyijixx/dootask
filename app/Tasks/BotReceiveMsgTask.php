@@ -431,6 +431,9 @@ class BotReceiveMsgTask extends AbstractTask
                 'agency' => $setting[$type . '_agency'],
                 'server_url' => $serverUrl,
             ];
+            if ($msg->msg['model_name']) {
+                $extras['model_name'] = $msg->msg['model_name'];
+            }
             if ($type === 'wenxin') {
                 $extras['api_key'] .= ':' . $setting['wenxin_secret'];
             }

@@ -91,7 +91,7 @@ export default {
                             link: 'https://platform.openai.com/account/api-keys'
                         },
                         {
-                            label: '模型',
+                            label: '默认模型',
                             prop: 'openai_model',
                             type: 'auto-complete',
                             data: AIModelList('openai'),
@@ -132,7 +132,7 @@ export default {
                             link: 'https://docs.anthropic.com/en/api/getting-started'
                         },
                         {
-                            label: '模型',
+                            label: '默认模型',
                             prop: 'claude_model',
                             type: 'auto-complete',
                             data: AIModelList('claude'),
@@ -167,7 +167,7 @@ export default {
                             link: 'https://platform.deepseek.com/api_keys'
                         },
                         {
-                            label: '模型',
+                            label: '默认模型',
                             prop: 'deepseek_model',
                             type: 'auto-complete',
                             data: AIModelList('deepseek'),
@@ -208,7 +208,7 @@ export default {
                             link: 'https://makersuite.google.com/app/apikey'
                         },
                         {
-                            label: '模型',
+                            label: '默认模型',
                             prop: 'gemini_model',
                             type: 'auto-complete',
                             data: AIModelList('gemini'),
@@ -242,7 +242,7 @@ export default {
                             link: 'https://bigmodel.cn/usercenter/apikeys'
                         },
                         {
-                            label: '模型',
+                            label: '默认模型',
                             prop: 'zhipu_model',
                             type: 'auto-complete',
                             data: AIModelList('zhipu'),
@@ -276,7 +276,7 @@ export default {
                             link: 'https://help.aliyun.com/zh/model-studio/developer-reference/get-api-key'
                         },
                         {
-                            label: '模型',
+                            label: '默认模型',
                             prop: 'qianwen_model',
                             type: 'auto-complete',
                             data: AIModelList('qianwen'),
@@ -317,7 +317,7 @@ export default {
                             link: 'https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application/v1'
                         },
                         {
-                            label: '模型',
+                            label: '默认模型',
                             prop: 'wenxin_model',
                             type: 'auto-complete',
                             data: AIModelList('wenxin'),

@@ -1028,6 +1028,7 @@ class DialogController extends AbstractController
      * @apiParam {String} [silence]         是否静默发送
      * - no: 正常发送（默认）
      * - yes: 静默发送
+     * @apiParam {String} [model_name]      模型名称（仅AI机器人支持）
      *
      * @apiSuccess {Number} ret     返回状态码（1正确、0错误）
      * @apiSuccess {String} msg     返回信息（错误描述）
@@ -1048,6 +1049,7 @@ class DialogController extends AbstractController
         $key = trim(Request::input('key'));
         $text_type = strtolower(trim(Request::input('text_type')));
         $silence = in_array(strtolower(trim(Request::input('silence'))), ['yes', 'true', '1']);
+        $model_name = trim(Request::input('model_name'));
         $markdown = in_array($text_type, ['md', 'markdown']);
         //
         $result = [];
@@ -1119,11 +1121,17 @@ class DialogController extends AbstractController
                 if (empty($key)) {
                     $key = $desc;
                 }
+                if ($model_name) {
+                    $msgData['model_name'] = $model_name;
+                }
                 $result = WebSocketDialogMsg::sendMsg($action, $dialog_id, 'longtext', $msgData, $user->userid, false, false, $silence, $key);
             } else {
                 $msgData = ['text' => $text];
                 if ($markdown) {
                     $msgData['type'] = 'md';
+                }
+                if ($model_name) {
+                    $msgData['model_name'] = $model_name;
                 }
                 $result = WebSocketDialogMsg::sendMsg($action, $dialog_id, 'text', $msgData, $user->userid, false, false, $silence, $key);
             }

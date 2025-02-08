@@ -188,23 +188,25 @@ class UserBot extends AbstractModel
                 ];
 
             default:
-                if (preg_match('/^ai-(.*?)@bot\.system$/', $email)) {
+                if (preg_match('/^ai-(.*?)@bot\.system$/', $email, $match)) {
                     if (!Base::judgeClientVersion('0.42.62')) {
                         return [
                             'key' => '%3A.clear',
                             'label' => Doo::translate('清空上下文')
                         ];
                     }
+                    $aibotSetting = Base::setting('aibotSetting');
                     return [
                         [
-                            'key' => 'ai-newchat',
-                            'label' => Doo::translate('开启新对话'),
-                            'config' => []
+                            'key' => '~ai-model-select',
+                            'label' => Doo::translate('选择模型'),
+                            'config' => [
+                                'model' => $aibotSetting[$match[1] . '_model']
+                            ]
                         ],
                         [
-                            'key' => 'ai-historychat',
-                            'label' => Doo::translate('历史对话'),
-                            'config' => []
+                            'key' => '%3A.clear',
+                            'label' => Doo::translate('清空上下文')
                         ]
                     ];
                 }
