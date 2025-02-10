@@ -15,7 +15,7 @@ class WebSocketDialogsAddSessionId extends Migration
     {
         Schema::table('web_socket_dialogs', function (Blueprint $table) {
             if (!Schema::hasColumn('web_socket_dialogs', 'session_id')) {
-                $table->bigInteger('session_id')->index()->nullable()->default(0)->after('group_type')->comment('会话ID（最新）');
+                $table->bigInteger('session_id')->index()->nullable()->default(0)->after('group_type')->comment('会话ID');
             }
         });
     }

@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\DB;
  * @property int $id
  * @property string|null $type 对话类型
  * @property string|null $group_type 聊天室类型
- * @property int|null $session_id 会话ID（最新）
+ * @property int|null $session_id 会话ID
  * @property string|null $name 对话名称
  * @property string $avatar 头像（群）
  * @property int|null $owner_id 群主用户ID

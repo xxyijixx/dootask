@@ -1181,6 +1181,7 @@ class WebSocketDialogMsg extends AbstractModel
             $dialogMsg = self::createInstance([
                 'dialog_id' => $dialog_id,
                 'dialog_type' => $dialog->type,
+                'session_id' => $dialog->session_id,
                 'reply_id' => $reply_id,
                 'forward_id' => $forward_id,
                 'userid' => $sender,
