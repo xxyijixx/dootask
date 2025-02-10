@@ -66,10 +66,14 @@ class Setting extends AbstractModel
                 }
                 $array = [];
                 $aiList = ['openai', 'claude', 'deepseek', 'gemini', 'zhipu', 'qianwen', 'wenxin'];
-                $fieldList = ['key', 'model', 'base_url', 'agency', 'system', 'secret'];
+                $fieldList = ['key', 'model', 'base_url', 'agency', 'temperature', 'system', 'secret'];
                 foreach ($aiList as $aiName) {
                     foreach ($fieldList as $fieldName) {
                         $key = $aiName . '_' . $fieldName;
+                        if ($fieldName == 'temperature' && $value[$key]) {
+                            $array[$key] = floatval(min(1, max(0, floatval($value[$key]) ?: 0.7)));
+                            continue;
+                        }
                         $array[$key] = $value[$key] ?: match ($key) {
                             'openai_model' => 'gpt-4o-mini',
                             'claude_model' => 'claude-3-5-sonnet-latest',

@@ -18,16 +18,15 @@
                                     type="password"
                                     :placeholder="$L(field.placeholder)"/>
                             </template>
-                            <template v-else-if="field.type === 'auto-complete'">
-                                <AutoComplete
+                            <template v-else-if="field.type === 'model'">
+                                <Select
                                     v-model="formData[field.prop]"
-                                    :data="field.data"
-                                    :placeholder="$L(field.placeholder)"
-                                    :filter-method="field.noFilter ? null : filterMethod"
-                                    @on-blur="field.noFilter = true"
-                                    @on-keyup="field.noFilter = false"
+                                    @on-create="modelCreate($event, field.options)"
+                                    filterable
+                                    allow-create
                                     transfer>
-                                </AutoComplete>
+                                    <Option v-for="item in modelOption(formData[field.prop], field.options)" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                                </Select>
                             </template>
                             <template v-else-if="field.type === 'textarea'">
                                 <Input
@@ -93,9 +92,8 @@ export default {
                         {
                             label: '默认模型',
                             prop: 'openai_model',
-                            type: 'auto-complete',
-                            data: AIModelList('openai'),
-                            noFilter: true,
+                            type: 'model',
+                            options: AIModelList('openai'),
                             placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
                             link: 'https://platform.openai.com/docs/models'
@@ -103,7 +101,6 @@ export default {
                         {
                             label: 'Base URL',
                             prop: 'openai_base_url',
-                            type: 'input',
                             placeholder: 'Enter base URL...',
                             tip: 'API请求的基础URL路径，如果没有请留空'
                         },
@@ -112,6 +109,12 @@ export default {
                             prop: 'openai_agency',
                             placeholder: '支持 http 或 socks 代理',
                             tip: '例如：http://proxy.com 或 socks5://proxy.com'
+                        },
+                        {
+                            label: 'Temperature',
+                            prop: 'openai_temperature',
+                            placeholder: '模型温度，低则保守，高则多样。',
+                            tip: '例如：0.7，范围：0-1，默认：0.7'
                         },
                         {
                             label: '默认提示词',
@@ -134,9 +137,8 @@ export default {
                         {
                             label: '默认模型',
                             prop: 'claude_model',
-                            type: 'auto-complete',
-                            data: AIModelList('claude'),
-                            noFilter: true,
+                            type: 'model',
+                            options: AIModelList('claude'),
                             placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
                             link: 'https://docs.anthropic.com/en/docs/about-claude/models'
@@ -146,6 +148,12 @@ export default {
                             prop: 'claude_agency',
                             placeholder: '支持 http 或 socks 代理',
                             tip: '例如：http://proxy.com 或 socks5://proxy.com'
+                        },
+                        {
+                            label: 'Temperature',
+                            prop: 'claude_temperature',
+                            placeholder: '模型温度，低则保守，高则多样。',
+                            tip: '例如：0.7，范围：0-1，默认：0.7'
                         },
                         {
                             label: '默认提示词',
@@ -169,9 +177,8 @@ export default {
                         {
                             label: '默认模型',
                             prop: 'deepseek_model',
-                            type: 'auto-complete',
-                            data: AIModelList('deepseek'),
-                            noFilter: true,
+                            type: 'model',
+                            options: AIModelList('deepseek'),
                             placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
                             link: 'https://api-docs.deepseek.com/zh-cn/quick_start/pricing'
@@ -188,6 +195,12 @@ export default {
                             prop: 'deepseek_agency',
                             placeholder: '支持 http 或 socks 代理',
                             tip: '例如：http://proxy.com 或 socks5://proxy.com'
+                        },
+                        {
+                            label: 'Temperature',
+                            prop: 'deepseek_temperature',
+                            placeholder: '模型温度，低则保守，高则多样。',
+                            tip: '例如：0.7，范围：0-1，默认：0.7'
                         },
                         {
                             label: '默认提示词',
@@ -210,9 +223,8 @@ export default {
                         {
                             label: '默认模型',
                             prop: 'gemini_model',
-                            type: 'auto-complete',
-                            data: AIModelList('gemini'),
-                            noFilter: true,
+                            type: 'model',
+                            options: AIModelList('gemini'),
                             placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
                             link: 'https://ai.google.dev/models/gemini'
@@ -222,6 +234,12 @@ export default {
                             prop: 'gemini_agency',
                             placeholder: '仅支持 http 代理',
                             tip: '例如：http://proxy.com 或 https://proxy.com'
+                        },
+                        {
+                            label: 'Temperature',
+                            prop: 'gemini_temperature',
+                            placeholder: '模型温度，低则保守，高则多样。',
+                            tip: '例如：0.7，范围：0-1，默认：0.7'
                         },
                         {
                             label: '默认提示词',
@@ -244,9 +262,8 @@ export default {
                         {
                             label: '默认模型',
                             prop: 'zhipu_model',
-                            type: 'auto-complete',
-                            data: AIModelList('zhipu'),
-                            noFilter: true,
+                            type: 'model',
+                            options: AIModelList('zhipu'),
                             placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
                             link: 'https://open.bigmodel.cn/dev/api'
@@ -256,6 +273,12 @@ export default {
                             prop: 'zhipu_agency',
                             placeholder: '支持 http 或 socks 代理',
                             tip: '例如：http://proxy.com 或 socks5://proxy.com'
+                        },
+                        {
+                            label: 'Temperature',
+                            prop: 'zhipu_temperature',
+                            placeholder: '模型温度，低则保守，高则多样。',
+                            tip: '例如：0.7，范围：0-1，默认：0.7'
                         },
                         {
                             label: '默认提示词',
@@ -278,9 +301,8 @@ export default {
                         {
                             label: '默认模型',
                             prop: 'qianwen_model',
-                            type: 'auto-complete',
-                            data: AIModelList('qianwen'),
-                            noFilter: true,
+                            type: 'model',
+                            options: AIModelList('qianwen'),
                             placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
                             link: 'https://help.aliyun.com/zh/model-studio/getting-started/models'
@@ -290,6 +312,12 @@ export default {
                             prop: 'qianwen_agency',
                             placeholder: '支持 http 或 socks 代理',
                             tip: '例如：http://proxy.com 或 socks5://proxy.com'
+                        },
+                        {
+                            label: 'Temperature',
+                            prop: 'qianwen_temperature',
+                            placeholder: '模型温度，低则保守，高则多样。',
+                            tip: '例如：0.7，范围：0-1，默认：0.7'
                         },
                         {
                             label: '默认提示词',
@@ -319,9 +347,8 @@ export default {
                         {
                             label: '默认模型',
                             prop: 'wenxin_model',
-                            type: 'auto-complete',
-                            data: AIModelList('wenxin'),
-                            noFilter: true,
+                            type: 'model',
+                            options: AIModelList('wenxin'),
                             placeholder: '请输入模型名称',
                             tipPrefix: '查看说明',
                             link: 'https://cloud.baidu.com/doc/WENXINWORKSHOP/s/Blfmc9dlf'
@@ -331,6 +358,12 @@ export default {
                             prop: 'wenxin_agency',
                             placeholder: '支持 http 或 socks 代理',
                             tip: '例如：http://proxy.com 或 socks5://proxy.com'
+                        },
+                        {
+                            label: 'Temperature',
+                            prop: 'wenxin_temperature',
+                            placeholder: '模型温度，低则保守，高则多样。',
+                            tip: '例如：0.7，范围：0-1，默认：0.7'
                         },
                         {
                             label: '默认提示词',
@@ -351,8 +384,14 @@ export default {
         ...mapState(['formOptions']),
     },
     methods: {
-        filterMethod(value, option) {
-            return option.toUpperCase().indexOf(value.toUpperCase()) !== -1;
+        modelCreate(value, options) {
+            options.push({value, label: value});
+        },
+        modelOption(value, options) {
+            if (value && !options.find(item => item.value === value)) {
+                options.unshift({value, label: value});
+            }
+            return options;
         },
         submitForm() {
             this.$refs.formData.validate((valid) => {

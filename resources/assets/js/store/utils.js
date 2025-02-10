@@ -163,90 +163,95 @@ export class SSEClient {
     }
 }
 
-export function AIModelList(email) {
-    switch (email) {
-        case "openai":
-        case "ai-openai@bot.system":
-            return [
-                'gpt-4',
-                'gpt-4-turbo',
-                'gpt-4o',
-                'gpt-4o-mini',
-                'gpt-3.5-turbo',
-                'gpt-3.5-turbo-16k',
-                'gpt-3.5-turbo-0125',
-                'gpt-3.5-turbo-1106'
-            ]
 
-        case "claude":
-        case "ai-claude@bot.system":
-            return [
-                'claude-3-5-sonnet-latest',
-                'claude-3-5-sonnet-20241022',
-                'claude-3-5-haiku-latest',
-                'claude-3-5-haiku-20241022',
-                'claude-3-opus-latest',
-                'claude-3-opus-20240229',
-                'claude-3-haiku-20240307',
-                'claude-2.1',
-                'claude-2.0'
-            ]
-
-        case "deepseek":
-        case "ai-deepseek@bot.system":
-            return [
-                'deepseek-chat',
-                'deepseek-reasoner'
-            ]
-
-        case "wenxin":
-        case "ai-wenxin@bot.system":
-            return [
-                'gemini-1.5-flash',
-                'gemini-1.5-flash-8b',
-                'gemini-1.5-pro',
-                'gemini-1.0-pro',
-            ]
-
-        case "qianwen":
-        case "ai-qianwen@bot.system":
-            return [
-                'glm-4',
-                'glm-4-plus',
-                'glm-4-air',
-                'glm-4-airx',
-                'glm-4-long',
-                'glm-4-flash',
-                'glm-4v',
-                'glm-4v-plus',
-                'glm-3-turbo'
-            ]
-
-        case "gemini":
-        case "ai-gemini@bot.system":
-            return [
-                'qwen-turbo',
-                'qwen-turbo-latest',
-                'qwen-plus',
-                'qwen-plus-latest',
-                'qwen-max',
-                'qwen-max-latest',
-                'qwen-long',
-            ]
-
-        case "zhipu":
-        case "ai-zhipu@bot.system":
-            return [
-                'ernie-4.0-8k',
-                'ernie-4.0-8k-latest',
-                'ernie-4.0-turbo-128k',
-                'ernie-4.0-turbo-8k',
-                'ernie-3.5-128k',
-                'ernie-3.5-8k',
-                'ernie-speed-128k',
-                'ernie-speed-8k',
-                'ernie-lite-8k',
-                'ernie-tiny-8k',
-            ]
-    }
+const __AIModelData = {
+    openai: [
+        {value: 'gpt-4', label: 'GPT-4'},
+        {value: 'gpt-4-turbo', label: 'GPT-4 Turbo'},
+        {value: 'gpt-4o', label: 'GPT-4o'},
+        {value: 'gpt-4o-mini', label: 'GPT-4o Mini'},
+        {value: 'o1', label: 'GPT-o1'},
+        {value: 'o1-mini', label: 'GPT-o1 Mini'},
+        {value: 'o3-mini', label: 'GPT-o3 Mini'},
+        {value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo'},
+        {value: 'gpt-3.5-turbo-16k', label: 'GPT-3.5 Turbo 16K'},
+        {value: 'gpt-3.5-turbo-0125', label: 'GPT-3.5 Turbo 0125'},
+        {value: 'gpt-3.5-turbo-1106', label: 'GPT-3.5 Turbo 1106'}
+    ],
+    claude: [
+        {value: 'claude-3-5-sonnet-latest', label: 'Claude 3.5 Sonnet'},
+        {value: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet 20241022'},
+        {value: 'claude-3-5-haiku-latest', label: 'Claude 3.5 Haiku'},
+        {value: 'claude-3-5-haiku-20241022', label: 'Claude 3.5 Haiku 20241022'},
+        {value: 'claude-3-opus-latest', label: 'Claude 3 Opus'},
+        {value: 'claude-3-opus-20240229', label: 'Claude 3 Opus 20240229'},
+        {value: 'claude-3-haiku-20240307', label: 'Claude 3 Haiku 20240307'},
+        {value: 'claude-2.1', label: 'Claude 2.1'},
+        {value: 'claude-2.0', label: 'Claude 2.0'}
+    ],
+    deepseek: [
+        {value: 'deepseek-chat', label: 'DeepSeek V3'},
+        {value: 'deepseek-reasoner', label: 'DeepSeek R1'}
+    ],
+    wenxin: [
+        {value: 'ernie-4.0-8k', label: 'Ernie 4.0 8K'},
+        {value: 'ernie-4.0-8k-latest', label: 'Ernie 4.0 8K Latest'},
+        {value: 'ernie-4.0-turbo-128k', label: 'Ernie 4.0 Turbo 128K'},
+        {value: 'ernie-4.0-turbo-8k', label: 'Ernie 4.0 Turbo 8K'},
+        {value: 'ernie-3.5-128k', label: 'Ernie 3.5 128K'},
+        {value: 'ernie-3.5-8k', label: 'Ernie 3.5 8K'},
+        {value: 'ernie-speed-128k', label: 'Ernie Speed 128K'},
+        {value: 'ernie-speed-8k', label: 'Ernie Speed 8K'},
+        {value: 'ernie-lite-8k', label: 'Ernie Lite 8K'},
+        {value: 'ernie-tiny-8k', label: 'Ernie Tiny 8K'}
+    ],
+    qianwen: [
+        {value: 'qwen-max', label: 'QWEN Max'},
+        {value: 'qwen-max-latest', label: 'QWEN Max Latest'},
+        {value: 'qwen-turbo', label: 'QWEN Turbo'},
+        {value: 'qwen-turbo-latest', label: 'QWEN Turbo Latest'},
+        {value: 'qwen-plus', label: 'QWEN Plus'},
+        {value: 'qwen-plus-latest', label: 'QWEN Plus Latest'},
+        {value: 'qwen-long', label: 'QWEN Long'}
+    ],
+    gemini: [
+        {value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash'},
+        {value: 'gemini-2.0-flash-lite-preview-02-05', label: 'Gemini 2.0 Flash-Lite Preview'},
+        {value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash'},
+        {value: 'gemini-1.5-flash-8b', label: 'Gemini 1.5 Flash 8B'},
+        {value: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro'},
+        {value: 'gemini-1.0-pro', label: 'Gemini 1.0 Pro'}
+    ],
+    zhipu: [
+        {value: 'glm-4', label: 'GLM-4'},
+        {value: 'glm-4-plus', label: 'GLM-4 Plus'},
+        {value: 'glm-4-air', label: 'GLM-4 Air'},
+        {value: 'glm-4-airx', label: 'GLM-4 AirX'},
+        {value: 'glm-4-long', label: 'GLM-4 Long'},
+        {value: 'glm-4-flash', label: 'GLM-4 Flash'},
+        {value: 'glm-4v', label: 'GLM-4V'},
+        {value: 'glm-4v-plus', label: 'GLM-4V Plus'},
+        {value: 'glm-3-turbo', label: 'GLM-3 Turbo'}
+    ]
 }
+
+const AIModelList = (email) => {
+    const emailMap = {
+        "ai-openai@bot.system": "openai",
+        "ai-claude@bot.system": "claude",
+        "ai-deepseek@bot.system": "deepseek",
+        "ai-wenxin@bot.system": "wenxin",
+        "ai-qianwen@bot.system": "qianwen",
+        "ai-gemini@bot.system": "gemini",
+        "ai-zhipu@bot.system": "zhipu"
+    };
+    email = emailMap[email] || email;
+    return __AIModelData[email] || []
+}
+
+const AIModelLabel = (email, model) => {
+    const item = AIModelList(email).find(item => item.value === model)
+    return item ? item.label : model
+}
+
+export {AIModelList, AIModelLabel}

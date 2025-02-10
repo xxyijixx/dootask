@@ -720,7 +720,7 @@ import touchclick from "../../../directives/touchclick";
 import {languageList} from "../../../language";
 import {isLocalResourcePath} from "../../../components/Replace/utils";
 import emitter from "../../../store/events";
-import {AIModelList} from "../../../store/utils";
+import {AIModelLabel, AIModelList} from "../../../store/utils";
 
 export default {
     name: "DialogWrapper",
@@ -1847,8 +1847,11 @@ export default {
         quickLabel({key, label, config}) {
             if (key === '~ai-model-select') {
                 const model = this.aiModelValue()
-                if (model) return model
-                if (config?.model) return config.model
+                if (model) {
+                    label = AIModelLabel(this.dialogData.email, model)
+                } else if (config?.model) {
+                    label = AIModelLabel(this.dialogData.email, config.model)
+                }
             }
             return label
         },
@@ -1915,7 +1918,7 @@ export default {
                     if (!this.isAiBot) {
                         return
                     }
-                    const list = AIModelList(this.dialogData.email).map(value => ({label: value, value: value}))
+                    const list = AIModelList(this.dialogData.email)
                     const configModel = item.config?.model
                     if (configModel && !list.find(({value}) => value === configModel)) {
                         list.unshift({label: configModel, value: configModel})

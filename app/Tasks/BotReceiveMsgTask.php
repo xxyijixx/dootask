@@ -431,6 +431,9 @@ class BotReceiveMsgTask extends AbstractTask
                 'agency' => $setting[$type . '_agency'],
                 'server_url' => $serverUrl,
             ];
+            if ($setting[$type . '_temperature']) {
+                $extras['temperature'] = floatval($setting[$type . '_temperature']);
+            }
             if ($msg->msg['model_name']) {
                 $extras['model_name'] = $msg->msg['model_name'];
             }
