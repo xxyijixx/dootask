@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $read 已阅数量
  * @property int|null $send 发送数量
  * @property int|null $tag 标注会员ID
- * @property string|null $session 会话标识符
+ * @property int|null $session_id 会话ID
  * @property int|null $todo 设为待办会员ID
  * @property int|null $link 是否存在链接
  * @property int|null $modify 是否编辑
@@ -70,7 +70,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogMsg whereReplyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogMsg whereReplyNum($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogMsg whereSend($value)
- * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogMsg whereSession($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogMsg whereSessionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogMsg whereTag($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogMsg whereTodo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogMsg whereType($value)

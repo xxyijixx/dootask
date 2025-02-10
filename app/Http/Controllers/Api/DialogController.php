@@ -489,6 +489,8 @@ class DialogController extends AbstractController
      * @apiName msg__list
      *
      * @apiParam {Number} dialog_id         对话ID
+     * @apiParam {Number} [session_id]      会话ID
+     * - 此参数目前仅和AI的对话有效，AI对话支持新建对话，此参数为会话ID
      * @apiParam {Number} [msg_id]          消息ID
      * @apiParam {Number} [position_id]     此消息ID前后的数据
      * @apiParam {Number} [prev_id]         此消息ID之前的数据
@@ -514,6 +516,7 @@ class DialogController extends AbstractController
         $user = User::auth();
         //
         $dialog_id = intval(Request::input('dialog_id'));
+        $session_id = intval(Request::input('session_id'));
         $msg_id = intval(Request::input('msg_id'));
         $position_id = intval(Request::input('position_id'));
         $prev_id = intval(Request::input('prev_id'));
@@ -536,6 +539,9 @@ class DialogController extends AbstractController
                 ->on('read.msg_id', '=', 'web_socket_dialog_msgs.id');
         })->where('web_socket_dialog_msgs.dialog_id', $dialog_id);
         //
+        if ($session_id > 0) {
+            $builder->whereSessionId($session_id);
+        }
         if ($msg_type) {
             if ($msg_type === 'tag') {
                 $builder->where('tag', '>', 0);

@@ -1922,6 +1922,20 @@ export default {
                     }
                     break;
 
+                // 开启新对话
+                case "~ai-chat-new":
+                    if (!this.isAiBot) {
+                        return
+                    }
+                    break;
+
+                // 历史对话
+                case "~ai-chat-history":
+                    if (!this.isAiBot) {
+                        return
+                    }
+                    break;
+
                 // 发送快捷指令
                 default:
                     if (/^~/.test(item.key)) {

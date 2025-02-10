@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class WebSocketDialogMsgsAddSession extends Migration
+class WebSocketDialogMsgsAddSessionId extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,8 @@ class WebSocketDialogMsgsAddSession extends Migration
     public function up()
     {
         Schema::table('web_socket_dialog_msgs', function (Blueprint $table) {
-            if (!Schema::hasColumn('web_socket_dialog_msgs', 'session')) {
-                $table->string('session', 36)->nullable()->default('')->after('tag')->comment('会话标识符');
+            if (!Schema::hasColumn('web_socket_dialog_msgs', 'session_id')) {
+                $table->bigInteger('session_id')->index()->nullable()->default(0)->after('dialog_type')->comment('会话ID');
             }
         });
     }
@@ -28,7 +28,7 @@ class WebSocketDialogMsgsAddSession extends Migration
     public function down()
     {
         Schema::table('web_socket_dialog_msgs', function (Blueprint $table) {
-            $table->dropColumn('session');
+            $table->dropColumn('session_id');
         });
     }
 }
