@@ -113,7 +113,7 @@ export default {
                         {
                             label: 'Temperature',
                             prop: 'openai_temperature',
-                            placeholder: '模型温度，低则保守，高则多样。',
+                            placeholder: '模型温度，低则保守，高则多样',
                             tip: '例如：0.7，范围：0-1，默认：0.7'
                         },
                         {
@@ -152,7 +152,7 @@ export default {
                         {
                             label: 'Temperature',
                             prop: 'claude_temperature',
-                            placeholder: '模型温度，低则保守，高则多样。',
+                            placeholder: '模型温度，低则保守，高则多样',
                             tip: '例如：0.7，范围：0-1，默认：0.7'
                         },
                         {
@@ -199,7 +199,7 @@ export default {
                         {
                             label: 'Temperature',
                             prop: 'deepseek_temperature',
-                            placeholder: '模型温度，低则保守，高则多样。',
+                            placeholder: '模型温度，低则保守，高则多样',
                             tip: '例如：0.7，范围：0-1，默认：0.7'
                         },
                         {
@@ -238,7 +238,7 @@ export default {
                         {
                             label: 'Temperature',
                             prop: 'gemini_temperature',
-                            placeholder: '模型温度，低则保守，高则多样。',
+                            placeholder: '模型温度，低则保守，高则多样',
                             tip: '例如：0.7，范围：0-1，默认：0.7'
                         },
                         {
@@ -277,7 +277,7 @@ export default {
                         {
                             label: 'Temperature',
                             prop: 'zhipu_temperature',
-                            placeholder: '模型温度，低则保守，高则多样。',
+                            placeholder: '模型温度，低则保守，高则多样',
                             tip: '例如：0.7，范围：0-1，默认：0.7'
                         },
                         {
@@ -316,7 +316,7 @@ export default {
                         {
                             label: 'Temperature',
                             prop: 'qianwen_temperature',
-                            placeholder: '模型温度，低则保守，高则多样。',
+                            placeholder: '模型温度，低则保守，高则多样',
                             tip: '例如：0.7，范围：0-1，默认：0.7'
                         },
                         {
@@ -362,7 +362,7 @@ export default {
                         {
                             label: 'Temperature',
                             prop: 'wenxin_temperature',
-                            placeholder: '模型温度，低则保守，高则多样。',
+                            placeholder: '模型温度，低则保守，高则多样',
                             tip: '例如：0.7，范围：0-1，默认：0.7'
                         },
                         {

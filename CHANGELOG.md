@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.42.74]
+
+### Performance
+
+- 优化审批功能
+- AI机器人支持多会话
+- AI机器人支持自定义模型
+
 ## [0.42.61]
 
 ### Performance
