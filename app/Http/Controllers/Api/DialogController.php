@@ -541,6 +541,8 @@ class DialogController extends AbstractController
         //
         if ($session_id > 0) {
             $builder->whereSessionId($session_id);
+        } elseif ($dialog->session_id > 0) {
+            $builder->whereSessionId($dialog->session_id);
         }
         if ($msg_type) {
             if ($msg_type === 'tag') {

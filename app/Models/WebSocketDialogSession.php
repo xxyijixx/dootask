@@ -7,7 +7,6 @@ namespace App\Models;
  *
  * @property int $id
  * @property int $dialog_id 对话ID
- * @property int $userid 用户ID
  * @property string $title 会话标题
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -27,7 +26,6 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogSession whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogSession whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogSession whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogSession whereUserid($value)
  * @mixin \Eloquent
  */
 class WebSocketDialogSession extends AbstractModel
@@ -49,13 +47,5 @@ class WebSocketDialogSession extends AbstractModel
     public function dialog()
     {
         return $this->belongsTo(WebSocketDialog::class, 'dialog_id');
-    }
-
-    /**
-     * 获取关联的用户
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'userid');
     }
 }
