@@ -109,6 +109,57 @@ class Extranet
     }
 
     /**
+     * 通过 openAI 生成标题
+     * @param $text
+     * @return array
+     */
+    public static function openAIGenerateTitle($text)
+    {
+        $aibotSetting = Base::setting('aibotSetting');
+        if (empty($aibotSetting['openai_key'])) {
+            return Base::retError("AI接口未配置");
+        }
+        $extra = [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer ' . $aibotSetting['openai_key'],
+        ];
+        if ($aibotSetting['openai_agency']) {
+            $extra['CURLOPT_PROXY'] = $aibotSetting['openai_agency'];
+            if (str_contains($aibotSetting['openai_agency'], 'socks')) {
+                $extra['CURLOPT_PROXYTYPE'] = CURLPROXY_SOCKS5;
+            } else {
+                $extra['CURLOPT_PROXYTYPE'] = CURLPROXY_HTTP;
+            }
+        }
+        $res = Ihttp::ihttp_request('https://api.openai.com/v1/chat/completions', json_encode([
+            "model" => "gpt-3.5-turbo",
+            "messages" => [
+                [
+                    "role" => "system",
+                    "content" => "你是一个专业的标题生成器，擅长为对话生成简洁的标题，请将提供的文本生成一个标题。"
+                ],
+                [
+                    "role" => "user",
+                    "content" => $text
+                ]
+            ]
+        ]), $extra, 15);
+        if (Base::isError($res)) {
+            return Base::retError("生成失败", $res);
+        }
+        $resData = Base::json2array($res['data']);
+        if (empty($resData['choices'])) {
+            return Base::retError("生成失败", $resData);
+        }
+        $result = $resData['choices'][0]['message']['content'];
+        $result = preg_replace('/^\"|\"$/', '', $result);
+        if (empty($result)) {
+            return Base::retError("生成失败", $result);
+        }
+        return Base::retSuccess("success", $result);
+    }
+
+    /**
      * 获取IP地址经纬度
      * @param string $ip
      * @return array

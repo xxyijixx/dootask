@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Module\Base;
+use App\Module\Extranet;
+use Swoole\Coroutine;
 use Cache;
 
 /**
@@ -69,17 +71,30 @@ class WebSocketDialogSession extends AbstractModel
         if (Cache::has($cacheKey)) {
             return;
         }
+        $originalTitle = $dialogMsg->key ?: $dialogMsg->msg['text'] ?: 'Untitled';
+        $title = Base::cutStr($originalTitle, 100);
+        if ($title == '...') {
+            return;
+        }
         $session = self::whereId($sessionId)->first();
         if (!$session) {
             return;
         }
-        $title = Base::cutStr($dialogMsg->key ?: $dialogMsg->msg['text'], 100);
-        if (empty($title)) {
-            return;
-        }
         $session->title = $title;
         $session->save();
-        // todo 通过AI生成标题
         Cache::forever($cacheKey, true);
+        // 通过AI接口更新对话标题
+        go(function () use ($session, $title, $originalTitle) {
+            Coroutine::sleep(0.1);
+            $res = Extranet::openAIGenerateTitle($originalTitle);
+            if (Base::isError($res)) {
+                return;
+            }
+            $newTitle = $res['data'];
+            if ($newTitle && $newTitle != $title) {
+                $session->title = Base::cutStr($newTitle, 100);
+                $session->save();
+            }
+        });
     }
 }
