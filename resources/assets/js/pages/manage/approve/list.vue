@@ -8,7 +8,7 @@
             <Tag v-if="data.state == 3" color="red">{{$L('已拒绝')}}</Tag>
             <Tag v-if="data.state == 4" color="red">{{$L('已撤回')}}</Tag>
         </h2>
-        <p v-if="data.var?.type">{{$L('假期类型')}}：<span>{{$L(data.var?.type)}}</span></p>
+        <p v-if="$A.strExists(data.proc_def_name, '请假') && data.var?.type">{{$L('假期类型')}}：<span>{{$L(data.var?.type)}}</span></p>
         <p>{{$L('开始时间')}}：<span>{{data.var?.start_time}}</span></p>
         <p>{{$L('结束时间')}}：<span>{{data.var?.end_time}}</span></p>
         <div class="list-member">

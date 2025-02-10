@@ -1389,6 +1389,15 @@
                                 width: 300px;
                             }
 
+                            .ivu-btn-grey {
+                                &.rejected {
+                                    color: #ff0000;
+                                }
+                                &.revoked {
+                                    color: #9b9b9b;
+                                }
+                            }
+
                             .cause {
                                 border-bottom: 1px solid #e3e3e3;
                                 border-top: 1px solid #e3e3e3;

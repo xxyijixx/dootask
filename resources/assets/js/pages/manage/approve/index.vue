@@ -183,7 +183,7 @@
                         <Option v-for="(item, index) in procdefList" :value="item.name" :key="index">{{ $L(item.name) }}</Option>
                     </Select>
                 </FormItem>
-                <FormItem v-if="(addData.applyType || '').indexOf('请假') !== -1" prop="type" :label="$L('假期类型')">
+                <FormItem v-if="$A.strExists(addData.applyType, '请假')" prop="type" :label="$L('假期类型')">
                     <Select v-model="addData.type" :placeholder="$L('请选择假期类型')">
                         <Option v-for="(item, index) in selectTypes" :value="item" :key="index">{{ $L(item) }}</Option>
                     </Select>

@@ -4,15 +4,15 @@
         <div class="cause">
             <p>{{$L("申请人")}}：<span class="mark-color">@{{ msg.data.start_nickname }}</span> {{ msg.data.department }}</p>
             <b>{{$L("详情")}}</b>
-            <p v-if="msg.data.type">{{$L("假期类型")}}：{{ $L(msg.data.type) }}</p>
+            <p v-if="$A.strExists(msg.data.proc_def_name, '请假') && msg.data.type">{{$L("假期类型")}}：{{ $L(msg.data.type) }}</p>
             <p>{{$L("开始时间")}}：{{ msg.data.start_time }} ({{ $L(msg.data.start_day_of_week) }})</p>
             <p>{{$L("结束时间")}}：{{ msg.data.end_time }} ({{ $L(msg.data.end_day_of_week) }})</p>
             <p>{{$L("事由")}}：{{ msg.data.description }}</p>
         </div>
         <div class="btn-raw no-dark-content">
             <button v-if="msg.action === 'pass'" class="ivu-btn ivu-btn-grey">{{$L("已同意")}}</button>
-            <button v-else-if="msg.action === 'refuse'" class="ivu-btn ivu-btn-grey">{{$L("已拒绝")}}</button>
-            <button v-else-if="msg.action === 'withdraw'" class="ivu-btn ivu-btn-grey">{{$L("已撤销")}}</button>
+            <button v-else-if="msg.action === 'refuse'" class="ivu-btn ivu-btn-grey rejected">{{$L("已拒绝")}}</button>
+            <button v-else-if="msg.action === 'withdraw'" class="ivu-btn ivu-btn-grey revoked">{{$L("已撤销")}}</button>
         </div>
     </div>
 </template>
