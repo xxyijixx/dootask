@@ -205,15 +205,15 @@ class UserBot extends AbstractModel
                             ]
                         ],
                         [
-                            'key' => '~ai-chat-new',
-                            'label' => Doo::translate('开启新对话'),
+                            'key' => '~ai-session-create',
+                            'label' => Doo::translate('开启新会话'),
                             'config' => [
                                 'model' => $aibotSetting[$match[1] . '_model']
                             ]
                         ],
                         [
-                            'key' => '~ai-chat-history',
-                            'label' => Doo::translate('历史对话'),
+                            'key' => '~ai-session-history',
+                            'label' => Doo::translate('历史会话'),
                         ]
                     ];
                 }

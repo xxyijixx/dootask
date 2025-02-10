@@ -1196,6 +1196,8 @@ class WebSocketDialogMsg extends AbstractModel
                 $dialogMsg->send = 1;
                 $dialogMsg->generateKeyAndSave($search_key);
                 //
+                WebSocketDialogSession::updateTitle($dialogMsg->session_id, $dialogMsg);
+                //
                 if ($dialogMsg->type === 'meeting') {
                     MeetingMsg::createInstance([
                         'meetingid' => $dialogMsg->msg['meetingid'],

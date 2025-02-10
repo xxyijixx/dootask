@@ -25,6 +25,7 @@ use App\Models\WebSocketDialogConfig;
 use App\Models\WebSocketDialogMsgRead;
 use App\Models\WebSocketDialogMsgTodo;
 use App\Models\WebSocketDialogMsgTranslate;
+use App\Models\WebSocketDialogSession;
 use Hhxsv5\LaravelS\Swoole\Task\Task;
 
 /**
@@ -3089,5 +3090,125 @@ class DialogController extends AbstractController
         }
 
         return Base::retSuccess('保存成功');
+    }
+
+    /**
+     * @api {get} api/dialog/session/create          62. AI-开启新会话
+     *
+     * @apiDescription 需要token身份，仅限与AI用户会话
+     * @apiVersion 1.0.0
+     * @apiGroup dialog
+     * @apiName session_create
+     *
+     * @apiParam {Number} dialog_id         对话ID
+     *
+     * @apiSuccess {Number} ret     返回状态码（1正确、0错误）
+     * @apiSuccess {String} msg     返回信息（错误描述）
+     * @apiSuccess {Object} data    返回数据
+     */
+    public function session__create()
+    {
+        User::auth();
+        //
+        $dialog_id = intval(Request::input('dialog_id'));
+        //
+        $dialog = WebSocketDialog::checkDialog($dialog_id);
+        //
+        if ($dialog->type != 'user') {
+            return Base::retError('当前对话不支持');
+        }
+        //
+        $hasAiUser = WebSocketDialogUser::join('users as u', 'web_socket_dialog_users.userid', '=', 'u.userid')
+            ->where('dialog_id', $dialog->id)
+            ->where('u.email', 'like', 'ai-%@bot.system')
+            ->exists();
+        if (!$hasAiUser) {
+            return Base::retError('当前对话不支持');
+        }
+        //
+        $session = WebSocketDialogSession::whereDialogId($dialog->id)
+            ->whereTitle('')
+            ->first();
+        if ($session) {
+            $dialog->session_id = $session->id;
+            $dialog->save();
+            return Base::retSuccess('success', $session);
+        }
+        //
+        $session = WebSocketDialogSession::create([
+            'dialog_id' => $dialog->id,
+            'status' => 1,
+            'title' => '',
+        ]);
+        $session->save();
+        $dialog->session_id = $session->id;
+        $dialog->save();
+        //
+        return Base::retSuccess('success', $session);
+    }
+
+    /**
+     * @api {get} api/dialog/session/list          63. AI-获取会话列表
+     *
+     * @apiDescription 需要token身份
+     * @apiVersion 1.0.0
+     * @apiGroup dialog
+     * @apiName session_list
+     *
+     * @apiParam {Number} dialog_id         对话ID
+     *
+     * @apiParam {Number} [page]                当前页，默认:1
+     * @apiParam {Number} [pagesize]            每页显示数量，默认:20，最大:50
+     *
+     * @apiSuccess {Number} ret     返回状态码（1正确、0错误）
+     * @apiSuccess {String} msg     返回信息（错误描述）
+     * @apiSuccess {Object} data    返回数据
+     */
+    public function session__list()
+    {
+        User::auth();
+        //
+        $dialog_id = intval(Request::input('dialog_id'));
+        //
+        $dialog = WebSocketDialog::checkDialog($dialog_id);
+        //
+        $sessions = WebSocketDialogSession::whereDialogId($dialog->id)
+            ->orderByDesc('id')
+            ->paginate(Base::getPaginate(100, 10));
+        //
+        return Base::retSuccess('success', $sessions);
+    }
+
+    /**
+     * @api {get} api/dialog/session/open          64. AI-打开会话
+     *
+     * @apiDescription 需要token身份
+     * @apiVersion 1.0.0
+     * @apiGroup dialog
+     * @apiName session_open
+     *
+     * @apiParam {Number} session_id         会话ID
+     *
+     * @apiSuccess {Number} ret     返回状态码（1正确、0错误）
+     * @apiSuccess {String} msg     返回信息（错误描述）
+     * @apiSuccess {Object} data    返回数据
+     */
+    public function session__open()
+    {
+        User::auth();
+        //
+        $session_id = intval(Request::input('session_id'));
+        //
+        $session = WebSocketDialogSession::whereId($session_id)->first();
+        if (empty($session)) {
+            return Base::retError('会话不存在或已被删除');
+        }
+        //
+        $dialog = WebSocketDialog::checkDialog($session->dialog_id);
+        //
+        $dialog->session_id = $session->id;
+        $dialog->save();
+        //
+        return Base::retSuccess('success', $session);
     }
 }

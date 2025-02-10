@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Module\Base;
+use Cache;
+
 /**
  * App\Models\WebSocketDialogSession
  *
@@ -47,5 +50,36 @@ class WebSocketDialogSession extends AbstractModel
     public function dialog()
     {
         return $this->belongsTo(WebSocketDialog::class, 'dialog_id');
+    }
+
+    /**
+     * @param $sessionId
+     * @param WebSocketDialogMsg $dialogMsg
+     * @return void
+     */
+    public static function updateTitle($sessionId, $dialogMsg)
+    {
+        if (!$sessionId) {
+            return;
+        }
+        if ($dialogMsg->type != 'text') {
+            return;
+        }
+        $cacheKey = 'dialog_session_title_' . $sessionId;
+        if (Cache::has($cacheKey)) {
+            return;
+        }
+        $session = self::whereId($sessionId)->first();
+        if (!$session) {
+            return;
+        }
+        $title = Base::cutStr($dialogMsg->key ?: $dialogMsg->msg['text'], 100);
+        if (empty($title)) {
+            return;
+        }
+        $session->title = $title;
+        $session->save();
+        // todo 通过AI生成标题
+        Cache::forever($cacheKey, true);
     }
 }

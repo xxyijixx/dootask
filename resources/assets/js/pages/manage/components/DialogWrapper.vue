@@ -1321,12 +1321,7 @@ export default {
         },
 
         msgType() {
-            this.getMsgs({
-                dialog_id: this.dialogId,
-                msg_id: this.msgId,
-                msg_type: this.msgType,
-                clear_before: true
-            }).catch(_ => {})
+            this.onGetMsgClear()
         },
 
         searchKey(key) {
@@ -1922,15 +1917,26 @@ export default {
                     }
                     break;
 
-                // 开启新对话
-                case "~ai-chat-new":
+                // 开启新会话
+                case "~ai-session-create":
                     if (!this.isAiBot) {
                         return
                     }
+                    this.$store.dispatch("call", {
+                        url: 'dialog/session/create',
+                        data: {
+                            dialog_id: this.dialogId,
+                        },
+                        spinner: 300
+                    }).then(() => {
+                        this.onGetMsgClear()
+                    }).catch(({msg}) => {
+                        $A.modalError(msg)
+                    });
                     break;
 
-                // 历史对话
-                case "~ai-chat-history":
+                // 历史会话
+                case "~ai-session-history":
                     if (!this.isAiBot) {
                         return
                     }
@@ -2576,6 +2582,15 @@ export default {
                 return;
             }
             this.$store.dispatch("openOkr", this.dialogData.link_id);
+        },
+
+        onGetMsgClear() {
+            this.getMsgs({
+                dialog_id: this.dialogId,
+                msg_id: this.msgId,
+                msg_type: this.msgType,
+                clear_before: true
+            }).catch(_ => {})
         },
 
         onReGetMsg() {
