@@ -4,7 +4,7 @@
             <IFrame ref="frame" class="drawio-iframe" :src="url" @on-message="onMessage"/>
             <div v-if="loadIng" class="drawio-loading"><Loading/></div>
         </template>
-        <div v-if="!runningPlugins.includes('drawio')" class="drawio-loading">请启用图表插件</div>
+        <div v-if="!runningPlugins.includes('drawio')" class="drawio-loading">{{ $L('请启用图表插件') }}</div>
     </div>
 </template>
 
@@ -89,6 +89,8 @@ export default {
     },
     mounted() {
         window.addEventListener('message', this.handleMessage)
+        // 加载插件信息
+        this.$store.dispatch('loadRunningPlugins')
     },
     beforeDestroy() {
         window.removeEventListener('message', this.handleMessage)

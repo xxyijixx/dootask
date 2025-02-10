@@ -62,7 +62,7 @@
                 <div v-if="loadIng" class="minder-loading"><Loading/></div>
             </template>
             <div class="minder-loading" v-if="!runningPlugins.includes('minder')">
-                请启用思维导图插件
+                {{ $L('请启用思维导图插件') }}
             </div>
         </div>
     </div>
@@ -231,6 +231,8 @@ import IFrame from "../pages/manage/components/IFrame.vue";
         },
         mounted() {
             window.addEventListener('message', this.handleMessage)
+            // 加载插件信息
+            this.$store.dispatch('loadRunningPlugins')
         },
         beforeDestroy() {
             window.removeEventListener('message', this.handleMessage)

@@ -11,7 +11,6 @@
             :url='url'
             inline
             :keep-alive="keepAlive"
-            disableSandbox
             :data='appData'
             @created='handleCreate'
             @beforemount='handleBeforeMount'

@@ -321,6 +321,12 @@ export default {
     activated() {
         this.initList()
     },
+    beforeRouteEnter(to, from, next) {
+        next(vm => {
+            // 当进入该页面的时候获取插件信息
+            vm.$store.dispatch('loadRunningPlugins')
+        });
+    },
     computed: {
         ...mapState([
             'systemConfig',

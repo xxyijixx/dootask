@@ -100,6 +100,11 @@ export default {
         }
     },
 
+    mounted(){
+        // 加载插件信息
+        this.$store.dispatch('loadRunningPlugins')
+    },
+
     beforeDestroy() {
         if (this.docEditor !== null) {
             this.docEditor.destroyEditor();

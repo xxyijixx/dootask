@@ -4401,18 +4401,32 @@ export default {
     /** *********************************** Plugin Store ****************************************/
     /** *****************************************************************************************/
     loadRunningPlugins({dispatch, state}) {
+        const isDataValid = () => {
+            if (!state.runningPlugins || !state.lastFetchPluginTime) {
+                return false;
+            }
+            const cacheValidTime = 5 * 1000;
+            return Date.now() - state.lastFetchPluginTime < cacheValidTime;
+        }
+
+        if (isDataValid()) {
+            return Promise.resolve(state.runningPlugins);
+        }
+
         return new Promise((resolve, reject) => {
             dispatch("call", {
                 url: "/store/api/v1/apps/running",
             }).then(({data}) => {
                 state.runningPlugins = data.list || []
-                // state.runningPlugins = ['okr']
+                state.lastFetchPluginTime = Date.now()
                 resolve(state.runningPlugins)
             }).catch(_ => {
                 state.runningPlugins = []
+                state.lastFetchPluginTime = Date.now()
                 reject()
             });
         })
-    },
+
+    }
     
 }

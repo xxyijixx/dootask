@@ -245,5 +245,6 @@ export default {
     menuOperation: {},
 
 
-    runningPlugins: []
+    runningPlugins: [],
+    lastFetchPluginTime: null,
 };
