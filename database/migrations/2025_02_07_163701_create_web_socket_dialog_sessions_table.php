@@ -34,9 +34,10 @@ class CreateWebSocketDialogSessionsTable extends Migration
             ->get();
         foreach ($list as $item) {
             $title = WebSocketDialogMsg::whereDialogId($item->id)->where('key', '!=', '')->orderBy('id')->value('key');
-            $session = WebSocketDialogSession::create([
+            $session = WebSocketDialogSession::createInstance([
                 'dialog_id' => $item->id,
                 'title' => $title ? Base::cutStr($title, 100) : 'Unknown',
+                'created_at' => $item->created_at,
             ]);
             $session->save();
             $item->session_id = $session->id;

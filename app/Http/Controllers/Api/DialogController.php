@@ -3175,6 +3175,14 @@ class DialogController extends AbstractController
         $sessions = WebSocketDialogSession::whereDialogId($dialog->id)
             ->orderByDesc('id')
             ->paginate(Base::getPaginate(100, 10));
+        $sessions->transform(function ($item) use ($dialog) {
+            if ($item->id === $dialog->session_id) {
+                $item->is_open = 1;
+            } else {
+                $item->is_open = 0;
+            }
+            return $item;
+        });
         //
         return Base::retSuccess('success', $sessions);
     }

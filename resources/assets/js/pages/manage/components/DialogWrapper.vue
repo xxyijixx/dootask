@@ -644,6 +644,18 @@
             <DialogRespond v-if="respondShow" :respond-data="respondData" @on-close="respondShow=false"/>
         </DrawerOverlay>
 
+        <!--历史会话-->
+        <DrawerOverlay
+            v-model="sessionHistoryShow"
+            placement="right"
+            :size="500">
+            <DialogSessionHistory
+                v-if="sessionHistoryShow"
+                :session-data="sessionHistoryData"
+                @on-submit="onSessionSubmit"
+                @on-close="sessionHistoryShow=false"/>
+        </DrawerOverlay>
+
         <!--待办完成-->
         <DrawerOverlay
             v-model="todoViewShow"
@@ -692,6 +704,7 @@ import DialogUpload from "./DialogUpload";
 import DrawerOverlay from "../../../components/DrawerOverlay";
 import DialogGroupInfo from "./DialogGroupInfo";
 import DialogRespond from "./DialogRespond";
+import DialogSessionHistory from "./DialogSessionHistory";
 import ChatInput from "./ChatInput";
 
 import VirtualList from "vue-virtual-scroll-list-hi"
@@ -716,6 +729,7 @@ export default {
         UserSelect,
         ImgUpload,
         DialogRespond,
+        DialogSessionHistory,
         DialogItem,
         VirtualList,
         ChatInput,
@@ -826,6 +840,9 @@ export default {
 
             respondShow: false,
             respondData: {},
+
+            sessionHistoryShow: false,
+            sessionHistoryData: {},
 
             todoSettingShow: false,
             todoSettingLoad: 0,
@@ -1940,6 +1957,11 @@ export default {
                     if (!this.isAiBot) {
                         return
                     }
+                    this.sessionHistoryData = {
+                        dialog_id: this.dialogId,
+                        name: this.dialogData.name,
+                    }
+                    this.sessionHistoryShow = true
                     break;
 
                 // 发送快捷指令
@@ -2582,6 +2604,11 @@ export default {
                 return;
             }
             this.$store.dispatch("openOkr", this.dialogData.link_id);
+        },
+
+        onSessionSubmit() {
+            this.sessionHistoryShow = false;
+            this.onGetMsgClear();
         },
 
         onGetMsgClear() {
