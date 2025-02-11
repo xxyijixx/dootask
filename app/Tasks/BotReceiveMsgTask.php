@@ -437,6 +437,9 @@ class BotReceiveMsgTask extends AbstractTask
             if ($msg->msg['model_name']) {
                 $extras['model_name'] = $msg->msg['model_name'];
             }
+            if ($dialog->session_id) {
+                $extras['context_key'] = 'session_' . $dialog->session_id;
+            }
             if ($type === 'wenxin') {
                 $extras['api_key'] .= ':' . $setting['wenxin_secret'];
             }
