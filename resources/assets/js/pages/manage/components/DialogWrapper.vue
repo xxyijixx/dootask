@@ -3747,6 +3747,7 @@ export default {
                 return
             }
             const path = `/single/file/msg/${data.id}`;
+            const title = data.type === 'longtext' ? this.$L('消息详情') : (`${msg.name} (${$A.bytesToSize(msg.size)})`);
             if (this.$Electron) {
                 this.$store.dispatch('openChildWindow', {
                     name: `file-msg-${data.id}`,
@@ -3754,7 +3755,7 @@ export default {
                     userAgent: "/hideenOfficeTitle/",
                     force: false,
                     config: {
-                        title: `${msg.name} (${$A.bytesToSize(msg.size)})`,
+                        title,
                         titleFixed: true,
                         parent: null,
                         width: Math.min(window.screen.availWidth, 1440),
@@ -3764,7 +3765,7 @@ export default {
             } else if (this.$isEEUiApp) {
                 this.$store.dispatch('openAppChildPage', {
                     pageType: 'app',
-                    pageTitle: `${msg.name} (${$A.bytesToSize(msg.size)})`,
+                    pageTitle: title,
                     url: 'web.js',
                     params: {
                         titleFixed: true,

@@ -1480,10 +1480,13 @@
                             justify-content: center;
                             margin-top: 12px;
                             border-top: 1px solid rgba(227, 227, 227, 0.42);
-                            padding-top: 12px;
-                            padding-bottom: 2px;
                             > span {
                                 cursor: pointer;
+                                flex: 1;
+                                text-align: center;
+                                height: 100%;
+                                padding: 12px;
+                                margin-bottom: -10px;
                             }
                         }
 
