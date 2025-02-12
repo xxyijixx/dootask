@@ -75,12 +75,26 @@ export default {
                 userid: '__system:userId__',
                 token: '__system:userToken__'
             };
+            const paramUser = {
+                userid: 0,
+                token: null
+            }
             Object.entries(paramMap).forEach(([param, key]) => {
-                urlParams[param] && window.localStorage.setItem(key, urlParams[param]);
+                if (urlParams[param]) {
+                    window.localStorage.setItem(key, urlParams[param]);
+                    param === 'userid' && (paramUser.userid = $A.runNum(urlParams[param]))
+                    param === 'token' && (paramUser.token = urlParams[param])
+                }
             });
             if (Object.keys(paramMap).some(param => urlParams[param])) {
                 const newUrl = $A.removeURLParameter(window.location.href, Object.keys(paramMap));
                 window.history.replaceState(null, '', newUrl);
+            }
+
+            // 处理用户身份信息
+            if (paramUser.userid > 0 && paramUser.token) {
+                const userInfo = await $A.IDBJson('userInfo')
+                await $A.IDBSet("userInfo", Object.assign(userInfo, paramUser));
             }
 
             // 清理缓存、读取缓存
@@ -993,14 +1007,6 @@ export default {
                 state.userId = state.userInfo.userid = $A.runNum(state.userInfo.userid);
                 state.userToken = state.userInfo.token;
                 state.userIsAdmin = $A.inArray("admin", state.userInfo.identity);
-            }
-
-            // 处理本地存储的用户信息
-            const localId = $A.runNum(window.localStorage.getItem("__system:userId__"));
-            const localToken = window.localStorage.getItem("__system:userToken__") || "";
-            if (state.userId === 0 && localId && localToken) {
-                state.userId = localId;
-                state.userToken = localToken;
             }
 
             // 处理ServerUrl
