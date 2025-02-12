@@ -8,7 +8,7 @@
             <ul>
                 <li v-for="(item, index) in listData" :key="index" @click="onOpen(item)">
                     <div class="history-title">
-                        <em v-if="item.is_open">{{$L('当前')}}</em>{{item.title || $L('新会话')}}
+                        <div v-if="openIng == item.id" class="history-load"><Loading/></div><em v-if="item.is_open">{{$L('当前')}}</em>{{item.title || $L('新会话')}}
                     </div>
                     <div class="history-time" :title="item.created_at">
                         {{$A.timeFormat(item.created_at)}}
@@ -36,7 +36,7 @@ export default {
 
     data() {
         return {
-            openIng: false,
+            openIng: 0,
 
             listData: [],
             listLoad: 0,
@@ -103,10 +103,10 @@ export default {
                 return
             }
             //
-            if (this.openIng) {
+            if (this.openIng > 0) {
                 return
             }
-            this.openIng = true
+            this.openIng = item.id
             //
             this.$store.dispatch("call", {
                 url: "dialog/session/open",
@@ -118,7 +118,7 @@ export default {
             }).catch(({msg}) => {
                 $A.modalError(msg)
             }).finally(_ => {
-                this.openIng = false;
+                this.openIng = 0;
             });
         }
     }
