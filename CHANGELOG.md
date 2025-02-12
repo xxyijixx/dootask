@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.42.79]
+
+### Bug Fixes
+
+- 修复偶现的是子窗口出现身份丢失的情况
+
+### Performance
+
+- 优化查看长消息内容
+
 ## [0.42.74]
 
 ### Performance
