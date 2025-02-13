@@ -2631,6 +2631,11 @@ export default {
         } else if ($A.isJson(data)) {
             data.id = parseInt(data.id)
             const index = state.cacheDialogs.findIndex(({id}) => id == data.id);
+            let lastForce = false
+            if (typeof data.last_force !== "undefined") {
+                lastForce = true
+                delete data.last_force
+            }
             if (index > -1) {
                 const original = state.cacheDialogs[index]
                 const nowTime = data.user_ms
@@ -2651,7 +2656,8 @@ export default {
                         return !state.dialogMsgs.find(m => m.id == id)?.read_at
                     })
                 }
-                if (data.last_at
+                if (!lastForce
+                    && data.last_at
                     && original.last_at
                     && $A.dayjs(data.last_at) < $A.dayjs(original.last_at)) {
                     delete data.last_at
@@ -3898,6 +3904,7 @@ export default {
                                                 id: dialog_id,
                                                 last_msg: data.last_msg,
                                                 last_at: data.last_msg ? data.last_msg.created_at : $A.daytz().format("YYYY-MM-DD HH:mm:ss"),
+                                                last_force: true,
                                             }
                                             if (data.update_read) {
                                                 // 更新未读数量
