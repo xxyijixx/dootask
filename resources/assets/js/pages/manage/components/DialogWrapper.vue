@@ -720,7 +720,6 @@ import touchclick from "../../../directives/touchclick";
 import {languageList} from "../../../language";
 import {isLocalResourcePath} from "../../../components/Replace/utils";
 import emitter from "../../../store/events";
-import {AIModelLabel, AIModelList} from "../../../store/utils";
 
 export default {
     name: "DialogWrapper",
@@ -1848,9 +1847,16 @@ export default {
             if (key === '~ai-model-select') {
                 const model = this.aiModelValue()
                 if (model) {
-                    label = AIModelLabel(this.dialogData.email, model)
+                    label = model
                 } else if (config?.model) {
-                    label = AIModelLabel(this.dialogData.email, config.model)
+                    label = config.model
+                }
+                if (config?.models) {
+                    config.models.forEach(({value, label: text}) => {
+                        if (value === label) {
+                            label = text
+                        }
+                    })
                 }
             }
             return label
@@ -1918,14 +1924,10 @@ export default {
                     if (!this.isAiBot) {
                         return
                     }
-                    const list = AIModelList(this.dialogData.email)
-                    const configModel = item.config?.model
-                    if (configModel && !list.find(({value}) => value === configModel)) {
-                        list.unshift({label: configModel, value: configModel})
-                    }
+                    const models = item.config?.models
                     this.$store.state.menuOperation = {
                         event,
-                        list,
+                        list: $A.isArray(models) ? models : [],
                         scrollHide: true,
                         onUpdate: async model => {
                             this.dialogAiModel = [

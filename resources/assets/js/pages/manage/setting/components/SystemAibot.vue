@@ -19,20 +19,15 @@
                                     :placeholder="$L(field.placeholder)"/>
                             </template>
                             <template v-else-if="field.type === 'model'">
-                                <Select
-                                    v-model="formData[field.prop]"
-                                    @on-create="modelCreate($event, field.options)"
-                                    filterable
-                                    allow-create
-                                    transfer>
-                                    <Option v-for="item in modelOption(formData[field.prop], field.options)" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                                <Select v-model="formData[field.prop]" transfer>
+                                    <Option v-for="item in modelOption(field.prop)" :value="item.value" :key="item.value">{{ item.label }}</Option>
                                 </Select>
                             </template>
                             <template v-else-if="field.type === 'textarea'">
                                 <Input
                                     :maxlength="500"
                                     type="textarea"
-                                    :autosize="{minRows:2,maxRows:5}"
+                                    :autosize="{minRows:2,maxRows:6}"
                                     v-model="formData[field.prop]"
                                     :placeholder="$L(field.placeholder)"/>
                             </template>
@@ -64,7 +59,6 @@
 
 <script>
 import {mapState} from "vuex";
-import {AIModelList} from "../../../../store/utils";
 
 export default {
     name: "SystemAibot",
@@ -90,13 +84,19 @@ export default {
                             link: 'https://platform.openai.com/account/api-keys'
                         },
                         {
+                            label: '模型列表',
+                            prop: 'openai_models',
+                            type: 'textarea',
+                            placeholder: '一行一个模型名称',
+                            tipPrefix: '查看说明',
+                            link: 'https://platform.openai.com/docs/models'
+                        },
+                        {
                             label: '默认模型',
                             prop: 'openai_model',
                             type: 'model',
-                            options: AIModelList('openai'),
-                            placeholder: '请输入模型名称',
-                            tipPrefix: '查看说明',
-                            link: 'https://platform.openai.com/docs/models'
+                            placeholder: '请选择默认模型',
+                            tip: '可选数据来自模型列表',
                         },
                         {
                             label: 'Base URL',
@@ -135,13 +135,19 @@ export default {
                             link: 'https://docs.anthropic.com/en/api/getting-started'
                         },
                         {
+                            label: '模型列表',
+                            prop: 'claude_models',
+                            type: 'textarea',
+                            placeholder: '一行一个模型名称',
+                            tipPrefix: '查看说明',
+                            link: 'https://docs.anthropic.com/en/docs/about-claude/models'
+                        },
+                        {
                             label: '默认模型',
                             prop: 'claude_model',
                             type: 'model',
-                            options: AIModelList('claude'),
-                            placeholder: '请输入模型名称',
-                            tipPrefix: '查看说明',
-                            link: 'https://docs.anthropic.com/en/docs/about-claude/models'
+                            placeholder: '请选择默认模型',
+                            tip: '可选数据来自模型列表',
                         },
                         {
                             label: '使用代理',
@@ -175,13 +181,19 @@ export default {
                             link: 'https://platform.deepseek.com/api_keys'
                         },
                         {
+                            label: '模型列表',
+                            prop: 'deepseek_models',
+                            type: 'textarea',
+                            placeholder: '一行一个模型名称',
+                            tipPrefix: '查看说明',
+                            link: 'https://api-docs.deepseek.com/zh-cn/quick_start/pricing'
+                        },
+                        {
                             label: '默认模型',
                             prop: 'deepseek_model',
                             type: 'model',
-                            options: AIModelList('deepseek'),
-                            placeholder: '请输入模型名称',
-                            tipPrefix: '查看说明',
-                            link: 'https://api-docs.deepseek.com/zh-cn/quick_start/pricing'
+                            placeholder: '请选择默认模型',
+                            tip: '可选数据来自模型列表',
                         },
                         {
                             label: 'Base URL',
@@ -221,13 +233,19 @@ export default {
                             link: 'https://makersuite.google.com/app/apikey'
                         },
                         {
+                            label: '模型列表',
+                            prop: 'gemini_models',
+                            type: 'textarea',
+                            placeholder: '一行一个模型名称',
+                            tipPrefix: '查看说明',
+                            link: 'https://ai.google.dev/models/gemini'
+                        },
+                        {
                             label: '默认模型',
                             prop: 'gemini_model',
                             type: 'model',
-                            options: AIModelList('gemini'),
-                            placeholder: '请输入模型名称',
-                            tipPrefix: '查看说明',
-                            link: 'https://ai.google.dev/models/gemini'
+                            placeholder: '请选择默认模型',
+                            tip: '可选数据来自模型列表',
                         },
                         {
                             label: '使用代理',
@@ -260,13 +278,19 @@ export default {
                             link: 'https://bigmodel.cn/usercenter/apikeys'
                         },
                         {
+                            label: '模型列表',
+                            prop: 'zhipu_models',
+                            type: 'textarea',
+                            placeholder: '一行一个模型名称',
+                            tipPrefix: '查看说明',
+                            link: 'https://open.bigmodel.cn/dev/api'
+                        },
+                        {
                             label: '默认模型',
                             prop: 'zhipu_model',
                             type: 'model',
-                            options: AIModelList('zhipu'),
-                            placeholder: '请输入模型名称',
-                            tipPrefix: '查看说明',
-                            link: 'https://open.bigmodel.cn/dev/api'
+                            placeholder: '请选择默认模型',
+                            tip: '可选数据来自模型列表',
                         },
                         {
                             label: '使用代理',
@@ -299,13 +323,19 @@ export default {
                             link: 'https://help.aliyun.com/zh/model-studio/developer-reference/get-api-key'
                         },
                         {
+                            label: '模型列表',
+                            prop: 'qianwen_models',
+                            type: 'textarea',
+                            placeholder: '一行一个模型名称',
+                            tipPrefix: '查看说明',
+                            link: 'https://help.aliyun.com/zh/model-studio/getting-started/models'
+                        },
+                        {
                             label: '默认模型',
                             prop: 'qianwen_model',
                             type: 'model',
-                            options: AIModelList('qianwen'),
-                            placeholder: '请输入模型名称',
-                            tipPrefix: '查看说明',
-                            link: 'https://help.aliyun.com/zh/model-studio/getting-started/models'
+                            placeholder: '请选择默认模型',
+                            tip: '可选数据来自模型列表',
                         },
                         {
                             label: '使用代理',
@@ -345,13 +375,19 @@ export default {
                             link: 'https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application/v1'
                         },
                         {
+                            label: '模型列表',
+                            prop: 'wenxin_models',
+                            type: 'textarea',
+                            placeholder: '一行一个模型名称',
+                            tipPrefix: '查看说明',
+                            link: 'https://cloud.baidu.com/doc/WENXINWORKSHOP/s/Blfmc9dlf'
+                        },
+                        {
                             label: '默认模型',
                             prop: 'wenxin_model',
                             type: 'model',
-                            options: AIModelList('wenxin'),
-                            placeholder: '请输入模型名称',
-                            tipPrefix: '查看说明',
-                            link: 'https://cloud.baidu.com/doc/WENXINWORKSHOP/s/Blfmc9dlf'
+                            placeholder: '请选择默认模型',
+                            tip: '可选数据来自模型列表',
                         },
                         {
                             label: '使用代理',
@@ -384,14 +420,15 @@ export default {
         ...mapState(['formOptions']),
     },
     methods: {
-        modelCreate(value, options) {
-            options.push({value, label: value});
-        },
-        modelOption(value, options) {
-            if (value && !options.find(item => item.value === value)) {
-                options.unshift({value, label: value});
+        modelOption(prop) {
+            const value = this.formData[prop + 's'];
+            if (value) {
+                return value.split('\n').map(item => {
+                    const [value, label] = `${item}:`.split(':');
+                    return {value, label: label || value};
+                }, []).filter(item => item.value);
             }
-            return options;
+            return []
         },
         submitForm() {
             this.$refs.formData.validate((valid) => {

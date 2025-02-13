@@ -196,20 +196,23 @@ class UserBot extends AbstractModel
                         ];
                     }
                     $aibotSetting = Base::setting('aibotSetting');
+                    $aibotModel = $aibotSetting[$match[1] . '_model'];
+                    $aibotModels = Setting::AIModels2Array($aibotSetting[$match[1] . '_models']);
+                    if (empty($aibotModels)) {
+                        return [];
+                    }
                     return [
                         [
                             'key' => '~ai-model-select',
                             'label' => Doo::translate('选择模型'),
                             'config' => [
-                                'model' => $aibotSetting[$match[1] . '_model']
+                                'model' => $aibotModel,
+                                'models' => $aibotModels
                             ]
                         ],
                         [
                             'key' => '~ai-session-create',
                             'label' => Doo::translate('开启新会话'),
-                            'config' => [
-                                'model' => $aibotSetting[$match[1] . '_model']
-                            ]
                         ],
                         [
                             'key' => '~ai-session-history',
