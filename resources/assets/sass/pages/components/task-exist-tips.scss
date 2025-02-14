@@ -11,13 +11,18 @@
         width: 100%;
     }
 
+    .list-task-avatar {
+        margin-bottom: -10px;
+    }
+
     .list-task {
         display: flex;
         margin-left: 34px;
         margin-right: 6px;
         margin-top: 10px;
         &.label {
-            color: #a7abb5;
+            margin-top: 20px;
+            font-weight: 600;
         }
     }
 
@@ -31,5 +36,17 @@
 
     .list-task-date {
         float: right;
+        opacity: 0.5;
+    }
+
+    @media (max-width: 640px) {
+        .list-task {
+            margin-top: 6px;
+            flex-direction: column;
+        }
+        .list-task-date {
+             float: none;
+            opacity: 0.3;
+        }
     }
 }

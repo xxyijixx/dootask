@@ -1189,7 +1189,11 @@ export default {
                             this.recordState = "ing"
                             this.recordBlob = null
                             setTimeout(_ => {
-                                this.recordRec.start()
+                                if (this.recordState == "stop") {
+                                    this.recordRec.close();
+                                } else {
+                                    this.recordRec.start()
+                                }
                             }, 300)
                         } else {
                             this.recordRec.close();

@@ -4,18 +4,18 @@
         :title="$L('计划时间冲突提示')"
         :styles="{
             width: '90%',
-            maxWidth: '550px'
+            maxWidth: '600px'
         }"
         class="task-exist-tips">
         <List :split="false" size="small">
-            <ListItem v-for="(items, userid) in tipsTask" :key="userid">
+            <ListItem v-for="(items, userid) in tipsTask" :key="`a_${userid}`">
                 <div class="list-content">
-                    <UserAvatar :userid="userid" :size="28" :show-icon="true" :show-name="true"/>
+                    <UserAvatar class="list-task-avatar" :userid="userid" :size="28" :show-icon="true" :show-name="true"/>
                     <template v-for="data in formatItems(items)">
                         <div class="list-task label">
                             <div class="list-task-name" :title="data.project_name">{{ data.project_name }}</div>
                         </div>
-                        <div class="list-task" v-for="(item, key) in data.list" :key="key">
+                        <div class="list-task" v-for="item in data.list" :key="item.id">
                             <div class="list-task-name" :title="item.name">{{ item.name }}</div>
                             <div class="list-task-date">{{ getCutTime(item) }}</div>
                         </div>
@@ -56,13 +56,13 @@ export default {
             let start_at = $A.dayjs(item.start_at);
             let end_at = $A.dayjs(item.end_at);
             let string = "";
-            if (start_at.format('YYYY/MM/DD') == end_at.format('YYYY/MM/DD')) {
-                string = start_at.format('YYYY/MM/DD HH:mm') + " ~ " + end_at.format('HH:mm')
+            if (start_at.format('YY/MM/DD') == end_at.format('YY/MM/DD')) {
+                string = start_at.format('YY/MM/DD HH:mm') + " ~ " + end_at.format('HH:mm')
             } else if (start_at.year() == end_at.year()) {
-                string = start_at.format('YYYY/MM/DD HH:mm') + " ~ " + end_at.format('MM/DD HH:mm')
+                string = start_at.format('YY/MM/DD HH:mm') + " ~ " + end_at.format('MM/DD HH:mm')
                 string = string.replace(/( 00:00| 23:59)/g, "")
             } else {
-                string = start_at.format('YYYY/MM/DD HH:mm') + " ~ " + end_at.format('YYYY/MM/DD HH:mm')
+                string = start_at.format('YY/MM/DD HH:mm') + " ~ " + end_at.format('YY/MM/DD HH:mm')
                 string = string.replace(/( 00:00| 23:59)/g, "")
             }
             return string

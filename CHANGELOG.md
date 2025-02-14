@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.42.85]
+
+### Bug Fixes
+
+- 撤回消息是消息列表不更新的情况
+
+### Performance
+
+- Onlyoffice 支持打开超过100m的文件
+- 优化点击上传列表效果
+- AI支持自定义模型列表
+
 ## [0.42.79]
 
 ### Bug Fixes

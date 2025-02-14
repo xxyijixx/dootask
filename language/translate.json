@@ -28056,18 +28056,6 @@
         "ru": "Алгоритм крупной языковой модели DeepSeek является алгоритмом службы глубокого синтеза, разработанным Beijing Deep Exploration Artificial Intelligence Foundation Technology Research Co., Ltd."
     },
     {
-        "key": "请输入模型名称",
-        "zh": "",
-        "zh-CHT": "請輸入模型名稱",
-        "en": "Please enter the model name",
-        "ko": "모델 이름을 입력하세요",
-        "ja": "モデル名を入力してください",
-        "de": "Bitte geben Sie den Modellnamen ein",
-        "fr": "Veuillez entrer le nom du modèle",
-        "id": "Silakan masukkan nama model",
-        "ru": "Пожалуйста, введите название модели"
-    },
-    {
         "key": "API请求的基础URL路径，如果没有请留空",
         "zh": "",
         "zh-CHT": "API請求的基礎URL路徑，如果沒有請留空",
@@ -28282,5 +28270,53 @@
         "fr": "Température du modèle : des valeurs plus basses conduisent à un comportement conservateur, des valeurs plus élevées à la diversité",
         "id": "Suhu model: nilai rendah menyebabkan perilaku konservatif, nilai tinggi menyebabkan keragaman",
         "ru": "Температура модели: низкие значения приводят к консервативному поведению, высокие - к разнообразию"
+    },
+    {
+        "key": "模型列表",
+        "zh": "",
+        "zh-CHT": "模型列表",
+        "en": "Model list",
+        "ko": "모델 목록",
+        "ja": "モデルリスト",
+        "de": "Modellliste",
+        "fr": "Liste des modèles",
+        "id": "Daftar model",
+        "ru": "Список моделей"
+    },
+    {
+        "key": "一行一个模型名称",
+        "zh": "",
+        "zh-CHT": "一行一個模型名稱",
+        "en": "One model name per line",
+        "ko": "행당 하나의 모델 이름",
+        "ja": "1行に1つのモデル名",
+        "de": "Ein Modellname pro Zeile",
+        "fr": "Un nom de modèle par ligne",
+        "id": "Satu nama model per baris",
+        "ru": "Одно название модели на строку"
+    },
+    {
+        "key": "请选择默认模型",
+        "zh": "",
+        "zh-CHT": "請選擇默認模型",
+        "en": "Please select a default model",
+        "ko": "기본 모델을 선택하세요",
+        "ja": "デフォルトモデルを選択してください",
+        "de": "Bitte ein Standardmodell auswählen",
+        "fr": "Veuillez sélectionner un modèle par défaut",
+        "id": "Silakan pilih model default",
+        "ru": "Выберите модель по умолчанию"
+    },
+    {
+        "key": "可选数据来自模型列表",
+        "zh": "",
+        "zh-CHT": "可選數據來自模型列表",
+        "en": "Optional data comes from the model list",
+        "ko": "선택적 데이터는 모델 목록에서 가져옵니다",
+        "ja": "オプションデータはモデルリストから来ます",
+        "de": "Optionale Daten stammen aus der Modellliste",
+        "fr": "Les données facultatives proviennent de la liste de modèles",
+        "id": "Data opsional berasal dari daftar model",
+        "ru": "Опционные данные взяты из списка моделей"
     }
 ]
