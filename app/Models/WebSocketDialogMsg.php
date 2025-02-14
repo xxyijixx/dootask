@@ -305,7 +305,12 @@ class WebSocketDialogMsg extends AbstractModel
         ];
         //
         $dialog = WebSocketDialog::find($this->dialog_id);
-        $dialog?->pushMsg('update', $resData);
+        if ($dialog) {
+            $dialog->pushMsg('update', $resData);
+            WebSocketDialogUser::whereDialogId($dialog->id)->change([
+                'updated_at' => Carbon::now()->toDateTimeString('millisecond'),
+            ]);
+        }
         //
         return Base::retSuccess('success', $resData);
     }
