@@ -1043,15 +1043,15 @@ export default {
         },
 
         browseFolder(id, shakeId = null) {
+            if (this.pid == id && this.fid == 0 && shakeId) {
+                this.shakeFile(shakeId);
+                return;
+            }
             if (id > 0) {
-                if (this.pid == id && this.fid == 0 && shakeId) {
-                    this.shakeFile(shakeId);
-                    return;
-                }
                 this.goForward({name: 'manage-file', params: {folderId: id, fileId: null, shakeId}});
             } else {
                 this.searchKey = '';
-                this.goForward({name: 'manage-file'});
+                this.goForward({name: 'manage-file', params: {folderId: null, fileId: null, shakeId}});
             }
         },
 
