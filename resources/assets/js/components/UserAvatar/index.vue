@@ -4,7 +4,11 @@
         class="avatar-wrapper common-avatar"
         :class="{'avatar-pointer': clickOpenDialog}"
         @click="onClickOpen">
-        <div v-if="showIcon" :class="boxClass" :style="boxStyle">
+        <div
+            v-if="showIcon"
+            :class="boxClass"
+            :style="boxStyle"
+            :title="showName ? undefined : user.nickname">
             <em :style="spotStyle"></em>
             <EAvatar v-if="showImg" ref="avatar" :class="{'avatar-default':isDefault}" :src="user.userimg" :size="avatarSize" :error="onError">
                 <span class="avatar-char" :style="spotStyle">{{nickname}}</span>
