@@ -764,9 +764,15 @@ class WebSocketDialogMsg extends AbstractModel
             $key = '';
             switch ($this->type) {
                 case 'text':
-                    if (!preg_match("/<span[^>]*?data-quick-key=([\"'])([^\"']+?)\\1[^>]*?>/is", $this->msg['text'])) {
-                        $key = strip_tags($this->msg['text']);
+                    if (preg_match("/<span[^>]*?data-quick-key=([\"'])([^\"']+?)\\1[^>]*?>/i", $this->msg['text'])) {
+                        break;
                     }
+                    $key = $this->msg['text'];
+                    if ($this->msg['type'] === 'md') {
+                        $key = preg_replace("/:::\s*reasoning[\s\S]*?:::/", "", $key);
+                        $key = Base::markdown2html($key);
+                    }
+                    $key = strip_tags($key);
                     break;
 
                 case 'vote':
@@ -1144,6 +1150,7 @@ class WebSocketDialogMsg extends AbstractModel
             }
             //
             $updateData = [
+                'type' => $type,
                 'mtype' => $mtype,
                 'link' => $link,
                 'msg' => array_merge($oldMsg, $msg),

@@ -512,6 +512,35 @@ body {
             padding-bottom: 0.8rem;
             border-bottom: 1px solid #eaecef;
         }
+
+        .apply-reasoning {
+            margin: 0 0 12px 0;
+            padding: 0 0 0 13px;
+            line-height: 26px;
+            position: relative;
+
+            &:before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 2px;
+                background-color: #e1e1e1;
+            }
+
+            .reasoning-label {
+                margin-bottom: 4px;
+                opacity: 0.9;
+            }
+
+            .reasoning-content {
+                opacity: 0.5;
+                > p:last-child {
+                    margin-bottom: 0;
+                }
+            }
+        }
     }
 }
 

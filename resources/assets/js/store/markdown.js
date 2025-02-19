@@ -248,6 +248,8 @@ const MarkdownPluginUtils = {
     }
 };
 
+export {MarkdownPluginUtils}
+
 export function MarkdownConver(text) {
     if (text === '...') {
         return '<div class="input-blink"></div>'

@@ -173,6 +173,7 @@ services:
     environment:
       REDIS_HOST: "${REDIS_HOST}"
       REDIS_PORT: "${REDIS_PORT}"
+      TIMEOUT: 600
     networks:
       extnetwork:
         ipv4_address: "${APP_IPPR}.12"

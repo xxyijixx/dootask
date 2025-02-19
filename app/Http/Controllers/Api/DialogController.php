@@ -1102,16 +1102,21 @@ class DialogController extends AbstractController
                 if (empty($size)) {
                     return Base::retError('消息发送保存失败');
                 }
-                $ext = $markdown ? 'md' : 'htm';
-                $text = MsgTool::truncateText($text, 500, $ext);
-                $desc = strip_tags($markdown ? Base::markdown2html($text) : $text);
+                $type = $markdown ? 'md' : 'htm';
+                $desc = $text;
+                if ($markdown) {
+                    $desc = preg_replace("/:::\s*reasoning[\s\S]*?:::/", "", $desc);
+                    $desc = Base::markdown2html($desc);
+                }
+                $desc = strip_tags($desc);
                 $desc = mb_substr(WebSocketDialogMsg::filterEscape($desc), 0, 200);
+                $text = MsgTool::truncateText($text, 500, $type);
                 $msgData = [
+                    'type' => $type,    // 内容类型
                     'desc' => $desc,    // 描述内容
                     'text' => $text,    // 简要内容
-                    'type' => $ext,     // 内容类型
                     'file' => [
-                        'name' => "LongText-{$strlen}.{$ext}",
+                        'name' => "LongText-{$strlen}.{$type}",
                         'size' => $size,
                         'file' => $file,
                         'path' => $path,
@@ -1119,7 +1124,7 @@ class DialogController extends AbstractController
                         'thumb' => '',
                         'width' => -1,
                         'height' => -1,
-                        'ext' => $ext,
+                        'ext' => $type,
                     ],
                 ];
                 if (empty($key)) {
