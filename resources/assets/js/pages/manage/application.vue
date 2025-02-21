@@ -54,7 +54,7 @@
                 </div>
                 <div class="ivu-modal-wrap-apply-body full-body">
                     <ul class="ivu-modal-wrap-ul">
-                        <li v-for="(item, key) in aibotList"  :key="key">
+                        <li v-for="(item, key) in aibotList" :key="key">
                             <div class="modal-item-img">
                                 <img :src="item.src">
                             </div>
@@ -84,49 +84,12 @@
                 </div>
                 <div class="ivu-modal-wrap-apply-body">
                     <Tabs v-model="aibotTabAction" :animated="false" class="ai-tabs">
-                        <TabPane label="ChatGPT" name="openai">
-                            <div class="aibot-warp">
-                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'openai'" />
-                            </div>
-                        </TabPane>
-                        <TabPane label="Claude" name="claude">
-                            <div class="aibot-warp">
-                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'claude'" />
-                            </div>
-                        </TabPane>
-                        <TabPane label="DeepSeek" name="deepseek">
-                            <div class="aibot-warp">
-                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'deepseek'" />
-                            </div>
-                        </TabPane>
-                        <TabPane label="Gemini" name="gemini">
-                            <div class="aibot-warp">
-                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'gemini'" />
-                            </div>
-                        </TabPane>
-                        <TabPane label="Grok" name="grok">
-                            <div class="aibot-warp">
-                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'grok'" />
-                            </div>
-                        </TabPane>
-                        <TabPane label="Ollama" name="ollama">
-                            <div class="aibot-warp">
-                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'ollama'" />
-                            </div>
-                        </TabPane>
-                        <TabPane :label="$L('智谱清言')" name="zhipu">
-                            <div class="aibot-warp">
-                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'zhipu'" />
-                            </div>
-                        </TabPane>
-                        <TabPane :label="$L('通义千问')" name="qianwen">
-                            <div class="aibot-warp">
-                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'qianwen'" />
-                            </div>
-                        </TabPane>
-                        <TabPane :label="$L('文心一言')" name="wenxin">
-                            <div class="aibot-warp">
-                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'wenxin'" />
+                        <TabPane v-for="(item, key) in aibotList" :key="key" :label="item.label" :name="item.value">
+                            <div class="aibot-setting">
+                                <SystemAibot
+                                    v-if="aibotTabAction == item.value"
+                                    :type="aibotTabAction"
+                                    @on-update-setting="handleAITags" />
                             </div>
                         </TabPane>
                     </Tabs>
@@ -501,18 +464,22 @@ export default {
             this.$store.dispatch("call", {
                 url: 'system/setting/aibot',
             }).then(({data}) => {
-                for (let key in data) {
-                    const match = key.match(/^(.*?)_models$/);
-                    if (match) {
-                        const value = match[1];
-                        this.aibotList.map(h => {
-                            if (h.value == value) {
-                                h.tags = AIModelNames(data[key]).map(item => item.label);
-                            }
-                        });
-                    }
-                }
+                this.handleAITags(data);
             });
+        },
+        // 处理AI标签
+        handleAITags(data) {
+            for (let key in data) {
+                const match = key.match(/^(.*?)_models$/);
+                if (match) {
+                    const value = match[1];
+                    this.aibotList.map(h => {
+                        if (h.value == value) {
+                            h.tags = AIModelNames(data[key]).map(item => item.label);
+                        }
+                    });
+                }
+            }
         },
         // 开始聊天
         onGoToChat(type) {

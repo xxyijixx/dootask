@@ -168,6 +168,7 @@ export default {
                 if (save) {
                     $A.messageSuccess('修改成功');
                 }
+                this.$emit('on-update-setting', data);
                 this.formData = data;
                 this.formDatum_bak = $A.cloneJSON(this.formData);
             }).catch(({msg}) => {
