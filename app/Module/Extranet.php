@@ -81,7 +81,7 @@ class Extranet
             }
         }
         $res = Ihttp::ihttp_request('https://api.openai.com/v1/chat/completions', json_encode([
-            "model" => "gpt-3.5-turbo",
+            "model" => "gpt-4o-mini",
             "messages" => [
                 [
                     "role" => "system",
@@ -132,7 +132,7 @@ class Extranet
             }
         }
         $res = Ihttp::ihttp_request('https://api.openai.com/v1/chat/completions', json_encode([
-            "model" => "gpt-3.5-turbo",
+            "model" => "gpt-4o-mini",
             "messages" => [
                 [
                     "role" => "system",

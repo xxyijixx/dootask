@@ -287,6 +287,7 @@ class SystemController extends AbstractController
      * @apiParam {String} type
      * - get: 获取（默认）
      * - save: 保存设置（参数：[...]）
+     *
      * @apiSuccess {Number} ret     返回状态码（1正确、0错误）
      * @apiSuccess {String} msg     返回信息（错误描述）
      * @apiSuccess {Object} data    返回数据
@@ -320,6 +321,32 @@ class SystemController extends AbstractController
         }
         //
         return Base::retSuccess('success', $setting ?: json_decode('{}'));
+    }
+
+    /**
+     * @api {get} api/system/setting/aibot_defmodels          04. 获取AI默认模型
+     *
+     * @apiDescription 获取AI机器人默认模型
+     * @apiVersion 1.0.0
+     * @apiGroup system
+     * @apiName setting__aibot_defmodels
+     *
+     * @apiParam {String} type      AI类型
+     *
+     * @apiSuccess {Number} ret     返回状态码（1正确、0错误）
+     * @apiSuccess {String} msg     返回信息（错误描述）
+     * @apiSuccess {Object} data    返回数据
+     */
+    public function setting__aibot_defmodels()
+    {
+        $type = trim(Request::input('type'));
+        $models = Setting::AIDefaultModels($type);
+        if (empty($models)) {
+            return Base::retError('未找到默认模型');
+        }
+        return Base::retSuccess('success', [
+            'models' => $models
+        ]);
     }
 
     /**

@@ -14496,18 +14496,6 @@
         "ru": "Пожалуйста, заполните имя!"
     },
     {
-        "key": "访问OpenAI网站查看",
-        "zh": "",
-        "zh-CHT": "訪問OpenAI網站查看",
-        "en": "Visit OpenAI website to view",
-        "ko": "OpenAI 웹사이트에서 확인",
-        "ja": "OpenAIウェブサイトにアクセスして確認",
-        "de": "Besuchen Sie die OpenAI-Website, um es anzusehen",
-        "fr": "Visitez le site Web d'OpenAI pour voir",
-        "id": "Kunjungi situs web OpenAI untuk melihat",
-        "ru": "Посетите веб-сайт OpenAI для просмотра"
-    },
-    {
         "key": "使用代理",
         "zh": "",
         "zh-CHT": "使用代理",
@@ -28066,18 +28054,6 @@
         "fr": "Chemin d'URL de base pour la demande d'API, laisser vide si aucun",
         "id": "Jalur URL dasar untuk permintaan API, biarkan kosong jika tidak ada",
         "ru": "Базовый путь URL для запроса API, оставить пустым, если отсутствует"
-    },
-    {
-        "key": "访问DeepSeek网站查看",
-        "zh": "",
-        "zh-CHT": "訪問DeepSeek網站查看",
-        "en": "Visit the DeepSeek website to view",
-        "ko": "DeepSeek 웹사이트 방문하여 보기",
-        "ja": "DeepSeekのウェブサイトを訪問して確認してください",
-        "de": "Besuchen Sie die DeepSeek-Website, um zu sehen",
-        "fr": "Visitez le site Web de DeepSeek pour voir",
-        "id": "Kunjungi situs web DeepSeek untuk melihat",
-        "ru": "Посетите веб-сайт DeepSeek, чтобы просмотреть"
     },
     {
         "key": "欢迎词",

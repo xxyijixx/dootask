@@ -56,14 +56,20 @@
                     </p>
                 </div>
                 <div class="ivu-modal-wrap-apply-body">
-                    <ul class="ivu-modal-wrap-ul" v-if="aibotType == 1">
+                    <ul class="ai-list" v-if="aibotType == 1">
                         <li v-for="(item, key) in aibotList"  :key="key">
-                            <img class="apply-icon" :src="item.src">
-                            <h4>{{ item.label }}</h4>
-                            <p class="desc" @click="openDetail(item.desc)">{{ item.desc }}</p>
-                            <p class="btn" @click="onGoToChat(item.value)">{{ $L('开始聊天') }}</p>
-                            <div class="load" v-if="aibotDialogSearchLoad == item.value">
-                                <Loading />
+                            <div class="ai-img">
+                                <img :src="item.src">
+                            </div>
+                            <div class="ai-info">
+                                <h4>{{ item.label }}</h4>
+                                <p class="ai-desc" @click="openDetail(item.desc)">{{ item.desc }}</p>
+                                <ul class="ai-modal">
+                                    <li>aa</li>
+                                    <li>22</li>
+                                    <li>cc</li>
+                                </ul>
+                                <Button type="primary" :loading="aibotDialogSearchLoad == item.value" @click="onGoToChat(item.value)">{{ $L('开始聊天') }}</Button>
                             </div>
                         </li>
                     </ul>
