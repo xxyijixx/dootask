@@ -68,39 +68,39 @@
                         </li>
                     </ul>
                     <Tabs v-else v-model="aibotTabAction" class="ai-tabs">
-                        <TabPane label="ChatGPT" name="opanai">
+                        <TabPane label="ChatGPT" name="openai">
                             <div class="aibot-warp">
-                                <SystemAibot type="ChatGPT" v-if="aibotTabAction == 'opanai'" />
+                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'openai'" />
                             </div>
                         </TabPane>
                         <TabPane label="Claude" name="claude">
                             <div class="aibot-warp">
-                                <SystemAibot type="Claude" v-if="aibotTabAction == 'claude'" />
+                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'claude'" />
                             </div>
                         </TabPane>
                         <TabPane label="DeepSeek" name="deepseek">
                             <div class="aibot-warp">
-                                <SystemAibot type="DeepSeek" v-if="aibotTabAction == 'deepseek'" />
+                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'deepseek'" />
                             </div>
                         </TabPane>
                         <TabPane label="Gemini" name="gemini">
                             <div class="aibot-warp">
-                                <SystemAibot type="Gemini" v-if="aibotTabAction == 'gemini'" />
+                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'gemini'" />
                             </div>
                         </TabPane>
                         <TabPane :label="$L('智谱清言')" name="zhipu">
                             <div class="aibot-warp">
-                                <SystemAibot type="Zhipu" v-if="aibotTabAction == 'zhipu'" />
+                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'zhipu'" />
                             </div>
                         </TabPane>
                         <TabPane :label="$L('文心一言')" name="wenxin">
                             <div class="aibot-warp">
-                                <SystemAibot type="Wenxin" v-if="aibotTabAction == 'wenxin'" />
+                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'wenxin'" />
                             </div>
                         </TabPane>
                         <TabPane :label="$L('通义千问')" name="qianwen">
                             <div class="aibot-warp">
-                                <SystemAibot type="Qianwen" v-if="aibotTabAction == 'qianwen'" />
+                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'qianwen'" />
                             </div>
                         </TabPane>
                     </Tabs>
@@ -298,7 +298,7 @@ export default {
                     desc: this.$L('我是达摩院自主研发的超大规模语言模型，能够回答问题、创作文字，还能表达观点、撰写代码。')
                 },
             ],
-            aibotTabAction: "opanai",
+            aibotTabAction: "openai",
             aibotShow: false,
             aibotType: 1,
             aibotDialogSearchLoad: "",
@@ -449,7 +449,7 @@ export default {
                     break;
                 case 'robot':
                     this.aibotType = 1;
-                    this.aibotTabAction = "opanai";
+                    this.aibotTabAction = "openai";
                     this.aibotShow = true;
                     break;
                 case 'signin':
