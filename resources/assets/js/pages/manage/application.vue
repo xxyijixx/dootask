@@ -21,8 +21,7 @@
                             :sm="{ span: 6 }"
                             :lg="{ span: 6 }"
                             :xl="{ span: 6 }"
-                            :xxl="{ span: 3 }"
-                        >
+                            :xxl="{ span: 3 }">
                             <div class="apply-col">
                                 <div @click="applyClick(item)">
                                     <div class="logo">
@@ -46,26 +45,26 @@
             <Report v-if="workReportShow" v-model="workReportTabs" @on-read="$store.dispatch('getReportUnread', 1000)" />
         </DrawerOverlay>
 
-        <!--AI 列表-->
+        <!--AI-->
         <DrawerOverlay v-model="aibotShow" placement="right" :size="720">
             <div v-if="aibotShow" class="ivu-modal-wrap-apply">
                 <div class="ivu-modal-wrap-apply-title">
                     {{ $L('AI 列表') }}
                     <p @click="applyClick({value: 'robot-setting'}, 'openai')" v-if="userIsAdmin">{{$L('机器人设置')}}</p>
                 </div>
-                <div class="ivu-modal-wrap-apply-body ai-body">
-                    <ul class="ai-list">
+                <div class="ivu-modal-wrap-apply-body full-body">
+                    <ul class="ivu-modal-wrap-ul">
                         <li v-for="(item, key) in aibotList"  :key="key">
-                            <div class="ai-img">
+                            <div class="modal-item-img">
                                 <img :src="item.src">
                             </div>
-                            <div class="ai-info">
+                            <div class="modal-item-info">
                                 <h4>{{ item.label }}</h4>
-                                <p class="ai-desc" @click="openDetail(item.desc)">{{ item.desc }}</p>
-                                <ul v-if="item.tags.length > 0" class="ai-modal">
+                                <p class="modal-item-desc" @click="openDetail(item.desc)">{{ item.desc }}</p>
+                                <ul v-if="item.tags.length > 0" class="modal-item-tags">
                                     <li v-for="(tag, index) in item.tags" :key="index">{{ tag }}</li>
                                 </ul>
-                                <div class="ai-btn">
+                                <div class="modal-item-btns">
                                     <Button icon="md-chatbubbles" :loading="aibotDialogSearchLoad == item.value" @click="onGoToChat(item.value)">{{ $L('开始聊天') }}</Button>
                                     <Button v-if="userIsAdmin" icon="md-settings" @click="applyClick({value: 'robot-setting'}, item.value)">{{ $L('设置') }}</Button>
                                 </div>
@@ -136,53 +135,85 @@
         </DrawerOverlay>
 
         <!--签到-->
-        <DrawerOverlay v-model="signInShow" placement="right" :size="700">
-            <div class="ivu-modal-wrap-apply">
+        <DrawerOverlay v-model="signInShow" placement="right" :size="500">
+            <div v-if="signInShow" class="ivu-modal-wrap-apply">
                 <div class="ivu-modal-wrap-apply-title">
                     {{ $L('签到管理') }}
-                    <p @click="signInType = signInType == 1 ? 2 : 1" v-if="userIsAdmin">
-                        {{ signInType == 1 ? $L('签到设置') : $L('返回') }}
-                    </p>
+                    <p @click="signInSettingShow=true" v-if="userIsAdmin">{{ $L('签到设置') }}</p>
                 </div>
                 <div class="ivu-modal-wrap-apply-body">
-                    <Checkin v-if="signInType == 1" />
-                    <SystemCheckin v-else />
+                    <Checkin />
                 </div>
             </div>
         </DrawerOverlay>
 
-        <!-- 会议  -->
-        <DrawerOverlay v-model="meetingShow" placement="right" :size="600">
-            <div class="ivu-modal-wrap-apply">
+        <!--签到设置-->
+        <DrawerOverlay v-model="signInSettingShow" placement="right" :size="720">
+            <div v-if="signInSettingShow" class="ivu-modal-wrap-apply">
                 <div class="ivu-modal-wrap-apply-title">
-                    {{ $L('会议') }}
-                    <p @click="meetingType = meetingType == 1 ? 2 : 1">
-                        {{ meetingType == 1 ? $L('会议设置') : $L('返回') }}
-                    </p>
+                    {{ $L('签到设置') }}
+                    <p @click="signInSettingShow=false">{{ $L('返回') }}</p>
                 </div>
                 <div class="ivu-modal-wrap-apply-body">
-                    <ul class="ivu-modal-wrap-ul" v-if="meetingType == 1">
+                    <SystemCheckin/>
+                </div>
+            </div>
+        </DrawerOverlay>
+
+        <!--会议-->
+        <DrawerOverlay v-model="meetingShow" placement="right" :size="720">
+            <div v-if="meetingShow" class="ivu-modal-wrap-apply">
+                <div class="ivu-modal-wrap-apply-title">
+                    {{ $L('会议') }}
+                    <p @click="meetingSettingShow = true" v-if="userIsAdmin">{{ $L('会议设置') }}</p>
+                </div>
+                <div class="ivu-modal-wrap-apply-body full-body">
+                    <ul class="ivu-modal-wrap-ul">
                         <li>
-                            <div class="apply-icon no-dark-content meeting"></div>
-                            <h4>{{ $L('新会议') }}</h4>
-                            <p class="desc" @click="openDetail(meetingDescs.add)"> {{ meetingDescs.add }} </p>
-                            <p class="btn" @click="onMeeting('createMeeting')">{{ $L('新建会议') }}</p>
+                            <div class="modal-item-img">
+                                <div class="apply-icon no-dark-content meeting"></div>
+                            </div>
+                            <div class="modal-item-info">
+                                <h4>{{ $L('新会议') }}</h4>
+                                <p class="modal-item-desc" @click="openDetail(meetingDescs.add)"> {{ meetingDescs.add }} </p>
+                                <div class="modal-item-btns">
+                                    <Button @click="onMeeting('createMeeting')">{{ $L('新建会议') }}</Button>
+                                </div>
+                            </div>
                         </li>
                         <li>
-                            <div class="apply-icon no-dark-content meeting-join"></div>
-                            <h4>{{ $L('加入会议') }}</h4>
-                            <p class="desc" @click="openDetail(meetingDescs.join)">{{ meetingDescs.join }}</p>
-                            <p class="btn" @click="onMeeting('joinMeeting')">{{ $L('加入会议') }}</p>
+                            <div class="modal-item-img">
+                                <div class="apply-icon no-dark-content meeting-join"></div>
+                            </div>
+                            <div class="modal-item-info">
+                                <h4>{{ $L('加入会议') }}</h4>
+                                <p class="modal-item-desc" @click="openDetail(meetingDescs.join)">{{ meetingDescs.join }}</p>
+                                <div class="modal-item-btns">
+                                    <Button @click="onMeeting('joinMeeting')">{{ $L('加入会议') }}</Button>
+                                </div>
+                            </div>
                         </li>
                     </ul>
-                    <SystemMeeting v-else />
+                </div>
+            </div>
+        </DrawerOverlay>
+
+        <!--会议设置-->
+        <DrawerOverlay v-model="meetingSettingShow" placement="right" :size="600">
+            <div v-if="meetingSettingShow" class="ivu-modal-wrap-apply">
+                <div class="ivu-modal-wrap-apply-title">
+                    {{ $L('会议设置') }}
+                    <p @click="meetingSettingShow = false">{{ $L('返回') }}</p>
+                </div>
+                <div class="ivu-modal-wrap-apply-body full-body">
+                    <SystemMeeting/>
                 </div>
             </div>
         </DrawerOverlay>
 
         <!--LDAP-->
         <DrawerOverlay v-model="ldapShow" placement="right" :size="700">
-            <div class="ivu-modal-wrap-apply">
+            <div v-if="ldapShow" class="ivu-modal-wrap-apply">
                 <div class="ivu-modal-wrap-apply-title">
                     {{ $L('LDAP 设置') }}
                 </div>
@@ -194,7 +225,7 @@
 
         <!--邮件-->
         <DrawerOverlay v-model="mailShow" placement="right" :size="700">
-            <div class="ivu-modal-wrap-apply">
+            <div v-if="mailShow" class="ivu-modal-wrap-apply">
                 <div class="ivu-modal-wrap-apply-title">
                     {{ $L('邮件通知') }}
                 </div>
@@ -206,7 +237,7 @@
 
         <!--app推送-->
         <DrawerOverlay v-model="appPushShow" placement="right" :size="700">
-            <div class="ivu-modal-wrap-apply">
+            <div v-if="appPushShow" class="ivu-modal-wrap-apply">
                 <div class="ivu-modal-wrap-apply-title">
                     {{ $L('APP 推送') }}
                 </div>
@@ -289,10 +320,10 @@ export default {
             aibotDialogSearchLoad: "",
             //
             signInShow: false,
-            signInType: 1,
+            signInSettingShow: false,
             //
             meetingShow: false,
-            meetingType: 1,
+            meetingSettingShow: false,
             meetingDescs: {
                 add: this.$L('创建一个全新的会议视频会议，与会者可以在实时中进行面对面的视听交流。') + this.$L('通过视频会议平台，参与者可以分享屏幕、共享文档，并与其他与会人员进行讨论和协。'),
                 join: this.$L('加入视频会议，参与已经创建的会议，在会议过程中与其他参会人员进行远程实时视听交流和协作。'),
@@ -300,10 +331,8 @@ export default {
             //
             ldapShow: false,
             //
-            mailType: 1,
             mailShow: false,
             //
-            appPushType: 1,
             appPushShow: false,
             //
             scanLoginShow: false,
@@ -441,22 +470,18 @@ export default {
                     this.aibotSettingShow = true;
                     break;
                 case 'signin':
-                    this.signInType = 1;
                     this.signInShow = true;
                     break;
                 case 'meeting':
-                    this.meetingType = 1;
                     this.meetingShow = true;
                     break;
                 case 'ldap':
                     this.ldapShow = true;
                     break;
                 case 'mail':
-                    this.mailType = 1;
                     this.mailShow = true;
                     break;
                 case 'appPush':
-                    this.appPushType = 1;
                     this.appPushShow = true;
                     break;
                 case 'scan':
@@ -603,22 +628,6 @@ export default {
         openDetail(desc){
             $A.modalInfo({
                 content: desc,
-                onOk: () => {
-                    return new Promise((resolve, reject) => {
-                        this.$store.dispatch("call", {
-                            url: 'dialog/group/disband',
-                            data: {
-                                dialog_id: this.dialogId,
-                            }
-                        }).then(({msg}) => {
-                            resolve(msg);
-                            this.$store.dispatch("forgetDialog", this.dialogId);
-                            this.goForward({name: 'manage-messenger'});
-                        }).catch(({msg}) => {
-                            reject(msg);
-                        });
-                    })
-                },
             });
         },
         // 前往接龙与投票

@@ -241,11 +241,7 @@
     max-width: 100vw;
 
     .ivu-modal-wrap-apply-title {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        margin: 0 20px;
-        padding: 12px 10px;
+        padding: 12px 30px;
         background: #ffffff;
         color: #303133;
         font-size: 20px;
@@ -261,14 +257,14 @@
         }
 
         @media (max-width: 500px) {
+            padding: 10px 30px;
             margin-right: 28px;
         }
-
     }
 
     .ivu-modal-wrap-apply-body {
-        position: relative;
         flex: 1;
+        position: relative;
         padding: 8px 30px;
 
         .setting-item,
@@ -328,89 +324,6 @@
             list-style-type: none;
             overflow: hidden;
             border-radius: 3px;
-            margin-right: -10px;
-
-            li {
-                float: left;
-                width: calc(50% - 10px);
-                border: 1px solid #eeeeee;
-                box-sizing: border-box;
-                padding: 28px 20px;
-                position: relative;
-                text-align: center;
-                margin-right: 10px;
-                margin-bottom: 10px;
-                border-radius: 6px;
-
-                .apply-icon {
-                    display: block;
-                    width: 50px;
-                    height: 50px;
-                    border-radius: 16px;
-                    margin: 0 auto 12px;
-                }
-
-                h4 {
-                    word-break: break-all;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    font-style: normal;
-                    max-width: 100%;
-                    font-size: 16px;
-                    font-weight: 500;
-                    color: #1b1b1b;
-                    line-height: 24px;
-                    text-align: center;
-                    padding: 0 12px;
-                    margin-bottom: 6px;
-                }
-
-                p {
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    display: -webkit-box;
-                    -webkit-box-orient: vertical;
-                    -webkit-line-clamp: 4;
-                    @media (max-width: 510px) {
-                        -webkit-line-clamp: 2;
-                    }
-                    &.btn {
-                        -webkit-line-clamp: 1;
-                    }
-                }
-
-                .desc {
-                    cursor: pointer;
-                    height: 84px;
-                    @media (max-width: 510px) {
-                        height: 42px;
-                    }
-                }
-
-                .btn {
-                    color: #2b85e4;
-                    margin: 20px auto 0;
-                    cursor: pointer;
-                    padding: 5px 0;
-                }
-
-                .load {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: #9797971c;
-                    line-height: 300px;
-                }
-            }
-        }
-
-        .ai-list {
-            list-style-type: none;
-            overflow: hidden;
-            border-radius: 3px;
             padding: 10px;
             margin: -10px;
 
@@ -427,18 +340,19 @@
                     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
                 }
 
-                .ai-img {
+                .modal-item-img {
                     margin-right: 20px;
                     flex-shrink: 0;
 
-                    > img {
+                    > img,
+                    .apply-icon {
                         width: 52px;
                         height: 52px;
                         border-radius: 26px;
                     }
                 }
 
-                .ai-info {
+                .modal-item-info {
                     flex: 1;
 
                     h4 {
@@ -449,7 +363,7 @@
                         font-weight: 500;
                     }
 
-                    .ai-desc {
+                    .modal-item-desc {
                         font-size: 14px;
                         color: #666;
                         line-height: 1.6;
@@ -461,7 +375,7 @@
                         -webkit-line-clamp: 2;
                     }
 
-                    .ai-modal {
+                    .modal-item-tags {
                         display: flex;
                         flex-wrap: wrap;
                         gap: 8px;
@@ -479,7 +393,7 @@
                         }
                     }
 
-                    .ai-btn {
+                    .modal-item-btns {
                         button + button {
                             margin-left: 12px;
                         }
@@ -518,14 +432,19 @@
             }
         }
 
-        &.ai-body {
+        &.full-body {
+            height: 0;
+            overflow: auto;
+
             @media (max-width: 500px) {
                 padding: 8px 0;
-                .ai-list {
+
+                .ivu-modal-wrap-ul {
                     > li {
                         border: 0;
                         border-top: 1px solid #eeeeee;
                         border-radius: 0;
+
                         &:hover {
                             box-shadow: none;
                         }
