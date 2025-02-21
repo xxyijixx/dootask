@@ -46,17 +46,12 @@
             <Report v-if="workReportShow" v-model="workReportTabs" @on-read="$store.dispatch('getReportUnread', 1000)" />
         </DrawerOverlay>
 
-        <!--AI 机器人-->
-        <DrawerOverlay v-model="aibotShow" placement="right" :size="950">
-            <div class="ivu-modal-wrap-apply">
-                <div class="ivu-modal-wrap-apply-title">
-                    {{ $L('AI 机器人') }}
-                    <p @click="aibotType = aibotType == 1 ? 2 : 1" v-if="userIsAdmin">
-                        {{ aibotType == 1 ? $L('机器人设置') : $L('返回') }}
-                    </p>
-                </div>
-                <div class="ivu-modal-wrap-apply-body">
-                    <ul class="ai-list" v-if="aibotType == 1">
+        <!--AI 列表-->
+        <DrawerOverlay v-model="aibotShow" placement="right" :size="720">
+            <div v-if="aibotShow" class="ivu-modal-wrap-apply">
+                <div class="ivu-modal-wrap-apply-title">{{ $L('AI 列表') }}</div>
+                <div class="ivu-modal-wrap-apply-body ai-body">
+                    <ul class="ai-list">
                         <li v-for="(item, key) in aibotList"  :key="key">
                             <div class="ai-img">
                                 <img :src="item.src">
@@ -69,11 +64,23 @@
                                     <li>22</li>
                                     <li>cc</li>
                                 </ul>
-                                <Button type="primary" :loading="aibotDialogSearchLoad == item.value" @click="onGoToChat(item.value)">{{ $L('开始聊天') }}</Button>
+                                <div class="ai-btn">
+                                    <Button icon="md-chatbubbles" :loading="aibotDialogSearchLoad == item.value" @click="onGoToChat(item.value)">{{ $L('开始聊天') }}</Button>
+                                    <Button icon="md-settings" @click="applyClick({value: 'robot-setting'}, item.value)">{{ $L('设置') }}</Button>
+                                </div>
                             </div>
                         </li>
                     </ul>
-                    <Tabs v-else v-model="aibotTabAction" class="ai-tabs">
+                </div>
+            </div>
+        </DrawerOverlay>
+
+        <!--AI 设置-->
+        <DrawerOverlay v-model="aibotSettingShow" placement="right" :size="950">
+            <div v-if="aibotSettingShow" class="ivu-modal-wrap-apply">
+                <div class="ivu-modal-wrap-apply-title">{{ $L('AI 设置') }}</div>
+                <div class="ivu-modal-wrap-apply-body">
+                    <Tabs v-model="aibotTabAction" :animated="false" class="ai-tabs">
                         <TabPane label="ChatGPT" name="openai">
                             <div class="aibot-warp">
                                 <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'openai'" />
@@ -315,20 +322,20 @@ export default {
                 },
                 {
                     value: "qianwen",
-                    label: "Qianwen",
+                    label: "通义千问",
                     src: $A.mainUrl('avatar/%E9%80%9A%E4%B9%89%E5%8D%83%E9%97%AE.png'),
                     desc: this.$L('我是达摩院自主研发的超大规模语言模型，能够回答问题、创作文字，还能表达观点、撰写代码。')
                 },
                 {
                     value: "wenxin",
-                    label: "Wenxin",
+                    label: "文心一言",
                     src: $A.mainUrl('avatar/%E6%96%87%E5%BF%83.png'),
                     desc: this.$L('我是文心一言，英文名是ERNIE Bot。我能够与人对话互动，回答问题，协助创作，高效便捷地帮助人们获取信息、知识和灵感。')
                 },
             ],
-            aibotTabAction: "openai",
             aibotShow: false,
-            aibotType: 1,
+            aibotSettingShow: false,
+            aibotTabAction: "openai",
             aibotDialogSearchLoad: "",
             //
             signInShow: false,
@@ -476,9 +483,11 @@ export default {
                     this.workReportShow = true;
                     break;
                 case 'robot':
-                    this.aibotType = 1;
-                    this.aibotTabAction = "openai";
                     this.aibotShow = true;
+                    break;
+                case 'robot-setting':
+                    this.aibotTabAction = area;
+                    this.aibotSettingShow = true;
                     break;
                 case 'signin':
                     this.signInType = 1;
