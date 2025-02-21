@@ -47,7 +47,7 @@
         </DrawerOverlay>
 
         <!--AI 机器人-->
-        <DrawerOverlay v-model="aibotShow" placement="right" :size="800">
+        <DrawerOverlay v-model="aibotShow" placement="right" :size="950">
             <div class="ivu-modal-wrap-apply">
                 <div class="ivu-modal-wrap-apply-title">
                     {{ $L('AI 机器人') }}
@@ -88,19 +88,29 @@
                                 <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'gemini'" />
                             </div>
                         </TabPane>
+                        <TabPane label="Grok" name="grok">
+                            <div class="aibot-warp">
+                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'grok'" />
+                            </div>
+                        </TabPane>
+                        <TabPane label="Ollama" name="ollama">
+                            <div class="aibot-warp">
+                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'ollama'" />
+                            </div>
+                        </TabPane>
                         <TabPane :label="$L('智谱清言')" name="zhipu">
                             <div class="aibot-warp">
                                 <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'zhipu'" />
                             </div>
                         </TabPane>
-                        <TabPane :label="$L('文心一言')" name="wenxin">
-                            <div class="aibot-warp">
-                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'wenxin'" />
-                            </div>
-                        </TabPane>
                         <TabPane :label="$L('通义千问')" name="qianwen">
                             <div class="aibot-warp">
                                 <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'qianwen'" />
+                            </div>
+                        </TabPane>
+                        <TabPane :label="$L('文心一言')" name="wenxin">
+                            <div class="aibot-warp">
+                                <SystemAibot :type="aibotTabAction" v-if="aibotTabAction == 'wenxin'" />
                             </div>
                         </TabPane>
                     </Tabs>
@@ -280,22 +290,34 @@ export default {
                     desc: `${this.$L('我是由Google开发的生成式人工智能聊天机器人。')}${this.$L('它基于同名的Gemini系列大型语言模型。')}${this.$L('是应对OpenAI公司开发的ChatGPT聊天机器人的崛起而开发的。')}`
                 },
                 {
+                    value: "grok",
+                    label: "Grok",
+                    src: $A.mainUrl('images/avatar/default_grok.png'),
+                    desc: this.$L('Grok是由xAI开发的生成式人工智能聊天机器人，旨在通过实时回答用户问题来提供帮助。')
+                },
+                {
+                    value: "ollama",
+                    label: "Ollama",
+                    src: $A.mainUrl('images/avatar/default_ollama.png'),
+                    desc: this.$L('Ollama 是一个轻量级、可扩展的框架，旨在让用户能够在本地机器上构建和运行大型语言模型。')
+                },
+                {
                     value: "zhipu",
                     label: "Zhipu",
                     src: $A.mainUrl('images/avatar/default_zhipu.png'),
                     desc: `${this.$L('我是智谱清言，是智谱 AI 公司于2023训练的语言模型。')}${this.$L('我的任务是针对用户的问题和要求提供适当的答复和支持。')}`
                 },
                 {
-                    value: "wenxin",
-                    label: "Wenxin",
-                    src: $A.mainUrl('avatar/%E6%96%87%E5%BF%83.png'),
-                    desc: this.$L('我是文心一言，英文名是ERNIE Bot。我能够与人对话互动，回答问题，协助创作，高效便捷地帮助人们获取信息、知识和灵感。')
-                },
-                {
                     value: "qianwen",
                     label: "Qianwen",
                     src: $A.mainUrl('avatar/%E9%80%9A%E4%B9%89%E5%8D%83%E9%97%AE.png'),
                     desc: this.$L('我是达摩院自主研发的超大规模语言模型，能够回答问题、创作文字，还能表达观点、撰写代码。')
+                },
+                {
+                    value: "wenxin",
+                    label: "Wenxin",
+                    src: $A.mainUrl('avatar/%E6%96%87%E5%BF%83.png'),
+                    desc: this.$L('我是文心一言，英文名是ERNIE Bot。我能够与人对话互动，回答问题，协助创作，高效便捷地帮助人们获取信息、知识和灵感。')
                 },
             ],
             aibotTabAction: "openai",

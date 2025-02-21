@@ -65,7 +65,7 @@ class Setting extends AbstractModel
                     $value['claude_key'] = $value['claude_token'];
                 }
                 $array = [];
-                $aiList = ['openai', 'claude', 'deepseek', 'gemini', 'zhipu', 'qianwen', 'wenxin'];
+                $aiList = ['openai', 'claude', 'deepseek', 'gemini', 'grok', 'ollama', 'zhipu', 'qianwen', 'wenxin'];
                 $fieldList = ['key', 'models', 'model', 'base_url', 'agency', 'temperature', 'system', 'secret'];
                 foreach ($aiList as $aiName) {
                     foreach ($fieldList as $fieldName) {
@@ -148,27 +148,6 @@ class Setting extends AbstractModel
                 'deepseek-chat: DeepSeek V3',
                 'deepseek-reasoner: DeepSeek R1'
             ],
-            'wenxin' => [
-                'ernie-4.0-8k: Ernie 4.0 8K',
-                'ernie-4.0-8k-latest: Ernie 4.0 8K Latest',
-                'ernie-4.0-turbo-128k: Ernie 4.0 Turbo 128K',
-                'ernie-4.0-turbo-8k: Ernie 4.0 Turbo 8K',
-                'ernie-3.5-128k: Ernie 3.5 128K',
-                'ernie-3.5-8k: Ernie 3.5 8K',
-                'ernie-speed-128k: Ernie Speed 128K',
-                'ernie-speed-8k: Ernie Speed 8K',
-                'ernie-lite-8k: Ernie Lite 8K',
-                'ernie-tiny-8k: Ernie Tiny 8K'
-            ],
-            'qianwen' => [
-                'qwen-max: QWEN Max',
-                'qwen-max-latest: QWEN Max Latest',
-                'qwen-turbo: QWEN Turbo',
-                'qwen-turbo-latest: QWEN Turbo Latest',
-                'qwen-plus: QWEN Plus',
-                'qwen-plus-latest: QWEN Plus Latest',
-                'qwen-long: QWEN Long'
-            ],
             'gemini' => [
                 'gemini-2.0-flash: Gemini 2.0 Flash',
                 'gemini-2.0-flash-lite-preview-02-05: Gemini 2.0 Flash-Lite Preview',
@@ -176,6 +155,16 @@ class Setting extends AbstractModel
                 'gemini-1.5-flash-8b: Gemini 1.5 Flash 8B',
                 'gemini-1.5-pro: Gemini 1.5 Pro',
                 'gemini-1.0-pro: Gemini 1.0 Pro'
+            ],
+            'grok' => [
+                'grok-2-vision-1212: Grok 2 Vision 1212',
+                'grok-2-vision: Grok 2 Vision',
+                'grok-2-vision-latest: Grok 2 Vision Latest',
+                'grok-2-1212: Grok 2 1212',
+                'grok-2: Grok 2',
+                'grok-2-latest: Grok 2 Latest',
+                'grok-vision-beta: Grok Vision Beta',
+                'grok-beta: Grok Beta',
             ],
             'zhipu' => [
                 'glm-4: GLM-4',
@@ -187,6 +176,27 @@ class Setting extends AbstractModel
                 'glm-4v: GLM-4V',
                 'glm-4v-plus: GLM-4V Plus',
                 'glm-3-turbo: GLM-3 Turbo'
+            ],
+            'qianwen' => [
+                'qwen-max: QWEN Max',
+                'qwen-max-latest: QWEN Max Latest',
+                'qwen-turbo: QWEN Turbo',
+                'qwen-turbo-latest: QWEN Turbo Latest',
+                'qwen-plus: QWEN Plus',
+                'qwen-plus-latest: QWEN Plus Latest',
+                'qwen-long: QWEN Long'
+            ],
+            'wenxin' => [
+                'ernie-4.0-8k: Ernie 4.0 8K',
+                'ernie-4.0-8k-latest: Ernie 4.0 8K Latest',
+                'ernie-4.0-turbo-128k: Ernie 4.0 Turbo 128K',
+                'ernie-4.0-turbo-8k: Ernie 4.0 Turbo 8K',
+                'ernie-3.5-128k: Ernie 3.5 128K',
+                'ernie-3.5-8k: Ernie 3.5 8K',
+                'ernie-speed-128k: Ernie Speed 128K',
+                'ernie-speed-8k: Ernie Speed 8K',
+                'ernie-lite-8k: Ernie Lite 8K',
+                'ernie-tiny-8k: Ernie Tiny 8K'
             ],
             default => [],
         };

@@ -175,6 +175,32 @@ export default {
                             }
                         ]
                     },
+                    grok: {
+                        extraFields: [
+                            {
+                                prop: "key",
+                                placeholder: "Grok API Key",
+                                link: "https://docs.x.ai/docs/tutorial"
+                            },
+                            {
+                                prop: "models",
+                                link: "https://docs.x.ai/docs/models"
+                            }
+                        ]
+                    },
+                    ollama: {
+                        extraFields: [
+                            {
+                                prop: "key",
+                                placeholder: "Ollama API Key",
+                            },
+                            {
+                                prop: "models",
+                                link: "https://ollama.com/models",
+                                functions: null,
+                            }
+                        ]
+                    },
                     zhipu: {
                         extraFields: [
                             {
@@ -341,6 +367,7 @@ export default {
                     spinner: 600,
                 }).then(({data}) => {
                     this.formData[prop] = data.models.join('\n');
+                    $A.messageSuccess('获取成功');
                 }).catch(({msg}) => {
                     $A.modalError(msg || '获取失败');
                 });
