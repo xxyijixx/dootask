@@ -443,6 +443,9 @@ class BotReceiveMsgTask extends AbstractTask
             if ($type === 'wenxin') {
                 $extras['api_key'] .= ':' . $setting['wenxin_secret'];
             }
+            if ($type === 'ollama' && empty($extras['api_key'])) {
+                $extras['api_key'] = Base::strRandom(6);
+            }
             if (empty($extras['api_key'])) {
                 $errorContent = '机器人未启用。';
             }

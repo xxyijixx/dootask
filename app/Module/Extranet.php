@@ -160,6 +160,35 @@ class Extranet
     }
 
     /**
+     * 获取 ollama 模型
+     * @param $baseUrl
+     * @return array
+     */
+    public static function ollamaModels($baseUrl)
+    {
+        $res = Ihttp::ihttp_request($baseUrl . '/api/tags', [], [], 15);
+        if (Base::isError($res)) {
+            return Base::retError("获取失败", $res);
+        }
+        $resData = Base::json2array($res['data']);
+        if (empty($resData['models'])) {
+            return Base::retError("获取失败", $resData);
+        }
+        $models = [];
+        foreach ($resData['models'] as $model) {
+            if ($model['name'] !== $model['model']) {
+                $models[] = "{$model['model']} | {$model['name']}";
+            } else {
+                $models[] = $model['model'];
+            }
+        }
+        return Base::retSuccess("success", [
+            'models' => $models,
+            'original' => $resData['models']
+        ]);
+    }
+
+    /**
      * 获取IP地址经纬度
      * @param string $ip
      * @return array

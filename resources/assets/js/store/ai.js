@@ -200,11 +200,17 @@ const AISystemConfig = {
                 {
                     prop: "key",
                     placeholder: "Ollama API Key",
+                    tip: "如果没有请留空",
                 },
                 {
                     prop: "models",
                     link: "https://ollama.com/models",
-                    functions: null,
+                    functions: "获取本地模型列表",
+                },
+                {
+                    prop: "base_url",
+                    placeholder: "Enter base URL...",
+                    tip: "API请求的URL路径",
                 }
             ]
         },

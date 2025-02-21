@@ -182,8 +182,17 @@ export default {
 
         functionClick(prop) {
             if (prop === `${this.type}_models`) {
+                const data = {};
+                if (this.type === 'ollama') {
+                    if (!this.formData[`${this.type}_base_url`]) {
+                        $A.modalError('请先填写 Base URL');
+                        return;
+                    }
+                    data.base_url = this.formData[`${this.type}_base_url`];
+                }
                 this.$store.dispatch("call", {
                     url: 'system/setting/aibot_defmodels?type=' + this.type,
+                    data,
                     spinner: 600,
                 }).then(({data}) => {
                     this.formData[prop] = data.models.join('\n');
