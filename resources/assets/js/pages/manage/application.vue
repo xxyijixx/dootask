@@ -49,7 +49,10 @@
         <!--AI 列表-->
         <DrawerOverlay v-model="aibotShow" placement="right" :size="720">
             <div v-if="aibotShow" class="ivu-modal-wrap-apply">
-                <div class="ivu-modal-wrap-apply-title">{{ $L('AI 列表') }}</div>
+                <div class="ivu-modal-wrap-apply-title">
+                    {{ $L('AI 列表') }}
+                    <p @click="applyClick({value: 'robot-setting'}, 'openai')" v-if="userIsAdmin">{{$L('机器人设置')}}</p>
+                </div>
                 <div class="ivu-modal-wrap-apply-body ai-body">
                     <ul class="ai-list">
                         <li v-for="(item, key) in aibotList"  :key="key">
@@ -59,14 +62,12 @@
                             <div class="ai-info">
                                 <h4>{{ item.label }}</h4>
                                 <p class="ai-desc" @click="openDetail(item.desc)">{{ item.desc }}</p>
-                                <ul class="ai-modal">
-                                    <li>aa</li>
-                                    <li>22</li>
-                                    <li>cc</li>
+                                <ul v-if="item.tags.length > 0" class="ai-modal">
+                                    <li v-for="(tag, index) in item.tags" :key="index">{{ tag }}</li>
                                 </ul>
                                 <div class="ai-btn">
                                     <Button icon="md-chatbubbles" :loading="aibotDialogSearchLoad == item.value" @click="onGoToChat(item.value)">{{ $L('开始聊天') }}</Button>
-                                    <Button icon="md-settings" @click="applyClick({value: 'robot-setting'}, item.value)">{{ $L('设置') }}</Button>
+                                    <Button v-if="userIsAdmin" icon="md-settings" @click="applyClick({value: 'robot-setting'}, item.value)">{{ $L('设置') }}</Button>
                                 </div>
                             </div>
                         </li>
@@ -78,7 +79,10 @@
         <!--AI 设置-->
         <DrawerOverlay v-model="aibotSettingShow" placement="right" :size="950">
             <div v-if="aibotSettingShow" class="ivu-modal-wrap-apply">
-                <div class="ivu-modal-wrap-apply-title">{{ $L('AI 设置') }}</div>
+                <div class="ivu-modal-wrap-apply-title">
+                    {{ $L('AI 设置') }}
+                    <p @click="aibotSettingShow=false">{{$L('返回')}}</p>
+                </div>
                 <div class="ivu-modal-wrap-apply-body">
                     <Tabs v-model="aibotTabAction" :animated="false" class="ai-tabs">
                         <TabPane label="ChatGPT" name="openai">
@@ -255,6 +259,7 @@ import SystemThirdAccess from "./setting/components/SystemThirdAccess";
 import SystemEmailSetting from "./setting/components/SystemEmailSetting";
 import SystemAppPush from "./setting/components/SystemAppPush";
 import emitter from "../../store/events";
+import {AIBotList, AIModelNames} from "../../store/ai";
 
 export default {
     components: {
@@ -277,62 +282,7 @@ export default {
             workReportShow: false,
             workReportTabs: "my",
             //
-            aibotList: [
-                {
-                    value: "openai",
-                    label: "ChatGPT",
-                    src: $A.mainUrl('images/avatar/default_openai.png'),
-                    desc: this.$L('我是一个人工智能助手，为用户提供问题解答和指导。我没有具体的身份，只是一个程序。您有什么问题可以问我哦？')
-                },
-                {
-                    value: "claude",
-                    label: "Claude",
-                    src: $A.mainUrl('images/avatar/default_claude.png'),
-                    desc: this.$L('我是Claude,一个由Anthropic公司创造出来的AI助手机器人。我的工作是帮助人类,与人对话并给出解答。')
-                },
-                {
-                    value: "deepseek",
-                    label: "DeepSeek",
-                    src: $A.mainUrl('images/avatar/default_deepseek.png'),
-                    desc: this.$L('DeepSeek大语言模型算法是北京深度求索人工智能基础技术研究有限公司推出的深度合成服务算法。')
-                },
-                {
-                    value: "gemini",
-                    label: "Gemini",
-                    src: $A.mainUrl('images/avatar/default_gemini.png'),
-                    desc: `${this.$L('我是由Google开发的生成式人工智能聊天机器人。')}${this.$L('它基于同名的Gemini系列大型语言模型。')}${this.$L('是应对OpenAI公司开发的ChatGPT聊天机器人的崛起而开发的。')}`
-                },
-                {
-                    value: "grok",
-                    label: "Grok",
-                    src: $A.mainUrl('images/avatar/default_grok.png'),
-                    desc: this.$L('Grok是由xAI开发的生成式人工智能聊天机器人，旨在通过实时回答用户问题来提供帮助。')
-                },
-                {
-                    value: "ollama",
-                    label: "Ollama",
-                    src: $A.mainUrl('images/avatar/default_ollama.png'),
-                    desc: this.$L('Ollama 是一个轻量级、可扩展的框架，旨在让用户能够在本地机器上构建和运行大型语言模型。')
-                },
-                {
-                    value: "zhipu",
-                    label: "Zhipu",
-                    src: $A.mainUrl('images/avatar/default_zhipu.png'),
-                    desc: `${this.$L('我是智谱清言，是智谱 AI 公司于2023训练的语言模型。')}${this.$L('我的任务是针对用户的问题和要求提供适当的答复和支持。')}`
-                },
-                {
-                    value: "qianwen",
-                    label: "通义千问",
-                    src: $A.mainUrl('avatar/%E9%80%9A%E4%B9%89%E5%8D%83%E9%97%AE.png'),
-                    desc: this.$L('我是达摩院自主研发的超大规模语言模型，能够回答问题、创作文字，还能表达观点、撰写代码。')
-                },
-                {
-                    value: "wenxin",
-                    label: "文心一言",
-                    src: $A.mainUrl('avatar/%E6%96%87%E5%BF%83.png'),
-                    desc: this.$L('我是文心一言，英文名是ERNIE Bot。我能够与人对话互动，回答问题，协助创作，高效便捷地帮助人们获取信息、知识和灵感。')
-                },
-            ],
+            aibotList: AIBotList,
             aibotShow: false,
             aibotSettingShow: false,
             aibotTabAction: "openai",
@@ -483,6 +433,7 @@ export default {
                     this.workReportShow = true;
                     break;
                 case 'robot':
+                    this.getAITags();
                     this.aibotShow = true;
                     break;
                 case 'robot-setting':
@@ -519,6 +470,24 @@ export default {
                     return;
             }
             this.$emit("on-click", item.value)
+        },
+        // 获取AI标签
+        getAITags() {
+            this.$store.dispatch("call", {
+                url: 'system/setting/aibot',
+            }).then(({data}) => {
+                for (let key in data) {
+                    const match = key.match(/^(.*?)_models$/);
+                    if (match) {
+                        const value = match[1];
+                        this.aibotList.map(h => {
+                            if (h.value == value) {
+                                h.tags = AIModelNames(data[key]).map(item => item.label);
+                            }
+                        });
+                    }
+                }
+            });
         },
         // 开始聊天
         onGoToChat(type) {
