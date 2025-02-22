@@ -452,13 +452,10 @@ class BotReceiveMsgTask extends AbstractTask
             if (in_array($this->client['platform'], ['win', 'mac', 'web']) && !Base::judgeClientVersion("0.41.11", $this->client['version'])) {
                 $errorContent = '当前客户端版本低（所需版本≥v0.41.11）。';
             }
-            $attachments = Cache::get("bot:{$msg->id}:attachments");
-            if ($attachments) {
-                $command = <<<EOF
-                    原始问题：{$command}
-
-                    {$attachments}
-                    EOF;
+            $attachments = Base::json2array(Cache::get("bot:{$msg->id}:attachments"));
+            foreach ($attachments as $attachment) {
+                $command = str_replace($attachment['search'], $attachment['replace'], $command);
+                $command .= "\n\n" . $attachment['context'];
             }
 
             if ($msg->reply_id > 0) {
@@ -469,11 +466,11 @@ class BotReceiveMsgTask extends AbstractTask
                     if ($replyCommand) {
                         $replyCommand = Base::cutStr($replyCommand, 2000);
                         $replyCommand = <<<EOF
-                            <quoted>
+                            <quoted_content>
                             {$replyCommand}
-                            </quoted>
+                            </quoted_content>
 
-                            上述 quoted 标签内的内容为引用。
+                            The content within the above quoted_content tags is a citation.
 
                             EOF;
                     }
@@ -586,24 +583,23 @@ class BotReceiveMsgTask extends AbstractTask
                 foreach ($taskIds as $index => $taskId) {
                     $taskInfo = ProjectTask::with(['content'])->whereId($taskId)->first();
                     if ($taskInfo) {
+                        $taskName = addslashes($taskInfo->name) . " (ID:{$taskId})";
                         $taskContext = implode("\n", $taskInfo->AIContext());
-                        $attachments[] = <<<EOF
-                            任务【{$taskInfo->name}】
-                            {$taskContext}
-                            EOF;
                     } else {
-                        $attachments[] = <<<EOF
-                            任务【{$match[2][$index]}】
-                            任务状态：不存在或已删除
-                            EOF;
+                        $taskName = addslashes($match[2][$index]) . " (ID:{$taskId})";
+                        $taskContext = "任务状态：不存在或已删除";
                     }
-                }
-                if ($attachments) {
-                    array_unshift($attachments, "相关任务信息：");
+                    $replName = "'{$taskName}'";
+                    $attachments[] = [
+                        'search' => $replName,
+                        'replace' => "{$replName} (see below for task_content tag)",
+                        'context' => "<task_content path=\"{$taskName}\">\n{$taskContext}\n</task_content>",
+                    ];
+                    $original = str_replace($match[0][$index], $replName, $original);
                 }
             }
             if ($attachments) {
-                Cache::put("bot:{$msg->id}:attachments", implode("\n\n", $attachments), 60);
+                Cache::put("bot:{$msg->id}:attachments", Base::array2json($attachments), 60);
             }
             $command = trim(strip_tags($original));
         }
@@ -666,12 +662,13 @@ class BotReceiveMsgTask extends AbstractTask
                     case 'task':
                         $taskInfo = ProjectTask::with(['content'])->whereDialogId($dialog->id)->first();
                         if ($taskInfo) {
-                            $taskText = "当前我在任务【{$taskInfo->name}】中";
+                            $taskName = addslashes($taskInfo->name) . " (ID:{$taskInfo->id})";
                             $taskContext = implode("\n", $taskInfo->AIContext());
                             if ($taskContext) {
-                                $taskText .= "\n{$taskContext}";
+                                $before_text[] = "当前我在任务 '{$taskName}' (see below for task_content tag) 对话中\n\n<task_content path=\"{$taskName}\">\n{$taskContext}\n</task_content>";
+                            } else {
+                                $before_text[] = "当前我在任务 '{$taskName}' 对话中";
                             }
-                            $before_text[] = $taskText;
                             $before_text[] = <<<EOF
                                 如果你判断我想要添加子任务，请按照以下格式回复：
 
