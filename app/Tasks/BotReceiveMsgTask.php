@@ -12,9 +12,9 @@ use App\Models\WebSocketDialogMsg;
 use App\Module\Base;
 use App\Module\Doo;
 use App\Module\Ihttp;
+use Cache;
 use Carbon\Carbon;
 use DB;
-use League\HTMLToMarkdown\HtmlConverter;
 
 @error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
@@ -452,13 +452,30 @@ class BotReceiveMsgTask extends AbstractTask
             if (in_array($this->client['platform'], ['win', 'mac', 'web']) && !Base::judgeClientVersion("0.41.11", $this->client['version'])) {
                 $errorContent = '当前客户端版本低（所需版本≥v0.41.11）。';
             }
+            $attachments = Cache::get("bot:{$msg->id}:attachments");
+            if ($attachments) {
+                $command = <<<EOF
+                    原始问题：{$command}
+
+                    {$attachments}
+                    EOF;
+            }
+
             if ($msg->reply_id > 0) {
                 $replyMsg = WebSocketDialogMsg::find($msg->reply_id);
                 $replyCommand = '';
                 if ($replyMsg) {
                     $replyCommand = $this->extractCommand($replyMsg);
                     if ($replyCommand) {
-                        $replyCommand = "<quoted>" . Base::cutStr($replyCommand, 2000) . "</quoted>\n\nThe content within the above <quoted> tags is a citation.\n\n";
+                        $replyCommand = Base::cutStr($replyCommand, 2000);
+                        $replyCommand = <<<EOF
+                            <quoted>
+                            {$replyCommand}
+                            </quoted>
+
+                            上述 quoted 标签内的内容为引用。
+
+                            EOF;
                     }
                 }
                 $command = $replyCommand . $command;
@@ -563,6 +580,31 @@ class BotReceiveMsgTask extends AbstractTask
                 $command = ":" . substr($command, 4);
             }
         } else {
+            $attachments = [];
+            if (preg_match_all("/<span class=\"mention task\" data-id=\"(\d+)\">(.*?)<\/span>/", $original, $match)) {
+                $taskIds = Base::newIntval($match[1]);
+                foreach ($taskIds as $index => $taskId) {
+                    $taskInfo = ProjectTask::with(['content'])->whereId($taskId)->first();
+                    if ($taskInfo) {
+                        $taskContext = implode("\n", $taskInfo->AIContext());
+                        $attachments[] = <<<EOF
+                            任务【{$taskInfo->name}】
+                            {$taskContext}
+                            EOF;
+                    } else {
+                        $attachments[] = <<<EOF
+                            任务【{$match[2][$index]}】
+                            任务状态：不存在或已删除
+                            EOF;
+                    }
+                }
+                if ($attachments) {
+                    array_unshift($attachments, "相关任务信息：");
+                }
+            }
+            if ($attachments) {
+                Cache::put("bot:{$msg->id}:attachments", implode("\n\n", $attachments), 60);
+            }
             $command = trim(strip_tags($original));
         }
         if (empty($command)) {
@@ -625,45 +667,11 @@ class BotReceiveMsgTask extends AbstractTask
                         $taskInfo = ProjectTask::with(['content'])->whereDialogId($dialog->id)->first();
                         if ($taskInfo) {
                             $taskText = "当前我在任务【{$taskInfo->name}】中";
-                            if ($taskInfo->archived_at) {
-                                $taskText .= "，此任务已经归档";
-                            } elseif ($taskInfo->complete_at) {
-                                $taskText .= "，此任务已经完成";
-                            } elseif ($taskInfo->end_at && Carbon::parse($taskInfo->end_at)->lt(Carbon::now())) {
-                                $taskText .= "，此任务已经过期";
+                            $taskContext = implode("\n", $taskInfo->AIContext());
+                            if ($taskContext) {
+                                $taskText .= "\n{$taskContext}";
                             }
                             $before_text[] = $taskText;
-                            if ($taskInfo->content) {
-                                $taskDesc = $taskInfo->content?->getContentInfo();
-                                if ($taskDesc) {
-                                    $converter = new HtmlConverter(['strip_tags' => true]);
-                                    $descContent = Base::cutStr($converter->convert($taskDesc['content']), 2000);
-                                    $before_text[] = <<<EOF
-                                        任务描述：
-                                        ```md
-                                        {$descContent}
-                                        ```
-                                        EOF;
-                                }
-                            }
-                            $subTask = ProjectTask::select(['id', 'name', 'complete_at', 'end_at'])->whereParentId($taskInfo->id)->get();
-                            if ($subTask->isNotEmpty()) {
-                                $subTaskContent = $subTask->map(function($item) {
-                                    $status = "";
-                                    if ($item->complete_at) {
-                                        $status = " （已完成）";
-                                    } elseif ($item->end_at && Carbon::parse($item->end_at)->lt(Carbon::now())) {
-                                        $status = " （已过期）";
-                                    }
-                                    return "  - {$item->name} {$status}";
-                                })->join("\n");
-                                if ($subTaskContent) {
-                                    $before_text[] = <<<EOF
-                                        子任务列表：
-                                        {$subTaskContent}
-                                        EOF;
-                                }
-                            }
                             $before_text[] = <<<EOF
                                 如果你判断我想要添加子任务，请按照以下格式回复：
 
