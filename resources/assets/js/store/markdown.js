@@ -68,6 +68,11 @@ const MarkdownPluginUtils = {
         return value;
     },
 
+    // 清除空推理
+    clearEmptyReasoning(text) {
+        return text.replace(/:::\s*reasoning\s*[\r\n]*\s*:::/g, '');
+    },
+
     // 修改初始化插件函数（推理）
     initReasoningPlugin(md) {
         md.block.ruler.before('fence', 'reasoning', (state, startLine, endLine, silent) => {
@@ -271,7 +276,9 @@ export function MarkdownConver(text) {
         MarkdownPluginUtils.initReasoningPlugin(MarkdownUtils.mdi);
         MarkdownPluginUtils.initCreateTaskPlugin(MarkdownUtils.mdi);
     }
-    return MarkdownUtils.formatMsg(MarkdownUtils.mdi.render(text))
+    text = MarkdownPluginUtils.clearEmptyReasoning(text);
+    text = MarkdownUtils.mdi.render(text);
+    return MarkdownUtils.formatMsg(text)
 }
 
 export function MarkdownPreview(text) {
@@ -280,6 +287,7 @@ export function MarkdownPreview(text) {
         MarkdownPluginUtils.initReasoningPlugin(MarkdownUtils.mds);
         MarkdownPluginUtils.initCreateTaskPlugin(MarkdownUtils.mds);
     }
+    text = MarkdownPluginUtils.clearEmptyReasoning(text);
     return MarkdownUtils.mds.render(text)
 }
 

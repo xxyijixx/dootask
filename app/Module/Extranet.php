@@ -166,7 +166,7 @@ class Extranet
             $extra['CURLOPT_PROXY'] = $agency;
             $extra['CURLOPT_PROXYTYPE'] = str_contains($agency, 'socks') ? CURLPROXY_SOCKS5 : CURLPROXY_HTTP;
         }
-        $res = Ihttp::ihttp_request($baseUrl . '/api/tags', [], $extra, 15);
+        $res = Ihttp::ihttp_request(rtrim($baseUrl, '/') . '/api/tags', [], $extra, 15);
         if (Base::isError($res)) {
             return Base::retError("获取失败", $res);
         }

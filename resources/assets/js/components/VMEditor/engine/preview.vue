@@ -1,6 +1,6 @@
 <template>
     <div class="vmpreview-wrapper" @click="handleClick">
-        <v-md-preview :text="value"/>
+        <v-md-preview :text="previewContent"/>
     </div>
 </template>
 
@@ -68,6 +68,12 @@ export default {
                 MarkdownPluginUtils.initReasoningPlugin(md);
             },
         });
+    },
+
+    computed: {
+        previewContent({value}) {
+            return MarkdownPluginUtils.clearEmptyReasoning(value);
+        }
     },
 
     methods: {

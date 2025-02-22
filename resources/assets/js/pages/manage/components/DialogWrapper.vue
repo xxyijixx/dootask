@@ -1167,8 +1167,7 @@ export default {
             return dialogData.dialog_user && dialogData.dialog_user.userid == dialogData.bot && userIsAdmin
         },
 
-        isAiBot() {
-            const {dialogData} = this;
+        isAiBot({dialogData}) {
             if (!dialogData.bot || dialogData.type !== 'user') {
                 return false
             }

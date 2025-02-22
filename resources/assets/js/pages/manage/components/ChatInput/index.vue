@@ -89,34 +89,36 @@
                         <ETooltip slot="reference" ref="moreTip" :disabled="$isEEUiApp || windowTouch || showMore" placement="top" :enterable="false" :content="$L('展开')">
                             <i class="taskfont">&#xe790;</i>
                         </ETooltip>
-                        <div v-if="recordReady" class="chat-input-popover-item" @click="onToolbar('meeting')">
-                            <i class="taskfont">&#xe7c1;</i>
-                            {{$L('新会议')}}
-                        </div>
-                        <div v-if="canCall" class="chat-input-popover-item" @click="onToolbar('call')">
-                            <i class="taskfont">&#xe7ba;</i>
-                            {{$L('拨打电话')}}
-                        </div>
-                        <div class="chat-input-popover-item" @click="onToolbar('image')">
-                            <i class="taskfont">&#xe7bc;</i>
-                            {{$L('发送图片')}}
-                        </div>
-                        <div class="chat-input-popover-item" @click="onToolbar('file')">
-                            <i class="taskfont">&#xe7c0;</i>
-                            {{$L('上传文件')}}
-                        </div>
-                        <div v-if="canAnon" class="chat-input-popover-item" @click="onToolbar('anon')">
-                            <i class="taskfont">&#xe690;</i>
-                            {{$L('匿名消息')}}
-                        </div>
-                        <div v-if="dialogData.type == 'group'" class="chat-input-popover-item" @click="onToolbar('word-chain')">
-                            <i class="taskfont">&#xe80a;</i>
-                            {{$L('发起接龙')}}
-                        </div>
-                        <div v-if="dialogData.type == 'group'" class="chat-input-popover-item" @click="onToolbar('vote')">
-                            <i class="taskfont">&#xe7fd;</i>
-                            {{$L('发起投票')}}
-                        </div>
+                        <template v-if="!isAiBot">
+                            <div v-if="recordReady" class="chat-input-popover-item" @click="onToolbar('meeting')">
+                                <i class="taskfont">&#xe7c1;</i>
+                                {{$L('新会议')}}
+                            </div>
+                            <div v-if="canCall" class="chat-input-popover-item" @click="onToolbar('call')">
+                                <i class="taskfont">&#xe7ba;</i>
+                                {{$L('拨打电话')}}
+                            </div>
+                            <div class="chat-input-popover-item" @click="onToolbar('image')">
+                                <i class="taskfont">&#xe7bc;</i>
+                                {{$L('发送图片')}}
+                            </div>
+                            <div class="chat-input-popover-item" @click="onToolbar('file')">
+                                <i class="taskfont">&#xe7c0;</i>
+                                {{$L('上传文件')}}
+                            </div>
+                            <div v-if="canAnon" class="chat-input-popover-item" @click="onToolbar('anon')">
+                                <i class="taskfont">&#xe690;</i>
+                                {{$L('匿名消息')}}
+                            </div>
+                            <div v-if="dialogData.type == 'group'" class="chat-input-popover-item" @click="onToolbar('word-chain')">
+                                <i class="taskfont">&#xe80a;</i>
+                                {{$L('发起接龙')}}
+                            </div>
+                            <div v-if="dialogData.type == 'group'" class="chat-input-popover-item" @click="onToolbar('vote')">
+                                <i class="taskfont">&#xe7fd;</i>
+                                {{$L('发起投票')}}
+                            </div>
+                        </template>
                         <div class="chat-input-popover-item" @click="onToolbar('full')">
                             <i class="taskfont">&#xe6a7;</i>
                             {{$L('全屏输入')}}
@@ -476,6 +478,13 @@ export default {
             } else {
                 return cacheKeyboard.send_button_desktop === 'enter';
             }
+        },
+
+        isAiBot({dialogData}) {
+            if (!dialogData.bot || dialogData.type !== 'user') {
+                return false
+            }
+            return /^ai-(.*?)@bot\.system/.test(dialogData.email)
         },
 
         canCall() {
