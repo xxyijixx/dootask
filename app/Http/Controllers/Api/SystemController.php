@@ -344,7 +344,7 @@ class SystemController extends AbstractController
         $baseUrl = trim(Request::input('base_url'));
         if ($type == 'ollama') {
             if (empty($baseUrl)) {
-                return Base::retError('请填写基础URL');
+                return Base::retError('请先填写 Base URL');
             }
             return Extranet::ollamaModels($baseUrl);
         }
