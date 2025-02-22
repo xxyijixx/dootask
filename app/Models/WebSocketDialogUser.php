@@ -8,6 +8,7 @@ namespace App\Models;
  * @property int $id
  * @property int|null $dialog_id 对话ID
  * @property int|null $userid 会员ID
+ * @property int|null $bot 是否机器人
  * @property \Illuminate\Support\Carbon|null $top_at 置顶时间
  * @property \Illuminate\Support\Carbon|null $last_at 最后消息时间
  * @property int|null $mark_unread 是否标记为未读：0否，1是
@@ -28,6 +29,7 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogUser query()
  * @method static \Illuminate\Database\Eloquent\Builder|AbstractModel remove()
  * @method static \Illuminate\Database\Eloquent\Builder|AbstractModel saveOrIgnore()
+ * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogUser whereBot($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogUser whereColor($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogUser whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WebSocketDialogUser whereDialogId($value)

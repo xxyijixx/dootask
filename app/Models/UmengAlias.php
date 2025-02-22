@@ -32,13 +32,13 @@ use Hedeqiang\UMeng\IOS;
  * @method static \Illuminate\Database\Eloquent\Builder|UmengAlias whereAlias($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UmengAlias whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UmengAlias whereDevice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UmengAlias whereVersion($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UmengAlias whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UmengAlias whereIsNotified($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UmengAlias wherePlatform($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UmengAlias whereUa($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UmengAlias whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UmengAlias whereUserid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UmengAlias whereVersion($value)
  * @mixin \Eloquent
  */
 class UmengAlias extends AbstractModel

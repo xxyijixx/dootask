@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $id
  * @property int|null $dialog_id 对话ID
  * @property string|null $dialog_type 对话类型
+ * @property int|null $session_id 会话ID
  * @property int|null $userid 发送会员ID
  * @property string|null $type 消息类型
  * @property string|null $mtype 消息类型（用于搜索）
@@ -27,7 +28,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $read 已阅数量
  * @property int|null $send 发送数量
  * @property int|null $tag 标注会员ID
- * @property int|null $session_id 会话ID
  * @property int|null $todo 设为待办会员ID
  * @property int|null $link 是否存在链接
  * @property int|null $modify 是否编辑
