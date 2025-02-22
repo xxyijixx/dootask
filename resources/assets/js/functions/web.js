@@ -247,6 +247,9 @@ import {convertLocalResourcePath} from "../components/Replace/utils";
             }
             if (type === 'md') {
                 text = text.replace(/:::\s*reasoning[\s\S]*?:::/g, "");
+                if (/:::\s*reasoning\s+/.test(text)) {
+                    return $A.L('思考中...')
+                }
                 text = MarkdownPreview(text);
             }
             //

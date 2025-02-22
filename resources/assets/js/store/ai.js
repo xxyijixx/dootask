@@ -211,6 +211,7 @@ const AISystemConfig = {
                     prop: "base_url",
                     placeholder: "Enter base URL...",
                     tip: "API请求的URL路径",
+                    sort: 1,
                 }
             ]
         },

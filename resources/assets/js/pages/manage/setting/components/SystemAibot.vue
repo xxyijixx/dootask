@@ -133,6 +133,18 @@ export default {
                 }
             });
 
+            // 处理sort参数并排序
+            let sort = 9999999;
+            prefixedFields.forEach(field => {
+                if (typeof field.sort === 'undefined') {
+                    field.sort = ++sort;
+                }
+            });
+
+            // 按sort字段正序排序
+            prefixedFields.sort((a, b) => a.sort - b.sort);
+
+            // 返回处理后的字段
             return prefixedFields;
         },
     },
@@ -189,6 +201,7 @@ export default {
                         return;
                     }
                     data.base_url = this.formData[`${this.type}_base_url`];
+                    data.key = this.formData[`${this.type}_key`];
                 }
                 this.$store.dispatch("call", {
                     url: 'system/setting/aibot_defmodels?type=' + this.type,
