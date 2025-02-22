@@ -34,11 +34,7 @@ class Extranet
         ];
         if ($aibotSetting['openai_agency']) {
             $extra['CURLOPT_PROXY'] = $aibotSetting['openai_agency'];
-            if (str_contains($aibotSetting['openai_agency'], 'socks')) {
-                $extra['CURLOPT_PROXYTYPE'] = CURLPROXY_SOCKS5;
-            } else {
-                $extra['CURLOPT_PROXYTYPE'] = CURLPROXY_HTTP;
-            }
+            $extra['CURLOPT_PROXYTYPE'] = str_contains($aibotSetting['openai_agency'], 'socks') ? CURLPROXY_SOCKS5 : CURLPROXY_HTTP;
         }
         $res = Ihttp::ihttp_request('https://api.openai.com/v1/audio/transcriptions', [
             'file' => new \CURLFile($filePath),
@@ -74,11 +70,7 @@ class Extranet
         ];
         if ($aibotSetting['openai_agency']) {
             $extra['CURLOPT_PROXY'] = $aibotSetting['openai_agency'];
-            if (str_contains($aibotSetting['openai_agency'], 'socks')) {
-                $extra['CURLOPT_PROXYTYPE'] = CURLPROXY_SOCKS5;
-            } else {
-                $extra['CURLOPT_PROXYTYPE'] = CURLPROXY_HTTP;
-            }
+            $extra['CURLOPT_PROXYTYPE'] = str_contains($aibotSetting['openai_agency'], 'socks') ? CURLPROXY_SOCKS5 : CURLPROXY_HTTP;
         }
         $res = Ihttp::ihttp_request('https://api.openai.com/v1/chat/completions', json_encode([
             "model" => "gpt-4o-mini",
@@ -125,11 +117,7 @@ class Extranet
         ];
         if ($aibotSetting['openai_agency']) {
             $extra['CURLOPT_PROXY'] = $aibotSetting['openai_agency'];
-            if (str_contains($aibotSetting['openai_agency'], 'socks')) {
-                $extra['CURLOPT_PROXYTYPE'] = CURLPROXY_SOCKS5;
-            } else {
-                $extra['CURLOPT_PROXYTYPE'] = CURLPROXY_HTTP;
-            }
+            $extra['CURLOPT_PROXYTYPE'] = str_contains($aibotSetting['openai_agency'], 'socks') ? CURLPROXY_SOCKS5 : CURLPROXY_HTTP;
         }
         $res = Ihttp::ihttp_request('https://api.openai.com/v1/chat/completions', json_encode([
             "model" => "gpt-4o-mini",
@@ -162,11 +150,23 @@ class Extranet
     /**
      * 获取 ollama 模型
      * @param $baseUrl
+     * @param $key
+     * @param $agency
      * @return array
      */
-    public static function ollamaModels($baseUrl)
+    public static function ollamaModels($baseUrl, $key = null, $agency = null)
     {
-        $res = Ihttp::ihttp_request($baseUrl . '/api/tags', [], [], 15);
+        $extra = [
+            'Content-Type' => 'application/json',
+        ];
+        if ($key) {
+            $extra['Authorization'] = 'Bearer ' . $key;
+        }
+        if ($agency) {
+            $extra['CURLOPT_PROXY'] = $agency;
+            $extra['CURLOPT_PROXYTYPE'] = str_contains($agency, 'socks') ? CURLPROXY_SOCKS5 : CURLPROXY_HTTP;
+        }
+        $res = Ihttp::ihttp_request($baseUrl . '/api/tags', [], $extra, 15);
         if (Base::isError($res)) {
             return Base::retError("获取失败", $res);
         }

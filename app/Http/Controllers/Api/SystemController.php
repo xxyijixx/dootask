@@ -333,6 +333,8 @@ class SystemController extends AbstractController
      *
      * @apiParam {String} type          AI类型
      * @apiParam {String} [base_url]    基础URL（仅 type=ollama 时有效）
+     * @apiParam {String} [key]         Key（仅 type=ollama 时有效）
+     * @apiParam {String} [agency]      使用代理（仅 type=ollama 时有效）
      *
      * @apiSuccess {Number} ret     返回状态码（1正确、0错误）
      * @apiSuccess {String} msg     返回信息（错误描述）
@@ -341,12 +343,14 @@ class SystemController extends AbstractController
     public function setting__aibot_defmodels()
     {
         $type = trim(Request::input('type'));
-        $baseUrl = trim(Request::input('base_url'));
         if ($type == 'ollama') {
+            $baseUrl = trim(Request::input('base_url'));
+            $key = trim(Request::input('key'));
+            $agency = trim(Request::input('agency'));
             if (empty($baseUrl)) {
                 return Base::retError('请先填写 Base URL');
             }
-            return Extranet::ollamaModels($baseUrl);
+            return Extranet::ollamaModels($baseUrl, $key, $agency);
         }
         $models = Setting::AIDefaultModels($type);
         if (empty($models)) {

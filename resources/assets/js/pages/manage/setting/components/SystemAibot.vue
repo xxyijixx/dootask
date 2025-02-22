@@ -202,6 +202,7 @@ export default {
                     }
                     data.base_url = this.formData[`${this.type}_base_url`];
                     data.key = this.formData[`${this.type}_key`];
+                    data.agency = this.formData[`${this.type}_agency`];
                 }
                 this.$store.dispatch("call", {
                     url: 'system/setting/aibot_defmodels?type=' + this.type,
