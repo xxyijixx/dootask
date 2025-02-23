@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.43.7]
+
+### Features
+
+- 添加 Grok AI、Ollama AI
+
+### Performance
+
+- 优化AI支持分析指定文件
+- 支持在AI对话中直接引用任务提问
+- 优化 AI 参数
+- 优化 Ollama AI
+- 优化设置
+- 优化AI设置
+- 优化AI消息
+
 ## [0.42.85]
 
 ### Bug Fixes
@@ -10,6 +26,7 @@ All notable changes to this project will be documented in this file.
 
 ### Performance
 
+- 表情回复时更新对话列表
 - Onlyoffice 支持打开超过100m的文件
 - 优化点击上传列表效果
 - AI支持自定义模型列表
