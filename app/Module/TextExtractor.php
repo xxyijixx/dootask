@@ -157,12 +157,16 @@ class TextExtractor
     /**
      * 获取文件内容
      * @param $filePath
+     * @param float|int $maxSize 最大文件大小，单位字节，默认300KB
      * @return string
      */
-    public static function getFileContent($filePath)
+    public static function getFileContent($filePath, float|int $maxSize = 300 * 1024)
     {
         if (!file_exists($filePath) || !is_file($filePath)) {
             return "(Failed to read contents of {$filePath})";
+        }
+        if (filesize($filePath) > $maxSize) {
+            return "(File size exceeds " . Base::readableBytes($maxSize) . ", unable to display content)";
         }
         $te = new self();
         try {
