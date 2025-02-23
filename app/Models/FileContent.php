@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-
 use App\Module\Base;
 use App\Module\Timer;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -156,5 +155,29 @@ class FileContent extends AbstractModel
             }
         }
         return Base::retSuccess('success', [ 'content' => $content ]);
+    }
+
+    /**
+     * 获取文件内容
+     * @param $id
+     * @return self|null
+     */
+    public static function idOrCodeToContent($id)
+    {
+        $builder = null;
+        if (Base::isNumber($id)) {
+            $builder = FileContent::whereFid($id);
+        } elseif ($id) {
+            $fileLink = FileLink::whereCode($id)->first();
+            if ($fileLink) {
+                $builder = FileContent::whereFid($fileLink->file_id);
+            }
+        }
+        /** @var self $fileContent */
+        $fileContent = $builder?->orderByDesc('id')->first();
+        if ($fileContent) {
+            $fileContent->content = Base::json2array($fileContent->content ?: []);
+        }
+        return $fileContent;
     }
 }

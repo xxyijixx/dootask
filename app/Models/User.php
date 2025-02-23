@@ -243,6 +243,19 @@ class User extends AbstractModel
     }
 
     /**
+     * 返回是否AI机器人
+     * @return bool
+     */
+    public function isAiBot(&$aiName = '')
+    {
+        if (preg_match('/^ai-(.*?)@bot\.system$/', $this->email, $matches)) {
+            $aiName = $matches[1];
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 判断是否管理员
      */
     public function checkAdmin()

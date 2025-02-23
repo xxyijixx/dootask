@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Module\AiBot;
+namespace App\Module;
 
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -154,16 +154,11 @@ class TextExtractor
     /** ********************************************************************* */
     /** ********************************************************************* */
 
-    public static function parsePaths($filePath)
-    {
-        // todo
-        // (see below for file content)
-        // <file_content path="${mentionPath}">\n${content}\n</file_content>
-
-        // (see below for site content)
-        // <site_content url="${mention}">\n${result}\n</site_content>
-    }
-
+    /**
+     * 获取文件内容
+     * @param $filePath
+     * @return string
+     */
     public static function getFileContent($filePath)
     {
         if (!file_exists($filePath) || !is_file($filePath)) {

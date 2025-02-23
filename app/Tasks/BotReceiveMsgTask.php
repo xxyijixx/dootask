@@ -2,6 +2,7 @@
 
 namespace App\Tasks;
 
+use App\Models\FileContent;
 use App\Models\Project;
 use App\Models\ProjectTask;
 use App\Models\User;
@@ -12,6 +13,7 @@ use App\Models\WebSocketDialogMsg;
 use App\Module\Base;
 use App\Module\Doo;
 use App\Module\Ihttp;
+use App\Module\TextExtractor;
 use Cache;
 use Carbon\Carbon;
 use DB;
@@ -86,7 +88,7 @@ class BotReceiveMsgTask extends AbstractTask
         }
 
         // 提取指令
-        $command = $this->extractCommand($msg, $this->mention);
+        $command = $this->extractCommand($msg, $botUser->isAiBot(), $this->mention);
         if (empty($command)) {
             return;
         }
@@ -415,10 +417,9 @@ class BotReceiveMsgTask extends AbstractTask
         $userBot = null;
         $extras = [];
         $errorContent = null;
-        if (preg_match('/^ai-(.*?)@bot\.system$/', $botUser->email, $matches)) {
+        if ($botUser->isAiBot($type)) {
             // AI机器人
             $setting = Base::setting('aibotSetting');
-            $type = $matches[1];
             $extras = [
                 'model_type' => match ($type) {
                     'qianwen' => 'qwen',
@@ -462,7 +463,7 @@ class BotReceiveMsgTask extends AbstractTask
                 $replyMsg = WebSocketDialogMsg::find($msg->reply_id);
                 $replyCommand = '';
                 if ($replyMsg) {
-                    $replyCommand = $this->extractCommand($replyMsg);
+                    $replyCommand = $this->extractCommand($replyMsg, true);
                     if ($replyCommand) {
                         $replyCommand = Base::cutStr($replyCommand, 2000);
                         $replyCommand = <<<EOF
@@ -559,10 +560,11 @@ class BotReceiveMsgTask extends AbstractTask
     /**
      * 提取消息指令（提取消息内容）
      * @param WebSocketDialogMsg $msg
+     * @param bool $isAiBot
      * @param bool $mention
      * @return string
      */
-    private function extractCommand(WebSocketDialogMsg $msg, bool $mention = false)
+    private function extractCommand(WebSocketDialogMsg $msg, bool $isAiBot = false, bool $mention = false)
     {
         if ($msg->type !== 'text') {
             return '';
@@ -576,37 +578,49 @@ class BotReceiveMsgTask extends AbstractTask
             if (str_starts_with($command, '%3A.')) {
                 $command = ":" . substr($command, 4);
             }
-        } else {
-            $attachments = [];
+            return $command;
+        }
+        $aiContents = [];
+        if ($isAiBot) {
             if (preg_match_all("/<span class=\"mention task\" data-id=\"(\d+)\">(.*?)<\/span>/", $original, $match)) {
                 $taskIds = Base::newIntval($match[1]);
                 foreach ($taskIds as $index => $taskId) {
+                    $taskName = addslashes($match[2][$index]) . " (ID:{$taskId})";
+                    $taskContext = "任务状态：不存在或已删除";
                     $taskInfo = ProjectTask::with(['content'])->whereId($taskId)->first();
                     if ($taskInfo) {
                         $taskName = addslashes($taskInfo->name) . " (ID:{$taskId})";
                         $taskContext = implode("\n", $taskInfo->AIContext());
-                    } else {
-                        $taskName = addslashes($match[2][$index]) . " (ID:{$taskId})";
-                        $taskContext = "任务状态：不存在或已删除";
                     }
-                    $replName = "'{$taskName}'";
-                    $attachments[] = [
-                        'search' => $replName,
-                        'replace' => "{$replName} (see below for task_content tag)",
-                        'context' => "<task_content path=\"{$taskName}\">\n{$taskContext}\n</task_content>",
-                    ];
-                    $original = str_replace($match[0][$index], $replName, $original);
+                    $aiContents[] = "<task_content path=\"{$taskName}\">\n{$taskContext}\n</task_content>";
+                    $original = str_replace($match[0][$index], "'{$taskName}' (see below for task_content tag)", $original);
                 }
             }
-            if ($attachments) {
-                Cache::put("bot:{$msg->id}:attachments", Base::array2json($attachments), 60);
+            if (preg_match_all("/<a class=\"mention file\" href=\"([^\"']+?)\"[^>]*?>(.*?)<\/a>/", $original, $match)) {
+                $filePaths = $match[1];
+                foreach ($filePaths as $index => $filePath) {
+                    if (preg_match("/single\/file\/(.*?)$/", $filePath, $fileMatch)) {
+                        $fileName = addslashes($match[2][$index]);
+                        $fileContent = "文件状态：不存在或已删除";
+                        $fileInfo = FileContent::idOrCodeToContent($fileMatch[1]);
+                        if ($fileInfo && isset($fileInfo->content['url'])) {
+                            $filePath = public_path($fileInfo->content['url']);
+                            if (file_exists($filePath)) {
+                                $fileName .= " (ID:{$fileInfo->id})";
+                                $fileContent = TextExtractor::getFileContent($filePath);
+                            }
+                        }
+                        $aiContents[] = "<file_content path=\"{$fileName}\">\n{$fileContent}\n</file_content>";
+                        $original = str_replace($match[0][$index], "'{$fileName}' (see below for file_content tag)", $original);
+                    }
+                }
             }
-            $command = trim(strip_tags($original));
         }
-        if (empty($command)) {
-            return '';
+        $command = trim(strip_tags($original));
+        if ($aiContents) {
+            $command .= "\n\n" . implode("\n\n", $aiContents);
         }
-        return $command;
+        return $command ?: '';
     }
 
     /**
