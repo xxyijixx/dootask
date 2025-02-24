@@ -314,7 +314,7 @@ class SystemController extends AbstractController
         //
         if (env("SYSTEM_SETTING") == 'disabled') {
             foreach ($setting as $key => $item) {
-                if (str_contains($key, '_key')) {
+                if (str_contains($key, '_key') && $item) {
                     $setting[$key] = substr($item, 0, 4) . str_repeat('*', strlen($item) - 8) . substr($item, -4);
                 }
             }
