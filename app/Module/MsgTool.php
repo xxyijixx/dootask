@@ -25,11 +25,23 @@ class MsgTool
         }
 
         $isMd = strtolower($type) === 'md';
+        $placeholders = [];
 
-        // 如果是Markdown，转换为HTML
+        // 如果是Markdown，先处理特殊标记及转换为HTML
         if ($isMd) {
-            $converter = new CommonMarkConverter();
+            // 处理特殊标记
+            $pattern = '/:::\s*reasoning\s+(.*?)\s*:::/s';
+            $counter = 0;
+            $text = preg_replace_callback($pattern, function($matches) use ($type, $length, &$placeholders, &$counter) {
+                // 使用更简短的占位符，避免被markdown解析
+                $placeholder = "@PH::{$counter}::PH@";
+                $placeholders[$placeholder] = "::: reasoning\n" . self::truncateText($matches[1], $length, $type) . "\n:::";
+                $counter++;
+                return $placeholder;
+            }, $text);
+            // 转换为HTML
             try {
+                $converter = new CommonMarkConverter();
                 $text = $converter->convert($text);
             } catch (CommonMarkException) {
                 return "";
@@ -50,10 +62,26 @@ class MsgTool
         // 递归函数来遍历节点并截取内容
         self::traverseNodes($body, $currentLength, $length, $truncatedHtml);
 
-        // 如果是Markdown，转换回Markdown
+        // 如果是Markdown，转换回Markdown及还原特殊标记
         if ($isMd) {
-            $converter = new HtmlConverter();
-            $truncatedHtml = $converter->convert($truncatedHtml);
+            // 转换回Markdown
+            try {
+                $converter = new HtmlConverter();
+                $truncatedHtml = $converter->convert($truncatedHtml);
+            } catch (\Exception) {
+                return "";
+            }
+            // 还原特殊标记
+            if (!empty($placeholders)) {
+                $truncatedHtml = preg_replace('/@P?H?:*\s*$/', '', $truncatedHtml);
+                $preCount = substr_count($truncatedHtml, '@PH::');
+                $sufCount = substr_count($truncatedHtml, '::PH@');
+                $diffCount = $preCount - $sufCount;
+                if ($diffCount > 0) {
+                    $truncatedHtml .= str_repeat('::PH@', $diffCount);
+                }
+                $truncatedHtml = strtr($truncatedHtml, $placeholders);
+            }
         }
 
         return $truncatedHtml;
