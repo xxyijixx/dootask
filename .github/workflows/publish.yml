@@ -230,8 +230,42 @@ jobs:
         run: |
           ./cmd electron win
 
-  publish-release:
+  build-vendor:
     needs: [ check-version, create-release, build-client ]
+    if: needs.check-version.outputs.should_release == 'true'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: ./cmd install
+
+      - name: Create Vendor Archive
+        run: tar -czf vendor.tar.gz vendor/
+
+      - name: Upload Vendor Archive
+        uses: actions/github-script@v7
+        env:
+          RELEASE_ID: ${{ needs.create-release.outputs.release_id }}
+        with:
+          script: |
+            const fs = require('fs');
+
+            const data = await fs.promises.readFile('vendor.tar.gz');
+
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: process.env.RELEASE_ID,
+              name: 'vendor.tar.gz',
+              data: data
+            });
+
+  publish-release:
+    needs: [ check-version, create-release, build-client, build-vendor ]
     if: needs.check-version.outputs.should_release == 'true' && github.ref == 'refs/heads/pro'
     permissions:
       contents: write
