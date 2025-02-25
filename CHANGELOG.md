@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.43.18]
+
+### Bug Fixes
+
+- 首次跟ai聊天没有记录的问题
+
+### Performance
+
+- 工作报告支持查看仅未读
+- AI 支持引用文件
+- 优化图文消息
+- 优化文本信息复制
+- 优化样式
+- 无法再AI机器人页面看到模型的问题
+
 ## [0.43.7]
 
 ### Features
@@ -10,6 +25,7 @@ All notable changes to this project will be documented in this file.
 
 ### Performance
 
+- 优化MD消息过长处理
 - 优化AI支持分析指定文件
 - 支持在AI对话中直接引用任务提问
 - 优化 AI 参数
