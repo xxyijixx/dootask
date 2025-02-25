@@ -14,7 +14,6 @@ use App\Module\Base;
 use App\Module\Doo;
 use App\Module\Ihttp;
 use App\Module\TextExtractor;
-use Cache;
 use Carbon\Carbon;
 use DB;
 
@@ -453,30 +452,35 @@ class BotReceiveMsgTask extends AbstractTask
             if (in_array($this->client['platform'], ['win', 'mac', 'web']) && !Base::judgeClientVersion("0.41.11", $this->client['version'])) {
                 $errorContent = '当前客户端版本低（所需版本≥v0.41.11）。';
             }
-            $attachments = Base::json2array(Cache::get("bot:{$msg->id}:attachments"));
-            foreach ($attachments as $attachment) {
-                $command = str_replace($attachment['search'], $attachment['replace'], $command);
-                $command .= "\n\n" . $attachment['context'];
-            }
 
             if ($msg->reply_id > 0) {
                 $replyMsg = WebSocketDialogMsg::find($msg->reply_id);
-                $replyCommand = '';
+                $replyCommand = null;
                 if ($replyMsg) {
-                    $replyCommand = $this->extractCommand($replyMsg, true);
-                    if ($replyCommand) {
-                        $replyCommand = Base::cutStr($replyCommand, 2000);
-                        $replyCommand = <<<EOF
-                            <quoted_content>
-                            {$replyCommand}
-                            </quoted_content>
-
-                            The content within the above quoted_content tags is a citation.
-
-                            EOF;
+                    switch ($replyMsg->type) {
+                        case 'text':
+                            $replyCommand = $this->extractCommand($replyMsg, true);
+                            if ($replyCommand) {
+                                $replyCommand = Base::cutStr($replyCommand, 20000);
+                            }
+                            break;
+                        case 'file':
+                            $msgData = Base::json2array($replyMsg->getRawOriginal('msg'));
+                            $replyCommand = TextExtractor::getFileContent(public_path($msgData['path']));
+                            break;
                     }
                 }
-                $command = $replyCommand . $command;
+                if ($replyCommand) {
+                    $command = <<<EOF
+                        <quoted_content>
+                        {$replyCommand}
+                        </quoted_content>
+
+                        The content within the above quoted_content tags is a citation.
+
+                        {$command}
+                        EOF;
+                }
             }
             $this->AIGenerateSystemMessageOrBeforeText($msg->userid, $dialog, $extras);
             $webhookUrl = "{$serverUrl}/ai/chat";
