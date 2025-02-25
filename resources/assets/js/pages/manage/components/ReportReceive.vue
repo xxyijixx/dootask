@@ -24,6 +24,18 @@
                 </li>
                 <li>
                     <div class="search-label">
+                        {{ $L("汇报状态") }}
+                    </div>
+                    <div class="search-content">
+                        <Select
+                            v-model="keys.status"
+                            :placeholder="$L('全部')">
+                            <Option v-for="item in reportStatusList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                        </Select>
+                    </div>
+                </li>
+                <li>
+                    <div class="search-label">
                         {{ $L("汇报时间") }}
                     </div>
                     <div class="search-content">
@@ -190,6 +202,12 @@ export default {
                 {value: "", label: this.$L('全部')},
                 {value: "weekly", label: this.$L('周报')},
                 {value: "daily", label: this.$L('日报')},
+            ],
+
+            reportStatusList: [
+                {value: "", label: this.$L('全部')},
+                {value: "unread", label: this.$L('仅未读')},
+                {value: "read", label: this.$L('仅已读')},
             ],
         }
     },

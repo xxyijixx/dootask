@@ -71,6 +71,7 @@ class ReportController extends AbstractController
      * @apiParam {Object} [keys]             搜索条件
      * - keys.key: 关键词
      * - keys.type: 汇报类型，weekly:周报，daily:日报
+     * - keys.status: 状态，unread:未读，read:已读
      * - keys.created_at: 汇报时间
      * @apiParam {Number} [page]        当前页，默认:1
      * @apiParam {Number} [pagesize]    每页显示数量，默认:20，最大:50
@@ -97,6 +98,11 @@ class ReportController extends AbstractController
             }
             if (in_array($keys['type'], [Report::WEEKLY, Report::DAILY])) {
                 $builder->whereType($keys['type']);
+            }
+            if (in_array($keys['status'], ['unread', 'read'])) {
+                $builder->whereHas("receivesUser", function ($query) use ($user, $keys) {
+                    $query->where("report_receives.userid", $user->userid)->where("report_receives.read", $keys['status'] === 'unread' ? 0 : 1);
+                });
             }
             if (is_array($keys['created_at'])) {
                 if ($keys['created_at'][0] > 0) $builder->where('created_at', '>=', Base::newCarbon($keys['created_at'][0])->startOfDay());
