@@ -901,7 +901,11 @@ class WebSocketDialogMsg extends AbstractModel
         foreach ($matchs[2] as $key => $str) {
             $parsed = parse_url($str);
             if (str_starts_with($parsed['path'], "/uploads/")) {
-                $str = "{{RemoteURL}}" . ltrim($parsed['path'], "/");
+                $relativePath = ltrim($parsed['path'], "/");
+                $relativePath = Base::thumbRestore($relativePath);
+                if (file_exists(public_path($relativePath))) {
+                    $str = "{{RemoteURL}}{$relativePath}";
+                }
             }
             if ($imageSaveLocal === 'close') {
                 $imageSize = @getimagesize($str);
