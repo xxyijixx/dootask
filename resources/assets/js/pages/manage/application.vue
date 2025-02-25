@@ -462,7 +462,7 @@ export default {
         // 获取AI标签
         getAITags() {
             this.$store.dispatch("call", {
-                url: 'system/setting/aibot',
+                url: 'system/setting/aibot_models',
             }).then(({data}) => {
                 this.handleAITags(data);
             });
