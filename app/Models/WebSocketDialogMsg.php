@@ -899,8 +899,12 @@ class WebSocketDialogMsg extends AbstractModel
         $imageSaveLocal = Base::settingFind("system", "image_save_local");
         preg_match_all("/<img[^>]*?src=([\"'])(.*?(png|jpg|jpeg|webp|gif).*?)\\1[^>]*?>/is", $text, $matchs);
         foreach ($matchs[2] as $key => $str) {
+            $parsed = parse_url($str);
+            if (str_starts_with($parsed['path'], "/uploads/")) {
+                $str = "{{RemoteURL}}" . ltrim($parsed['path'], "/");
+            }
             if ($imageSaveLocal === 'close') {
-                $imageSize = getimagesize($str);
+                $imageSize = @getimagesize($str);
                 if ($imageSize === false) {
                     $imageSize = ["auto", "auto"];
                 }
