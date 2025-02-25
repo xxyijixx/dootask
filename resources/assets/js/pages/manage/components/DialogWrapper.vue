@@ -3134,6 +3134,14 @@ export default {
                         value: '',
                     })
                 }
+                if (msgData.msg.type === 'md') {
+                    this.operateCopys.push({
+                        type: 'md',
+                        icon: '&#xe77f;',
+                        label: '复制原文',
+                        value: '',
+                    })
+                }
             }
             this.$nextTick(() => {
                 const rect = el.getBoundingClientRect();
@@ -3563,11 +3571,18 @@ export default {
                 case 'text':
                     const copyEl = $A(this.$refs.scroller.$el).find(`[data-id="${this.operateItem.id}"]`).find('.dialog-content')
                     if (copyEl.length > 0) {
-                        const text = copyEl[0].innerText.replace(/\n\n/g, "\n").replace(/(^\s*)|(\s*$)/g, "")
-                        this.copyText(text)
+                        let copyText = copyEl[0].innerText;
+                        if ($A.getObject(this.operateItem.msg, 'type') !== 'md') {
+                            copyText = copyText.replace(/\n\n/g, "\n").replace(/(^\s*)|(\s*$)/g, "")
+                        }
+                        this.copyText(copyText)
                     } else {
                         $A.messageWarning('不可复制的内容');
                     }
+                    break;
+
+                case 'md':
+                    this.copyText(this.operateItem.msg.text)
                     break;
             }
         },
