@@ -1895,6 +1895,7 @@ class ProjectTask extends AbstractModel
                 $contexts[] = "任务截止时间：" . $this->end_at;
             }
         }
+        $contexts[] = "当前系统时间：" . Carbon::now()->toDateTimeString();
         if ($this->content) {
             $taskDesc = $this->content?->getContentInfo();
             if ($taskDesc) {

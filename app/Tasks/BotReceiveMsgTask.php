@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\ProjectTask;
 use App\Models\User;
 use App\Models\UserBot;
+use App\Models\UserDepartment;
 use App\Models\WebSocketDialog;
 use App\Models\WebSocketDialogConfig;
 use App\Models\WebSocketDialogMsg;
@@ -487,7 +488,7 @@ class BotReceiveMsgTask extends AbstractTask
                         EOF;
                 }
             }
-            $this->AIGenerateSystemMessageOrBeforeText($msg->userid, $dialog, $extras);
+            $this->AIGenerateSystemMessage($msg->userid, $dialog, $extras);
             $webhookUrl = "{$serverUrl}/ai/chat";
         } else {
             // 用户机器人
@@ -633,16 +634,15 @@ class BotReceiveMsgTask extends AbstractTask
     }
 
     /**
-     * 生成AI系统提示词或前置消息
+     * 生成AI系统提示词
      * @param int|null $userid
      * @param WebSocketDialog $dialog
      * @param array $extras
      * @return void
      */
-    private function AIGenerateSystemMessageOrBeforeText(int|null $userid, WebSocketDialog $dialog, array &$extras)
+    private function AIGenerateSystemMessage(int|null $userid, WebSocketDialog $dialog, array &$extras)
     {
-        $system_message = null;
-        $before_text = [];
+        $system_messages = [];
         switch ($dialog->type) {
             case "user":
                 $aiPrompt = WebSocketDialogConfig::where([
@@ -651,7 +651,7 @@ class BotReceiveMsgTask extends AbstractTask
                     'type' => 'ai_prompt',
                 ])->value('value');
                 if ($aiPrompt) {
-                    $system_message = $aiPrompt;
+                    $extras['system_message'] = $aiPrompt;
                 }
                 break;
             case "group":
@@ -661,16 +661,14 @@ class BotReceiveMsgTask extends AbstractTask
                     case 'project':
                         $projectInfo = Project::whereDialogId($dialog->id)->first();
                         if ($projectInfo) {
-                            $projectText = "当前我在项目【{$projectInfo->name}】中";
-                            if ($projectInfo->archived_at) {
-                                $projectText .= "，此项目已经归档";
-                            }
-                            $before_text[] = $projectText;
-                            if ($projectInfo->desc) {
-                                $before_text[] = "项目描述：{$projectInfo->desc}";
-                            }
-                            $before_text[] = <<<EOF
-                                如果你判断我想要添加任务，请按照以下格式回复：
+                            $projectDesc = $projectInfo->desc ?: "-";
+                            $projectStatus = $projectInfo->archived_at ? '已归档' : '正在进行中';
+                            $system_messages[] = <<<EOF
+                                当前我在项目【{$projectInfo->name}】中
+                                项目描述：{$projectDesc}
+                                项目状态：{$projectStatus}
+
+                                如果你判断我想要或需要添加任务，请按照以下格式回复：
 
                                 ::: create-task-list
                                 title: 任务标题1
@@ -685,15 +683,14 @@ class BotReceiveMsgTask extends AbstractTask
                     case 'task':
                         $taskInfo = ProjectTask::with(['content'])->whereDialogId($dialog->id)->first();
                         if ($taskInfo) {
-                            $taskName = addslashes($taskInfo->name) . " (ID:{$taskInfo->id})";
                             $taskContext = implode("\n", $taskInfo->AIContext());
-                            if ($taskContext) {
-                                $before_text[] = "当前我在任务 '{$taskName}' (see below for task_content tag) 对话中\n\n<task_content path=\"{$taskName}\">\n{$taskContext}\n</task_content>";
-                            } else {
-                                $before_text[] = "当前我在任务 '{$taskName}' 对话中";
-                            }
-                            $before_text[] = <<<EOF
-                                如果你判断我想要添加子任务，请按照以下格式回复：
+                            $system_messages[] = <<<EOF
+                                当前我在任务【{$taskInfo->name}】中
+                                当前时间：{$taskInfo->updated_at}
+                                任务ID：{$taskInfo->id}
+                                {$taskContext}
+
+                                如果你判断我想要或需要添加子任务，请按照以下格式回复：
 
                                 ::: create-subtask-list
                                 title: 子任务标题1
@@ -702,17 +699,23 @@ class BotReceiveMsgTask extends AbstractTask
                                 EOF;
                         }
                         break;
+                    case 'department':
+                        $userDepartment = UserDepartment::whereDialogId($dialog->id)->first();
+                        if ($userDepartment) {
+                            $system_messages[] = "当前我在【{$userDepartment->name}】的部门群聊中";
+                        }
+                        break;
                     case 'all':
-                        $before_text[] = "当前我团队【全体成员】的群聊中";
+                        $system_messages[] = "当前我在【全体成员】的群聊中";
                         break;
                 }
                 break;
         }
-        if ($system_message) {
-            $extras['system_message'] = $system_message;
+        if ($extras['system_message']) {
+            array_unshift($system_messages, $extras['system_message']);
         }
-        if ($before_text) {
-            $extras['before_text'] = Base::newTrim($before_text);
+        if ($system_messages) {
+            $extras['system_message'] = implode("\n\n====\n\n", Base::newTrim($system_messages));
         }
     }
 }
