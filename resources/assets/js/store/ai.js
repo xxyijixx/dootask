@@ -120,6 +120,8 @@ const AISystemConfig = {
             label: "默认提示词",
             prop: "system",
             type: "textarea",
+            maxlength: 20000,
+            showWordLimit: true,
             placeholder: "请输入默认提示词",
             tip: "例如：你是一个人开发的AI助手"
         }

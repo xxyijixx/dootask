@@ -66,7 +66,7 @@ class Setting extends AbstractModel
                 }
                 $array = [];
                 $aiList = ['openai', 'claude', 'deepseek', 'gemini', 'grok', 'ollama', 'zhipu', 'qianwen', 'wenxin'];
-                $fieldList = ['key', 'models', 'model', 'base_url', 'agency', 'temperature', 'system', 'secret'];
+                $fieldList = ['key', 'secret', 'models', 'model', 'base_url', 'agency', 'temperature', 'system'];
                 foreach ($aiList as $aiName) {
                     foreach ($fieldList as $fieldName) {
                         $key = $aiName . '_' . $fieldName;

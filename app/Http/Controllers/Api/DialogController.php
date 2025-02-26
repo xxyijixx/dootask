@@ -3090,7 +3090,7 @@ class DialogController extends AbstractController
             ]
         )) {
             WebSocketDialogMsg::sendMsg(null, $dialog_id, 'notice', [
-                'notice' => $value ? ("修改提示词：" . $value) : "取消提示词",
+                'notice' => $value ? ("修改提示词：" . Base::cutStr($value, 100)) : "取消提示词",
             ], User::userid(), true, true);
         }
 

@@ -449,11 +449,12 @@
             <Form :model="modifyData" @submit.native.prevent>
                 <FormItem prop="value" style="margin-bottom: 16px">
                     <Input
-                        :maxlength="500"
+                        :maxlength="20000"
                         type="textarea"
                         :autosize="{minRows:3,maxRows:5}"
                         v-model="modifyData.value"
-                        :placeholder="$L('例如：你是一个人开发的AI助手')"/>
+                        :placeholder="$L('例如：你是一个人开发的AI助手')"
+                        show-word-limit/>
                 </FormItem>
             </Form>
             <div slot="footer" class="adaption">
@@ -2896,7 +2897,8 @@ export default {
             this.modifyLoad++;
             this.$store.dispatch("call", {
                 url: 'dialog/config/save',
-                data: this.modifyData
+                data: this.modifyData,
+                method: 'post'
             }).then(({data, msg}) => {
                 $A.messageSuccess(msg);
                 this.$store.dispatch("saveDialog", data);

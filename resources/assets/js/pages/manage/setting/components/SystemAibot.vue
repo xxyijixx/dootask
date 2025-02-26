@@ -22,11 +22,12 @@
                     </template>
                     <template v-else-if="field.type === 'textarea'">
                         <Input
-                            :maxlength="500"
+                            :maxlength="field.maxlength || 500"
                             type="textarea"
                             :autosize="{minRows:2,maxRows:6}"
                             v-model="formData[field.prop]"
-                            :placeholder="$L(field.placeholder)"/>
+                            :placeholder="$L(field.placeholder)"
+                            :show-word-limit="!!field.showWordLimit"/>
                     </template>
                     <template v-else>
                         <Input
@@ -174,8 +175,12 @@ export default {
             const data = Object.fromEntries(Object.entries(this.formData).filter(([key]) => props.includes(key)));
             this.loadIng++;
             this.$store.dispatch("call", {
-                url: 'system/setting/aibot?type=' + (save ? 'save' : 'all'),
-                data: save ? data : {},
+                url: 'system/setting/aibot',
+                data: Object.assign(save ? data : {}, {
+                    type: save ? 'save' : 'get',
+                    filter: this.type,
+                }),
+                method: save ? 'post' : 'get',
             }).then(({data}) => {
                 if (save) {
                     $A.messageSuccess('修改成功');

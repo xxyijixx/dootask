@@ -287,6 +287,7 @@ class SystemController extends AbstractController
      * @apiParam {String} type
      * - get: 获取（默认）
      * - save: 保存设置（参数：[...]）
+     * @apiParam {String} filter    过滤字段（可选）
      *
      * @apiSuccess {Number} ret     返回状态码（1正确、0错误）
      * @apiSuccess {String} msg     返回信息（错误描述）
@@ -297,6 +298,7 @@ class SystemController extends AbstractController
         User::auth('admin');
         //
         $type = trim(Request::input('type'));
+        $filter = trim(Request::input('filter'));
         $setting = Base::setting('aibotSetting');
         if ($type == 'save') {
             if (env("SYSTEM_SETTING") == 'disabled') {
@@ -311,10 +313,18 @@ class SystemController extends AbstractController
             }
             $setting = Base::setting('aibotSetting', Base::newTrim($setting));
         }
+        if ($filter) {
+            $setting = array_filter($setting, function($value, $key) use ($filter) {
+                return str_starts_with($key, $filter);
+            }, ARRAY_FILTER_USE_BOTH);
+        }
         //
         if (env("SYSTEM_SETTING") == 'disabled') {
             foreach ($setting as $key => $item) {
-                if (str_contains($key, '_key') && $item) {
+                if (empty($item)) {
+                    continue;
+                }
+                if (str_ends_with($key, '_key') || str_ends_with($key, '_secret')) {
                     $setting[$key] = substr($item, 0, 4) . str_repeat('*', strlen($item) - 8) . substr($item, -4);
                 }
             }

@@ -1295,7 +1295,7 @@ class Base
      * 获取或设置
      * @param $setname          // 配置名称
      * @param bool $array       // 保存内容
-     * @param false $isUpdate   // 保存内容为更新模式，默认否
+     * @param bool $isUpdate    // 保存内容为更新模式，默认否
      * @return array
      */
     public static function setting($setname, $array = false, $isUpdate = false)
