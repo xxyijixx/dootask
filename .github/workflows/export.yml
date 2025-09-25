@@ -1,0 +1,45 @@
+name: Export Docker Images and Upload to Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  export-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pro branch code
+        uses: actions/checkout@v4
+        with:
+          ref: pro
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract image names from docker-compose.yml
+        id: images
+        run: |
+          images=$(yq '.services.*.image' docker-compose.yml | grep -v null | sort | uniq)
+          echo "images<<EOF" >> $GITHUB_OUTPUT
+          echo "$images" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Pull images
+        run: |
+          for img in ${{ steps.images.outputs.images }}; do
+            docker pull "$img"
+          done
+
+      - name: Save images to tar files
+        run: |
+          mkdir -p images
+          for img in ${{ steps.images.outputs.images }}; do
+            fname=$(echo $img | tr '/:' '_')
+            docker save "$img" -o "images/${fname}.tar"
+          done
+
+      - name: Upload images as release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: images/*.tar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
