@@ -7,16 +7,18 @@ jobs:
   export-images:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code (default branch)
+      - name: Checkout pro branch
         uses: actions/checkout@v4
+        with:
+          ref: pro
 
-      - name: Get latest tag
+      - name: Get latest tag (pro branch)
         id: get_tag
         run: |
           latest_tag=$(git tag --sort=-creatordate | head -n 1)
           echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
 
-      - name: Checkout latest tag
+      - name: Checkout latest tag (pro branch)
         uses: actions/checkout@v4
         with:
           ref: ${{ steps.get_tag.outputs.latest_tag }}
