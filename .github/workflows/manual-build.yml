@@ -73,11 +73,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-          
-      - name: Install electron deps
-        run: |
-          cd electron
-          npm ci
 
       # Android
       - name: (Android) Prepare
