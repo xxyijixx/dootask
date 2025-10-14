@@ -83,6 +83,15 @@ jobs:
         with:
           distribution: "zulu"
           java-version: "11"
+      
+      - name: (Android) Replace App Icons
+        if: matrix.build_type == 'android'
+        uses: xxyijixx/replace-app-icons-action@v1
+        with:
+          icons_repo: xxyijixx/app-icons   
+          ref: main                           
+          icons_subdir: '.'             
+          android_project_path: 'resources/mobile/platforms/android/eeuiApp'
 
       - name: (Android) Build
         if: matrix.build_type == 'android'
