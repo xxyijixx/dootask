@@ -613,6 +613,19 @@ async function startBuild(data) {
         const publicDir = path.resolve(__dirname, "../resources/mobile/src/public");
         fse.removeSync(publicDir)
         fse.copySync(electronDir, publicDir)
+        // 同步到 Flutter 资源目录
+        try {
+            const flutterDir = path.resolve(__dirname, "../dootask_flutter");
+            const flutterPublicDir = path.resolve(__dirname, "../dootask_flutter/public");
+            if (fs.existsSync(flutterDir)) {
+                fse.removeSync(flutterPublicDir);
+                fse.ensureDirSync(flutterPublicDir);
+                fse.copySync(electronDir, flutterPublicDir);
+                console.log("[Flutter] Copied electron/public -> dootask_flutter/public");
+            }
+        } catch (e) {
+            console.warn("[Flutter] Copy to dootask_flutter/public failed:", e.message);
+        }
         if (argv[3] === "publish") {
             // Android config
             const gradleFile = path.resolve(eeuiDir, "platforms/android/eeuiApp/local.properties")

@@ -1,6 +1,7 @@
 const isElectron = !!(window && window.process && window.process.type && window.electron);
 const isEEUIApp = window && window.navigator && /eeui/i.test(window.navigator.userAgent);
-const isSoftware = isElectron || isEEUIApp;
+const isFlutter = !!(window && (window.flutter_inappwebview || window.FLTWebView || window.isFlutterApp === true || (/flutter/i.test(window.navigator.userAgent || ""))));
+const isSoftware = isElectron || isEEUIApp || isFlutter;
 
 import {languageName, switchLanguage as $L} from "./language";
 import {isLocalHost} from "./components/Replace/utils";

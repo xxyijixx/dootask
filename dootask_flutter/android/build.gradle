@@ -1,0 +1,30 @@
+allprojects {
+    repositories {
+        // 阿里云国内镜像
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+
+        // 腾讯云镜像（备用）
+        // maven { url 'https://mirrors.tencent.com/nexus/repository/maven-public/' }
+
+        // 华为云镜像（备用）
+        // maven { url 'https://repo.huaweicloud.com/repository/maven/' }
+
+        // 官方仓库
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
